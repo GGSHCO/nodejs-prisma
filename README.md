@@ -1,1 +1,3 @@
 # nodejs-prisma
+
+git init
