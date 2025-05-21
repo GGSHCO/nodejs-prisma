@@ -1,0 +1,332 @@
+2025-05-13 10:46:35 [error]: TSError: ⨯ Unable to compile TypeScript:
+[96msrc/controllers/auth.controller.ts[0m:[93m14[0m:[93m41[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m14[0m       const existingUser = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                        ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m38[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m38[0m       const user = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m64[0m:[93m42[0m - [91merror[0m[90m TS2339: [0mProperty 'refreshToken' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'.
+
+[7m64[0m       const existingToken = await prisma.refreshToken.findUnique({
+[7m  [0m [91m                                         ~~~~~~~~~~~~[0m
+[96msrc/controllers/auth.controller.ts[0m:[93m75[0m:[93m20[0m - [91merror[0m[90m TS2339: [0mProperty 'refreshToken' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'.
+
+[7m75[0m       await prisma.refreshToken.delete({ where: { id: existingToken.id } })
+[7m  [0m [91m                   ~~~~~~~~~~~~[0m
+[96msrc/controllers/auth.controller.ts[0m:[93m87[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m87[0m       const user = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m93[0m:[93m22[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m93[0m         await prisma.user.update({
+[7m  [0m [91m                     ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m113[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m113[0m       const user = await prisma.user.findFirst({
+[7m   [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m126[0m:[93m20[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m126[0m       await prisma.user.update({
+[7m   [0m [91m                   ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m150[0m:[93m20[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m150[0m       await prisma.user.delete({ where: { id: userId } })
+[7m   [0m [91m                   ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+
+    at createTSError (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-05-13 10:47:17 [error]: TSError: ⨯ Unable to compile TypeScript:
+[96msrc/controllers/auth.controller.ts[0m:[93m14[0m:[93m41[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m14[0m       const existingUser = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                        ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m38[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m38[0m       const user = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m64[0m:[93m42[0m - [91merror[0m[90m TS2339: [0mProperty 'refreshToken' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'.
+
+[7m64[0m       const existingToken = await prisma.refreshToken.findUnique({
+[7m  [0m [91m                                         ~~~~~~~~~~~~[0m
+[96msrc/controllers/auth.controller.ts[0m:[93m75[0m:[93m20[0m - [91merror[0m[90m TS2339: [0mProperty 'refreshToken' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'.
+
+[7m75[0m       await prisma.refreshToken.delete({ where: { id: existingToken.id } })
+[7m  [0m [91m                   ~~~~~~~~~~~~[0m
+[96msrc/controllers/auth.controller.ts[0m:[93m87[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m87[0m       const user = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m93[0m:[93m22[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m93[0m         await prisma.user.update({
+[7m  [0m [91m                     ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m113[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m113[0m       const user = await prisma.user.findFirst({
+[7m   [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m126[0m:[93m20[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m126[0m       await prisma.user.update({
+[7m   [0m [91m                   ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m150[0m:[93m20[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m150[0m       await prisma.user.delete({ where: { id: userId } })
+[7m   [0m [91m                   ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+
+    at createTSError (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-05-13 10:51:17 [error]: TSError: ⨯ Unable to compile TypeScript:
+[96msrc/controllers/auth.controller.ts[0m:[93m14[0m:[93m41[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m14[0m       const existingUser = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                        ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m38[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m38[0m       const user = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m64[0m:[93m42[0m - [91merror[0m[90m TS2339: [0mProperty 'refreshToken' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'.
+
+[7m64[0m       const existingToken = await prisma.refreshToken.findUnique({
+[7m  [0m [91m                                         ~~~~~~~~~~~~[0m
+[96msrc/controllers/auth.controller.ts[0m:[93m75[0m:[93m20[0m - [91merror[0m[90m TS2339: [0mProperty 'refreshToken' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'.
+
+[7m75[0m       await prisma.refreshToken.delete({ where: { id: existingToken.id } })
+[7m  [0m [91m                   ~~~~~~~~~~~~[0m
+[96msrc/controllers/auth.controller.ts[0m:[93m87[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m87[0m       const user = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m93[0m:[93m22[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m93[0m         await prisma.user.update({
+[7m  [0m [91m                     ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m113[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m113[0m       const user = await prisma.user.findFirst({
+[7m   [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m126[0m:[93m20[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m126[0m       await prisma.user.update({
+[7m   [0m [91m                   ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m150[0m:[93m20[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m150[0m       await prisma.user.delete({ where: { id: userId } })
+[7m   [0m [91m                   ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+
+    at createTSError (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+2025-05-13 10:54:53 [error]: TSError: ⨯ Unable to compile TypeScript:
+[96msrc/controllers/auth.controller.ts[0m:[93m14[0m:[93m41[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m14[0m       const existingUser = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                        ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m38[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m38[0m       const user = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m64[0m:[93m42[0m - [91merror[0m[90m TS2339: [0mProperty 'refreshToken' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'.
+
+[7m64[0m       const existingToken = await prisma.refreshToken.findUnique({
+[7m  [0m [91m                                         ~~~~~~~~~~~~[0m
+[96msrc/controllers/auth.controller.ts[0m:[93m75[0m:[93m20[0m - [91merror[0m[90m TS2339: [0mProperty 'refreshToken' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'.
+
+[7m75[0m       await prisma.refreshToken.delete({ where: { id: existingToken.id } })
+[7m  [0m [91m                   ~~~~~~~~~~~~[0m
+[96msrc/controllers/auth.controller.ts[0m:[93m87[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m87[0m       const user = await prisma.user.findUnique({ where: { email } })
+[7m  [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m93[0m:[93m22[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m93[0m         await prisma.user.update({
+[7m  [0m [91m                     ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m113[0m:[93m33[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m113[0m       const user = await prisma.user.findFirst({
+[7m   [0m [91m                                ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m126[0m:[93m20[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m126[0m       await prisma.user.update({
+[7m   [0m [91m                   ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+[96msrc/controllers/auth.controller.ts[0m:[93m150[0m:[93m20[0m - [91merror[0m[90m TS2551: [0mProperty 'user' does not exist on type 'PrismaClient<{ log: ({ level: "warn"; emit: "event"; } | { level: "error"; emit: "event"; })[]; }, "error" | "warn", DefaultArgs>'. Did you mean 'user1'?
+
+[7m150[0m       await prisma.user.delete({ where: { id: userId } })
+[7m   [0m [91m                   ~~~~[0m
+
+  [96msrc/generated/prisma/client/index.d.ts[0m:[93m3205[0m:[93m7[0m
+    [7m3205[0m   get user1(): Prisma.user1Delegate<ExtArgs, ClientOptions>;
+    [7m    [0m [96m      ~~~~~[0m
+    'user1' is declared here.
+
+    at createTSError (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Projects\syf\server-prisma\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1465:32)
+    at Function._load (node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)

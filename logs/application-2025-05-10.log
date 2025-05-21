@@ -1,0 +1,109 @@
+2025-05-10 11:11:01 [error]: Unhandled error: TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:113:18
+    at Array.forEach (<anonymous>)
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:110:44
+    at Layer.handleRequest (C:\Projects\syf\server-prisma\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Projects\syf\server-prisma\node_modules\router\index.js:342:13)
+    at C:\Projects\syf\server-prisma\node_modules\router\index.js:297:9
+    at processParams (C:\Projects\syf\server-prisma\node_modules\router\index.js:582:12)
+    at next (C:\Projects\syf\server-prisma\node_modules\router\index.js:291:5)
+    at C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:822:7
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-05-10 11:11:56 [error]: Unhandled error: TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:113:18
+    at Array.forEach (<anonymous>)
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:110:44
+    at Layer.handleRequest (C:\Projects\syf\server-prisma\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Projects\syf\server-prisma\node_modules\router\index.js:342:13)
+    at C:\Projects\syf\server-prisma\node_modules\router\index.js:297:9
+    at processParams (C:\Projects\syf\server-prisma\node_modules\router\index.js:582:12)
+    at next (C:\Projects\syf\server-prisma\node_modules\router\index.js:291:5)
+    at C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:822:7
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-05-10 11:12:38 [error]: Unhandled error: TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:113:18
+    at Array.forEach (<anonymous>)
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:110:44
+    at Layer.handleRequest (C:\Projects\syf\server-prisma\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Projects\syf\server-prisma\node_modules\router\index.js:342:13)
+    at C:\Projects\syf\server-prisma\node_modules\router\index.js:297:9
+    at processParams (C:\Projects\syf\server-prisma\node_modules\router\index.js:582:12)
+    at next (C:\Projects\syf\server-prisma\node_modules\router\index.js:291:5)
+    at C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:822:7
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-05-10 11:12:51 [error]: Unhandled error: TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:113:18
+    at Array.forEach (<anonymous>)
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:110:44
+    at Layer.handleRequest (C:\Projects\syf\server-prisma\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Projects\syf\server-prisma\node_modules\router\index.js:342:13)
+    at C:\Projects\syf\server-prisma\node_modules\router\index.js:297:9
+    at processParams (C:\Projects\syf\server-prisma\node_modules\router\index.js:582:12)
+    at next (C:\Projects\syf\server-prisma\node_modules\router\index.js:291:5)
+    at C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:822:7
+    at async C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:704:5
+2025-05-10 11:13:08 [error]: Unhandled error: TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:113:18
+    at Array.forEach (<anonymous>)
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:110:44
+    at Layer.handleRequest (C:\Projects\syf\server-prisma\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Projects\syf\server-prisma\node_modules\router\index.js:342:13)
+    at C:\Projects\syf\server-prisma\node_modules\router\index.js:297:9
+    at processParams (C:\Projects\syf\server-prisma\node_modules\router\index.js:582:12)
+    at next (C:\Projects\syf\server-prisma\node_modules\router\index.js:291:5)
+    at C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:822:7
+    at async C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:704:5
+2025-05-10 11:13:16 [error]: Unhandled error: TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:113:18
+    at Array.forEach (<anonymous>)
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:110:44
+    at Layer.handleRequest (C:\Projects\syf\server-prisma\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Projects\syf\server-prisma\node_modules\router\index.js:342:13)
+    at C:\Projects\syf\server-prisma\node_modules\router\index.js:297:9
+    at processParams (C:\Projects\syf\server-prisma\node_modules\router\index.js:582:12)
+    at next (C:\Projects\syf\server-prisma\node_modules\router\index.js:291:5)
+    at C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:822:7
+    at async C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:704:5
+2025-05-10 11:13:22 [error]: Unhandled error: TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:113:18
+    at Array.forEach (<anonymous>)
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:110:44
+    at Layer.handleRequest (C:\Projects\syf\server-prisma\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Projects\syf\server-prisma\node_modules\router\index.js:342:13)
+    at C:\Projects\syf\server-prisma\node_modules\router\index.js:297:9
+    at processParams (C:\Projects\syf\server-prisma\node_modules\router\index.js:582:12)
+    at next (C:\Projects\syf\server-prisma\node_modules\router\index.js:291:5)
+    at C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:822:7
+    at async C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:704:5
+2025-05-10 11:14:49 [error]: Unhandled error: TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:113:18
+    at Array.forEach (<anonymous>)
+    at C:\Projects\syf\server-prisma\node_modules\express-mongo-sanitize\index.js:110:44
+    at Layer.handleRequest (C:\Projects\syf\server-prisma\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Projects\syf\server-prisma\node_modules\router\index.js:342:13)
+    at C:\Projects\syf\server-prisma\node_modules\router\index.js:297:9
+    at processParams (C:\Projects\syf\server-prisma\node_modules\router\index.js:582:12)
+    at next (C:\Projects\syf\server-prisma\node_modules\router\index.js:291:5)
+    at C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:822:7
+    at async C:\Projects\syf\server-prisma\node_modules\express-rate-limit\dist\index.cjs:704:5
+2025-05-10 12:13:18 [error]: Unhandled error: TypeError: Cannot set property query of #<IncomingMessage> which has only a getter
+    at C:\Projects\syf\server-prisma\src\middleware\validation.ts:16:16
+    at Layer.handleRequest (C:\Projects\syf\server-prisma\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Projects\syf\server-prisma\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Projects\syf\server-prisma\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Projects\syf\server-prisma\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Projects\syf\server-prisma\node_modules\router\lib\layer.js:152:17)
+    at C:\Projects\syf\server-prisma\node_modules\router\index.js:295:15
+    at processParams (C:\Projects\syf\server-prisma\node_modules\router\index.js:582:12)
+    at next (C:\Projects\syf\server-prisma\node_modules\router\index.js:291:5)
+    at Function.handle (C:\Projects\syf\server-prisma\node_modules\router\index.js:186:3)
+2025-05-10 12:24:54 [error]: Prisma Error: 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+Error validating datasource `db`: the URL must start with the protocol `prisma://`
+2025-05-10 13:17:57 [error]: Prisma Error: 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+Error validating datasource `db`: the URL must start with the protocol `prisma://`
