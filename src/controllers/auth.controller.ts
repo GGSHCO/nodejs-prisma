@@ -112,14 +112,12 @@ export class AuthController {
       // Set new access token in cookie
       res.cookie('accessToken', newAccessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
+        secure: process.env.NODE_ENV === 'prod',
+        sameSite: (process.env.NODE_ENV === 'prod' ? 'none' : 'lax') as
           | 'none'
           | 'lax',
         domain:
-          process.env.NODE_ENV === 'production'
-            ? process.env.CLIENT_URL
-            : undefined,
+          process.env.NODE_ENV === 'prod' ? process.env.CLIENT_URL : undefined,
         maxAge: 15 * 60 * 1000,
       })
 
@@ -352,10 +350,10 @@ export class AuthController {
 
       // const cookieSettings = {
       //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production',
-      //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      //   secure: process.env.NODE_ENV === 'prod',
+      //   sameSite: process.env.NODE_ENV === 'prod' ? 'none' : 'lax',
       //   domain:
-      //     process.env.NODE_ENV === 'production'
+      //     process.env.NODE_ENV === 'prod'
       //       ? process.env.CLIENT_URL
       //       : undefined,
       //   maxAge: type === 'access' ? 15 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000,
@@ -364,28 +362,24 @@ export class AuthController {
       // Set secure cookies
       res.cookie('accessToken', tokens.accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'prod',
         // sameSite: 'strict',
-        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
+        sameSite: (process.env.NODE_ENV === 'prod' ? 'none' : 'lax') as
           | 'none'
           | 'lax',
         domain:
-          process.env.NODE_ENV === 'production'
-            ? process.env.CLIENT_URL
-            : undefined,
+          process.env.NODE_ENV === 'prod' ? process.env.CLIENT_URL : undefined,
         maxAge: 15 * 60 * 1000,
       })
 
       res.cookie('refreshToken', tokens.refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
+        secure: process.env.NODE_ENV === 'prod',
+        sameSite: (process.env.NODE_ENV === 'prod' ? 'none' : 'lax') as
           | 'none'
           | 'lax',
         domain:
-          process.env.NODE_ENV === 'production'
-            ? process.env.CLIENT_URL
-            : undefined,
+          process.env.NODE_ENV === 'prod' ? process.env.CLIENT_URL : undefined,
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: '/api/refresh',
       })

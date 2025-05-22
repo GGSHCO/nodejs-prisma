@@ -44,9 +44,9 @@ app.get('/api/csrf-token', (req, res) => {
 
   // Set the cookie with appropriate security flags
   res.cookie('XSRF-TOKEN', csrfToken, {
-    httpOnly: process.env.NODE_ENV === 'production',
-    secure: process.env.NODE_ENV === 'production', // Use secure: true in production with HTTPS
-    sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none', // Adjust based on your CORS needs
+    httpOnly: process.env.NODE_ENV === 'prod',
+    secure: process.env.NODE_ENV === 'prod', // Use secure: true in production with HTTPS
+    sameSite: process.env.NODE_ENV === 'prod' ? 'lax' : 'none', // Adjust based on your CORS needs
     maxAge: 60 * 60 * 1000, // 1 hour, or match your session expiry
   })
 
