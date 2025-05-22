@@ -23,10 +23,10 @@ app.use(express.json({ limit: '10kb' })) // Body parser for JSON
 app.use(express.urlencoded({ extended: true, limit: '10kb' })) // Body parser for URL-encoded data
 app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
 
+app.use('/api', authRoutes)
+
 // --- Security Middleware (including CSRF) ---
 app.use(securityMiddleware)
-
-app.use('/api', authRoutes)
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() })
@@ -44,9 +44,9 @@ app.get('/api/csrf-token', (req, res) => {
 
   // Set the cookie with appropriate security flags
   res.cookie('XSRF-TOKEN', csrfToken, {
-    httpOnly: process.env.NODE_ENV === 'production',
-    secure: process.env.NODE_ENV === 'production', // Use secure: true in production with HTTPS
-    sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none', // Adjust based on your CORS needs
+    httpOnly: process.env.NODE_ENV === 'prod',
+    secure: process.env.NODE_ENV === 'prod', // Use secure: true in production with HTTPS
+    sameSite: process.env.NODE_ENV === 'prod' ? 'lax' : 'none', // Adjust based on your CORS needs
     maxAge: 3600000, // 1 hour, or match your session expiry
   })
 
