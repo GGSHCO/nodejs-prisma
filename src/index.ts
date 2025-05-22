@@ -1,7 +1,7 @@
 // src/index.ts
 
 // Load environment variables only in development
-if (process.env.NODE_ENV !== 'prod') {
+if (process.env.NODE_ENV !== 'production') {
   try {
     require('dotenv').config()
   } catch (error) {
@@ -47,7 +47,7 @@ app.get('/api/csrf-token', (req, res) => {
     httpOnly: process.env.NODE_ENV === 'production',
     secure: process.env.NODE_ENV === 'production', // Use secure: true in production with HTTPS
     sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none', // Adjust based on your CORS needs
-    maxAge: 3600000, // 1 hour, or match your session expiry
+    maxAge: 60 * 60 * 1000, // 1 hour, or match your session expiry
   })
 
   res.status(200).json({
