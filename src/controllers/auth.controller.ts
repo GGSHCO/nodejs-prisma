@@ -423,12 +423,34 @@ export class AuthController {
     }
   }
 
+  // static triggerTestError = async (
+  //   req: Request,
+  //   res: Response
+  // ): Promise<void> => {
+  //   try {
+  //     throw new Error('Manual test error for logger verification')
+  //   } catch (error) {
+  //     logger.error('Triggered test error', error)
+  //     res.status(500).send('Test error logged')
+  //   }
+  // }
+
   static triggerTestError = async (
     req: Request,
     res: Response
   ): Promise<void> => {
     try {
-      throw new Error('Manual test error for logger verification')
+      const email = 'rakesh@ggsh.in' // Hardcoded for test; replace or make dynamic if needed
+
+      const user = await prisma.sYF_USERMASTER.findUnique({
+        where: { EMAIL: email },
+      })
+
+      if (!user) {
+        throw new Error(`No user found with email: ${email}`)
+      }
+
+      res.status(200).json({ message: 'User found', user })
     } catch (error) {
       logger.error('Triggered test error', error)
       res.status(500).send('Test error logged')
