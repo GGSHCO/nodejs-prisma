@@ -14,6 +14,7 @@ import cookieParser from 'cookie-parser'
 import { securityMiddleware } from './middleware/security'
 import authRoutes from './routes/auth.routes'
 import logger from './config/logger'
+import { setCookie } from './utils/setCookie'
 
 const app = express()
 const port = process.env.PORT || 3000 // Use environment variable for port
@@ -43,11 +44,15 @@ app.get('/api/csrf-token', (req, res) => {
     Math.random().toString(36).substring(2, 15)
 
   // Set the cookie with appropriate security flags
-  res.cookie('XSRF-TOKEN', csrfToken, {
-    httpOnly: process.env.NODE_ENV === 'prod',
-    secure: process.env.NODE_ENV === 'prod', // Use secure: true in production with HTTPS
-    sameSite: process.env.NODE_ENV === 'prod' ? 'lax' : 'none', // Adjust based on your CORS needs
-    maxAge: 3600000, // 1 hour, or match your session expiry
+  // res.cookie('XSRF-TOKEN', csrfToken, {
+  //   httpOnly: process.env.NODE_ENV === 'prod',
+  //   secure: process.env.NODE_ENV === 'prod', // Use secure: true in production with HTTPS
+  //   sameSite: process.env.NODE_ENV === 'prod' ? 'lax' : 'none', // Adjust based on your CORS needs
+  //   maxAge: 3600000, // 1 hour, or match your session expiry
+  // })
+
+  setCookie(res, 'XSRF-TOKEN', csrfToken, {
+    maxAge: 60 * 60 * 1000,
   })
 
   res.status(200).json({

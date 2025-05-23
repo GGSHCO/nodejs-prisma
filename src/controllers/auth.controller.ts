@@ -11,6 +11,7 @@ import {
 import crypto from 'crypto'
 import logger from '../config/logger'
 import { User, UserCheck } from '../interfaces/User'
+import { setCookie } from '../utils/setCookie'
 
 // Security constants
 const PEPPER = process.env.PEPPER_SECRET! // Store in environment variables
@@ -110,16 +111,20 @@ export class AuthController {
       }).accessToken
 
       // Set new access token in cookie
-      res.cookie('accessToken', newAccessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
-          | 'none'
-          | 'lax',
-        domain:
-          process.env.NODE_ENV === 'production'
-            ? process.env.CLIENT_URL
-            : undefined,
+      // res.cookie('accessToken', newAccessToken, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production',
+      //   sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
+      //     | 'none'
+      //     | 'lax',
+      //   domain:
+      //     process.env.NODE_ENV === 'production'
+      //       ? process.env.CLIENT_URL
+      //       : undefined,
+      //   maxAge: 15 * 60 * 1000,
+      // })
+
+      setCookie(res, 'accessToken', newAccessToken, {
         maxAge: 15 * 60 * 1000,
       })
 
@@ -362,30 +367,39 @@ export class AuthController {
       // }
 
       // Set secure cookies
-      res.cookie('accessToken', tokens.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        // sameSite: 'strict',
-        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
-          | 'none'
-          | 'lax',
-        domain:
-          process.env.NODE_ENV === 'production'
-            ? process.env.CLIENT_URL
-            : undefined,
+      // res.cookie('accessToken', tokens.accessToken, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production',
+      //   // sameSite: 'strict',
+      //   sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
+      //     | 'none'
+      //     | 'lax',
+      //   domain:
+      //     process.env.NODE_ENV === 'production'
+      //       ? process.env.CLIENT_URL
+      //       : undefined,
+      //   maxAge: 15 * 60 * 1000,
+      // })
+
+      setCookie(res, 'accessToken', tokens.accessToken, {
         maxAge: 15 * 60 * 1000,
       })
 
-      res.cookie('refreshToken', tokens.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
-          | 'none'
-          | 'lax',
-        domain:
-          process.env.NODE_ENV === 'production'
-            ? process.env.CLIENT_URL
-            : undefined,
+      // res.cookie('refreshToken', tokens.refreshToken, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production',
+      //   sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
+      //     | 'none'
+      //     | 'lax',
+      //   domain:
+      //     process.env.NODE_ENV === 'production'
+      //       ? process.env.CLIENT_URL
+      //       : undefined,
+      //   maxAge: 7 * 24 * 60 * 60 * 1000,
+      //   path: '/api/refresh',
+      // })
+
+      setCookie(res, 'refreshToken', tokens.refreshToken, {
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: '/api/refresh',
       })
