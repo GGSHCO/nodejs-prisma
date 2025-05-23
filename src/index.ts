@@ -1,93 +1,21 @@
-// src/index.ts
-
-// Load environment variables only in development
-if (process.env.NODE_ENV !== 'prod') {
-  try {
-    require('dotenv').config()
-  } catch (error) {
-    console.error('Failed to load dotenv:', error)
-  }
-}
-
 import express from 'express'
-import cookieParser from 'cookie-parser'
-import crypto from 'crypto'
-import { securityMiddleware } from './middleware/security'
-import authRoutes from './routes/auth.routes'
-import logger from './config/logger'
-import { setCookie } from './utils/setCookie'
-import cors from 'cors'
 
 const app = express()
 const port = process.env.PORT || 3000
 
-app.post('/test-post1', (req, res) => {
-  res.status(200).send('POST test-1 from home')
+// --- Register routes ---
+app.post('/test-post', (req, res) => {
+  res.status(200).send('POST test from home')
 })
 
 app.get('/test-get', (req, res) => {
-  res.json({ status: 'ok' })
+  res.status(200).json({ status: 'ok' })
 })
-
-app.use(cors())
-
-// --- Core Express Middleware ---
-// app.use(express.json({ limit: '10kb' })) // Body parser for JSON
-// app.use(express.urlencoded({ extended: true, limit: '10kb' })) // Body parser for URL-encoded data
-// app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
-
-// --- CSRF Token Endpoint ---
-// This endpoint is essential for frontends and Postman to get the XSRF-TOKEN cookie.
-// It should be placed after cookieParser but before stricter security checks.
-// app.get('/api/csrf-token', (req, res) => {
-//   const csrfToken = crypto.randomBytes(32).toString('hex')
-
-//   setCookie(res, 'XSRF-TOKEN', csrfToken, {
-//     maxAge: 60 * 60 * 1000,
-//   })
-
-//   res.status(200).json({
-//     responseType: 'SUCCESS',
-//     responseMessage: 'CSRF token set in cookie',
-//     responseData: null,
-//   })
-// })
-
-// app.post('/test-post2', (req, res) => {
-//   res.status(200).send('POST test-2 from home')
-// })
-
-// app.use('/api', authRoutes)
-
-// // --- Security Middleware (including CSRF) ---
-// app.use(securityMiddleware)
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date() })
+  res.status(200).json({ status: 'ok', timestamp: new Date() })
 })
-
-// app.use(
-//   (
-//     err: Error,
-//     req: express.Request,
-//     res: express.Response,
-//     next: express.NextFunction
-//   ) => {
-//     logger.error(`Unhandled error: ${err.stack}`)
-//     res.status(500).json({ error: 'Internal server error' })
-//   }
-// )
 
 app.listen(port, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)
-  console.log(`CORS origin set to: ${process.env.CLIENT_URL}`) // For debugging
-})
-
-console.log('Registered routes:')
-authRoutes.stack.forEach((layer) => {
-  if (layer.route) {
-    const method = layer.route.stack[0].method.toUpperCase()
-    const path = layer.route.path
-    console.log(`${method} ${path}`)
-  }
 })
