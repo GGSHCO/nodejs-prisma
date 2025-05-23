@@ -110,20 +110,6 @@ export class AuthController {
         email: user.EMAIL,
       }).accessToken
 
-      // Set new access token in cookie
-      // res.cookie('accessToken', newAccessToken, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production',
-      //   sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
-      //     | 'none'
-      //     | 'lax',
-      //   domain:
-      //     process.env.NODE_ENV === 'production'
-      //       ? process.env.CLIENT_URL
-      //       : undefined,
-      //   maxAge: 15 * 60 * 1000,
-      // })
-
       setCookie(res, 'accessToken', newAccessToken, {
         maxAge: 15 * 60 * 1000,
       })

@@ -36,7 +36,7 @@ router.get(
 router.get('/test-logger', AuthController.triggerTestError)
 
 // Login
-router.post('/login', validate(loginSchema), AuthController.login)
+router.get('/login', validate(loginSchema), AuthController.login)
 
 // // Refresh token
 // router.post('/refresh', AuthController.refreshToken)

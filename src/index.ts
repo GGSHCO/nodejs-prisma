@@ -11,6 +11,7 @@ if (process.env.NODE_ENV !== 'prod') {
 
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import crypto from 'crypto'
 import { securityMiddleware } from './middleware/security'
 import authRoutes from './routes/auth.routes'
 import logger from './config/logger'
@@ -24,32 +25,11 @@ app.use(express.json({ limit: '10kb' })) // Body parser for JSON
 app.use(express.urlencoded({ extended: true, limit: '10kb' })) // Body parser for URL-encoded data
 app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
 
-app.use('/api', authRoutes)
-
-// --- Security Middleware (including CSRF) ---
-app.use(securityMiddleware)
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date() })
-})
-
 // --- CSRF Token Endpoint ---
 // This endpoint is essential for frontends and Postman to get the XSRF-TOKEN cookie.
 // It should be placed after cookieParser but before stricter security checks.
 app.get('/api/csrf-token', (req, res) => {
-  // Generate a random token. For production, consider a more robust library
-  // or a secure random string generator.
-  const csrfToken =
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15)
-
-  // Set the cookie with appropriate security flags
-  // res.cookie('XSRF-TOKEN', csrfToken, {
-  //   httpOnly: process.env.NODE_ENV === 'prod',
-  //   secure: process.env.NODE_ENV === 'prod', // Use secure: true in production with HTTPS
-  //   sameSite: process.env.NODE_ENV === 'prod' ? 'lax' : 'none', // Adjust based on your CORS needs
-  //   maxAge: 3600000, // 1 hour, or match your session expiry
-  // })
+  const csrfToken = crypto.randomBytes(32).toString('hex')
 
   setCookie(res, 'XSRF-TOKEN', csrfToken, {
     maxAge: 60 * 60 * 1000,
@@ -60,6 +40,15 @@ app.get('/api/csrf-token', (req, res) => {
     responseMessage: 'CSRF token set in cookie',
     responseData: null,
   })
+})
+
+app.use('/api', authRoutes)
+
+// --- Security Middleware (including CSRF) ---
+app.use(securityMiddleware)
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date() })
 })
 
 app.use(
