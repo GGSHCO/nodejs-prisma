@@ -5,10 +5,12 @@ const port = process.env.PORT || 3000
 
 // --- Register routes ---
 app.post('/test-post', (req, res) => {
+  console.log('POST /test-post called')
   res.status(200).send('POST test from home')
 })
 
 app.get('/test-get', (req, res) => {
+  console.log('GET /test-get called')
   res.status(200).json({ status: 'ok' })
 })
 
