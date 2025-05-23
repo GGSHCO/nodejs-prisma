@@ -254,7 +254,6 @@ export class AuthController {
       logger.error('Check if this error is logged inside Login method', error)
       res.status(500).send('Test error logged')
     }
-    return
 
     // try {
     //   const { email, password } = res.locals.sanitized.body.data
