@@ -24,6 +24,10 @@ app.post('/test-post1', (req, res) => {
   res.status(200).send('POST test-1 from home')
 })
 
+app.get('/test-get', (req, res) => {
+  res.json({ status: 'ok' })
+})
+
 // --- Core Express Middleware ---
 // app.use(express.json({ limit: '10kb' })) // Body parser for JSON
 // app.use(express.urlencoded({ extended: true, limit: '10kb' })) // Body parser for URL-encoded data
