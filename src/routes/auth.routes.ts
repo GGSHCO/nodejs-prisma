@@ -33,6 +33,8 @@ router.get(
   AuthController.verifyEmail
 )
 
+router.get('/test-logger', AuthController.triggerTestError)
+
 // Login
 router.post('/login', validate(loginSchema), AuthController.login)
 
