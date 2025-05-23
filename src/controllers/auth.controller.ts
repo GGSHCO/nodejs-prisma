@@ -423,6 +423,18 @@ export class AuthController {
     }
   }
 
+  static triggerTestError = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      throw new Error('Manual test error for logger verification')
+    } catch (error) {
+      logger.error('Triggered test error', error)
+      res.status(500).send('Test error logged')
+    }
+  }
+
   // static async forgotPassword(req: Request, res: Response): Promise<void> {
   //   try {
   //     const { email } = req.body
