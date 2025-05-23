@@ -16,9 +16,10 @@ import { securityMiddleware } from './middleware/security'
 import authRoutes from './routes/auth.routes'
 import logger from './config/logger'
 import { setCookie } from './utils/setCookie'
+import cors from 'cors'
 
 const app = express()
-const port = process.env.PORT
+const port = process.env.PORT || 3000
 
 app.post('/test-post1', (req, res) => {
   res.status(200).send('POST test-1 from home')
@@ -27,6 +28,8 @@ app.post('/test-post1', (req, res) => {
 app.get('/test-get', (req, res) => {
   res.json({ status: 'ok' })
 })
+
+app.use(cors())
 
 // --- Core Express Middleware ---
 // app.use(express.json({ limit: '10kb' })) // Body parser for JSON
