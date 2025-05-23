@@ -263,6 +263,13 @@ export class AuthController {
    */
   static login = async (req: Request, res: Response): Promise<void> => {
     try {
+      throw new Error('Check if this error is logged inside Login method')
+    } catch (error) {
+      logger.error('Check if this error is logged inside Login method', error)
+      res.status(500).send('Test error logged')
+    }
+
+    try {
       const { email, password } = res.locals.sanitized.body.data
 
       const user: UserCheck = await prisma.sYF_USERMASTER.findUnique({
