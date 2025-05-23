@@ -73,3 +73,12 @@ app.listen(port, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)
   console.log(`CORS origin set to: ${process.env.CLIENT_URL}`) // For debugging
 })
+
+console.log('Registered routes:')
+authRoutes.stack.forEach((layer) => {
+  if (layer.route) {
+    const method = layer.route.stack[0].method.toUpperCase()
+    const path = layer.route.path
+    console.log(`${method} ${path}`)
+  }
+})
