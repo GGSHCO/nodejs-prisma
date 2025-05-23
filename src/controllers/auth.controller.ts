@@ -268,166 +268,167 @@ export class AuthController {
       logger.error('Check if this error is logged inside Login method', error)
       res.status(500).send('Test error logged')
     }
+    return
 
-    try {
-      const { email, password } = res.locals.sanitized.body.data
+    // try {
+    //   const { email, password } = res.locals.sanitized.body.data
 
-      const user: UserCheck = await prisma.sYF_USERMASTER.findUnique({
-        where: { EMAIL: email },
-      })
+    //   const user: UserCheck = await prisma.sYF_USERMASTER.findUnique({
+    //     where: { EMAIL: email },
+    //   })
 
-      console.log(user)
+    //   console.log(user)
 
-      if (!user || !user.PASSWORD || !user.SALT) {
-        res.status(401).json({
-          responseType: 'ERROR',
-          responseMessage: 'Invalid credentials',
-          responseData: null,
-        })
-        return
-      }
+    //   if (!user || !user.PASSWORD || !user.SALT) {
+    //     res.status(401).json({
+    //       responseType: 'ERROR',
+    //       responseMessage: 'Invalid credentials',
+    //       responseData: null,
+    //     })
+    //     return
+    //   }
 
-      // Account lockout check
-      if ((user.failedLoginAttempts ?? 0) >= 5) {
-        const lockoutExpires = new Date(
-          (user.lastFailedLogin?.getTime() || 0) + ACCOUNT_LOCKOUT_DURATION
-        )
-        if (new Date() < lockoutExpires) {
-          res.status(403).json({
-            responseType: 'ERROR',
-            responseMessage: `Account locked until ${lockoutExpires.toLocaleTimeString()}`,
-            responseData: null,
-          })
-          return
-        }
-      }
+    //   // Account lockout check
+    //   if ((user.failedLoginAttempts ?? 0) >= 5) {
+    //     const lockoutExpires = new Date(
+    //       (user.lastFailedLogin?.getTime() || 0) + ACCOUNT_LOCKOUT_DURATION
+    //     )
+    //     if (new Date() < lockoutExpires) {
+    //       res.status(403).json({
+    //         responseType: 'ERROR',
+    //         responseMessage: `Account locked until ${lockoutExpires.toLocaleTimeString()}`,
+    //         responseData: null,
+    //       })
+    //       return
+    //     }
+    //   }
 
-      // Email verification check
-      if (user.STATUS !== 'active') {
-        res.status(403).json({
-          responseType: 'ERROR',
-          responseMessage: 'Verify email before login',
-          responseData: null,
-        })
-        return
-      }
+    //   // Email verification check
+    //   if (user.STATUS !== 'active') {
+    //     res.status(403).json({
+    //       responseType: 'ERROR',
+    //       responseMessage: 'Verify email before login',
+    //       responseData: null,
+    //     })
+    //     return
+    //   }
 
-      // Verify password with multiple layers
-      const isValid = await this.verifyPassword(
-        password,
-        user.SALT,
-        user.PASSWORD
-      )
+    //   // Verify password with multiple layers
+    //   const isValid = await this.verifyPassword(
+    //     password,
+    //     user.SALT,
+    //     user.PASSWORD
+    //   )
 
-      if (!isValid) {
-        await prisma.sYF_USERMASTER.update({
-          where: { LID: user.LID },
-          data: {
-            failedLoginAttempts: (user.failedLoginAttempts || 0) + 1,
-            lastFailedLogin: new Date(),
-          },
-        })
-        res.status(401).json({
-          responseType: 'ERROR',
-          responseMessage: 'Invalid credentials',
-          responseData: null,
-        })
-        return
-      }
+    //   if (!isValid) {
+    //     await prisma.sYF_USERMASTER.update({
+    //       where: { LID: user.LID },
+    //       data: {
+    //         failedLoginAttempts: (user.failedLoginAttempts || 0) + 1,
+    //         lastFailedLogin: new Date(),
+    //       },
+    //     })
+    //     res.status(401).json({
+    //       responseType: 'ERROR',
+    //       responseMessage: 'Invalid credentials',
+    //       responseData: null,
+    //     })
+    //     return
+    //   }
 
-      // Reset failed attempts
-      await prisma.sYF_USERMASTER.update({
-        where: { LID: user.LID },
-        data: {
-          failedLoginAttempts: 0,
-          lastFailedLogin: null,
-          lastLogin: new Date(),
-        },
-      })
+    //   // Reset failed attempts
+    //   await prisma.sYF_USERMASTER.update({
+    //     where: { LID: user.LID },
+    //     data: {
+    //       failedLoginAttempts: 0,
+    //       lastFailedLogin: null,
+    //       lastLogin: new Date(),
+    //     },
+    //   })
 
-      if (!user.EMAIL) {
-        res.status(500).json({
-          responseType: 'ERROR',
-          responseMessage: 'User email is missing for token generation.',
-          responseData: null,
-        })
-        return
-      }
+    //   if (!user.EMAIL) {
+    //     res.status(500).json({
+    //       responseType: 'ERROR',
+    //       responseMessage: 'User email is missing for token generation.',
+    //       responseData: null,
+    //     })
+    //     return
+    //   }
 
-      const userEmail = user.EMAIL
+    //   const userEmail = user.EMAIL
 
-      // Generate tokens
-      const tokens = generateTokens({
-        id: user.LID,
-        email: userEmail,
-      })
+    //   // Generate tokens
+    //   const tokens = generateTokens({
+    //     id: user.LID,
+    //     email: userEmail,
+    //   })
 
-      // const cookieSettings = {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production',
-      //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      //   domain:
-      //     process.env.NODE_ENV === 'production'
-      //       ? process.env.CLIENT_URL
-      //       : undefined,
-      //   maxAge: type === 'access' ? 15 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000,
-      // }
+    //   // const cookieSettings = {
+    //   //   httpOnly: true,
+    //   //   secure: process.env.NODE_ENV === 'production',
+    //   //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    //   //   domain:
+    //   //     process.env.NODE_ENV === 'production'
+    //   //       ? process.env.CLIENT_URL
+    //   //       : undefined,
+    //   //   maxAge: type === 'access' ? 15 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000,
+    //   // }
 
-      // Set secure cookies
-      // res.cookie('accessToken', tokens.accessToken, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production',
-      //   // sameSite: 'strict',
-      //   sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
-      //     | 'none'
-      //     | 'lax',
-      //   domain:
-      //     process.env.NODE_ENV === 'production'
-      //       ? process.env.CLIENT_URL
-      //       : undefined,
-      //   maxAge: 15 * 60 * 1000,
-      // })
+    //   // Set secure cookies
+    //   // res.cookie('accessToken', tokens.accessToken, {
+    //   //   httpOnly: true,
+    //   //   secure: process.env.NODE_ENV === 'production',
+    //   //   // sameSite: 'strict',
+    //   //   sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
+    //   //     | 'none'
+    //   //     | 'lax',
+    //   //   domain:
+    //   //     process.env.NODE_ENV === 'production'
+    //   //       ? process.env.CLIENT_URL
+    //   //       : undefined,
+    //   //   maxAge: 15 * 60 * 1000,
+    //   // })
 
-      setCookie(res, 'accessToken', tokens.accessToken, {
-        maxAge: 15 * 60 * 1000,
-      })
+    //   setCookie(res, 'accessToken', tokens.accessToken, {
+    //     maxAge: 15 * 60 * 1000,
+    //   })
 
-      // res.cookie('refreshToken', tokens.refreshToken, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production',
-      //   sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
-      //     | 'none'
-      //     | 'lax',
-      //   domain:
-      //     process.env.NODE_ENV === 'production'
-      //       ? process.env.CLIENT_URL
-      //       : undefined,
-      //   maxAge: 7 * 24 * 60 * 60 * 1000,
-      //   path: '/api/refresh',
-      // })
+    //   // res.cookie('refreshToken', tokens.refreshToken, {
+    //   //   httpOnly: true,
+    //   //   secure: process.env.NODE_ENV === 'production',
+    //   //   sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
+    //   //     | 'none'
+    //   //     | 'lax',
+    //   //   domain:
+    //   //     process.env.NODE_ENV === 'production'
+    //   //       ? process.env.CLIENT_URL
+    //   //       : undefined,
+    //   //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    //   //   path: '/api/refresh',
+    //   // })
 
-      setCookie(res, 'refreshToken', tokens.refreshToken, {
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: '/api/refresh',
-      })
+    //   setCookie(res, 'refreshToken', tokens.refreshToken, {
+    //     maxAge: 7 * 24 * 60 * 60 * 1000,
+    //     path: '/api/refresh',
+    //   })
 
-      res.status(200).json({
-        responseType: 'SUCCESS',
-        responseMessage: 'Login successful',
-        responseData: {
-          LID: user.LID,
-          EMAIL: user.EMAIL,
-          NAME: user.NAME,
-        },
-      })
-    } catch (error) {
-      logger.error('Login error:', error)
-      res.status(500).json({
-        responseType: 'ERROR',
-        responseMessage: 'Internal server error',
-        responseData: null,
-      })
-    }
+    //   res.status(200).json({
+    //     responseType: 'SUCCESS',
+    //     responseMessage: 'Login successful',
+    //     responseData: {
+    //       LID: user.LID,
+    //       EMAIL: user.EMAIL,
+    //       NAME: user.NAME,
+    //     },
+    //   })
+    // } catch (error) {
+    //   logger.error('Login error:', error)
+    //   res.status(500).json({
+    //     responseType: 'ERROR',
+    //     responseMessage: 'Internal server error',
+    //     responseData: null,
+    //   })
+    // }
   }
 
   // static triggerTestError = async (
