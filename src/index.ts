@@ -20,6 +20,10 @@ import { setCookie } from './utils/setCookie'
 const app = express()
 const port = process.env.PORT || 3000 // Use environment variable for port
 
+app.post('/test-post1', (req, res) => {
+  res.status(200).send('POST test-1 from home')
+})
+
 // --- Core Express Middleware ---
 app.use(express.json({ limit: '10kb' })) // Body parser for JSON
 app.use(express.urlencoded({ extended: true, limit: '10kb' })) // Body parser for URL-encoded data
@@ -40,6 +44,10 @@ app.get('/api/csrf-token', (req, res) => {
     responseMessage: 'CSRF token set in cookie',
     responseData: null,
   })
+})
+
+app.post('/test-post2', (req, res) => {
+  res.status(200).send('POST test-2 from home')
 })
 
 app.use('/api', authRoutes)
