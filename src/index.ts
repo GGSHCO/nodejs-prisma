@@ -17,8 +17,8 @@ import cors from 'cors'
 const app = express()
 const port = process.env.PORT || 3000
 
-app.post('/test-post1', (req, res) => {
-  res.status(200).send('POST test-1 from home')
+app.post('/test-post', (req, res) => {
+  res.status(200).send('POST test from home')
 })
 
 app.get('/test-get', (req, res) => {
@@ -28,8 +28,6 @@ app.get('/test-get', (req, res) => {
 // app.use(cors())
 
 // --- Core Express Middleware ---
-app.use(express.json({ limit: '10kb' })) // Body parser for JSON
-app.use(express.urlencoded({ extended: true, limit: '10kb' })) // Body parser for URL-encoded data
 app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
 
 // --- CSRF Token Endpoint ---
@@ -47,10 +45,6 @@ app.get('/api/csrf-token', (req, res) => {
     responseMessage: 'CSRF token set in cookie',
     responseData: null,
   })
-})
-
-app.post('/test-post2', (req, res) => {
-  res.status(200).send('POST test-2 from home')
 })
 
 // --- Security Middleware (including CSRF) ---
@@ -73,6 +67,14 @@ app.use(
     res.status(500).json({ error: 'Internal server error' })
   }
 )
+
+app.use((req, res) => {
+  res.status(404).json({
+    responseType: 'ERROR',
+    responseMessage: 'API endpoint not found',
+    responseData: null,
+  })
+})
 
 app.listen(port, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)

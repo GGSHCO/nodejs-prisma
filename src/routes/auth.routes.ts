@@ -40,7 +40,7 @@ router.post('/test-post', (req, res) => {
 router.post('/test-logger', AuthController.triggerTestError)
 
 // Login
-router.get('/login', validate(loginSchema), AuthController.login)
+router.post('/login', validate(loginSchema), AuthController.login)
 
 // // Refresh token
 // router.post('/refresh', AuthController.refreshToken)

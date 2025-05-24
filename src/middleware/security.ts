@@ -49,7 +49,7 @@ const authLimiter = rateLimit({
 
 const csrfProtection = (req: Request, res: Response, next: NextFunction) => {
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
-    const csrfToken = req.headers['x-csrf-token']
+    const csrfToken = req.headers['x-csrf-token'] || req.headers['X-CSRF-Token']
     if (!csrfToken || csrfToken !== req.cookies['XSRF-TOKEN']) {
       return res.status(403).json({
         responseType: 'ERROR',
@@ -72,7 +72,6 @@ export const securityMiddleware = [
           ...(process.env.NODE_ENV === 'dev'
             ? ["'unsafe-inline'", "'unsafe-eval'"]
             : []),
-          ...(process.env.NODE_ENV === 'dev' ? ["'unsafe-eval'"] : []),
         ].filter(Boolean),
         styleSrc: [
           "'self'",
@@ -101,9 +100,6 @@ export const securityMiddleware = [
     },
   }),
 
-  // CSRF protection
-  csrfProtection,
-
   // CORS
   cors({
     origin: corsOrigin,
@@ -113,9 +109,13 @@ export const securityMiddleware = [
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
   }),
 
-  express.json({ limit: '10kb' }),
-  express.urlencoded({ extended: true, limit: '10kb' }), // Remove X-Powered-By header
+  // CSRF protection
+  csrfProtection,
 
+  express.json({ limit: '10kb' }),
+  express.urlencoded({ extended: true, limit: '10kb' }),
+
+  // Remove X-Powered-By header
   (req: Request, res: Response, next: NextFunction) => {
     res.removeHeader('X-Powered-By')
     next()
