@@ -10,7 +10,7 @@ import { env } from '../config/env'
 // Validate CORS origin
 const corsOrigin = process.env.CLIENT_URL
 
-// const corsOrigin = process.env.NODE_ENV === 'production'
+// const corsOrigin = process.env.NODE_ENV === 'prod'
 //   ? [
 //       env.CLIENT_URL,
 //       'https://www.your-production-domain.com' // Add additional production domains
@@ -19,7 +19,7 @@ const corsOrigin = process.env.CLIENT_URL
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 100 : 1000,
+  max: process.env.NODE_ENV === 'prod' ? 100 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
@@ -69,7 +69,9 @@ export const securityMiddleware = [
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'",
+          ...(process.env.NODE_ENV === 'dev'
+            ? ["'unsafe-inline'", "'unsafe-eval'"]
+            : []),
           ...(process.env.NODE_ENV === 'dev' ? ["'unsafe-eval'"] : []),
         ].filter(Boolean),
         styleSrc: [
@@ -95,13 +97,12 @@ export const securityMiddleware = [
       },
     },
     crossOriginResourcePolicy: {
-      policy:
-        process.env.NODE_ENV === 'production' ? 'same-site' : 'cross-origin',
+      policy: process.env.NODE_ENV === 'prod' ? 'same-site' : 'cross-origin',
     },
   }),
 
   // CSRF protection
-  // csrfProtection,
+  csrfProtection,
 
   // CORS
   cors({
@@ -109,7 +110,7 @@ export const securityMiddleware = [
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true,
-    maxAge: 86400, // 24 hours
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
   }),
 
   express.json({ limit: '10kb' }),
