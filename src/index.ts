@@ -1,8 +1,13 @@
 // src/index.ts
 
 // Load environment variables only in development
-if (process.env.NODE_ENV === 'dev') {
-  require('dotenv').config()
+if (process.env.NODE_ENV !== 'prod') {
+  try {
+    // Ensure dotenv is only loaded in development mode
+    require('dotenv').config()
+  } catch (error) {
+    console.error('Error loading .env file:', error)
+  }
 }
 
 import express from 'express'

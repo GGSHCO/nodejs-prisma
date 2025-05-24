@@ -33,12 +33,6 @@ router.get(
   AuthController.verifyEmail
 )
 
-router.post('/test-post', (req, res) => {
-  res.status(200).send('POST request received')
-})
-
-router.post('/test-logger', AuthController.triggerTestError)
-
 // Login
 router.post('/login', validate(loginSchema), AuthController.login)
 
