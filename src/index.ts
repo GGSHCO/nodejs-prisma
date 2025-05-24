@@ -23,7 +23,7 @@ app.get('/greet', (req, res) => {
   if (name) {
     res.status(200).json({ message: `Hello, ${name}!` })
   } else {
-    res.status(400).json({ error: 'Name query parameter is missing' })
+    res.status(200).json({ error: 'Name query parameter is missing' })
   }
 })
 
