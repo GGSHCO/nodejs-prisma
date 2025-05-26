@@ -341,49 +341,9 @@ export class AuthController {
         email: userEmail,
       })
 
-      // const cookieSettings = {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production',
-      //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      //   domain:
-      //     process.env.NODE_ENV === 'production'
-      //       ? process.env.CLIENT_URL
-      //       : undefined,
-      //   maxAge: type === 'access' ? 15 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000,
-      // }
-
-      // Set secure cookies
-      // res.cookie('accessToken', tokens.accessToken, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production',
-      //   // sameSite: 'strict',
-      //   sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
-      //     | 'none'
-      //     | 'lax',
-      //   domain:
-      //     process.env.NODE_ENV === 'production'
-      //       ? process.env.CLIENT_URL
-      //       : undefined,
-      //   maxAge: 15 * 60 * 1000,
-      // })
-
       setCookie(res, 'accessToken', tokens.accessToken, {
         maxAge: 15 * 60 * 1000,
       })
-
-      // res.cookie('refreshToken', tokens.refreshToken, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production',
-      //   sameSite: (process.env.NODE_ENV === 'production' ? 'none' : 'lax') as
-      //     | 'none'
-      //     | 'lax',
-      //   domain:
-      //     process.env.NODE_ENV === 'production'
-      //       ? process.env.CLIENT_URL
-      //       : undefined,
-      //   maxAge: 7 * 24 * 60 * 60 * 1000,
-      //   path: '/api/refresh',
-      // })
 
       setCookie(res, 'refreshToken', tokens.refreshToken, {
         maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -467,30 +427,35 @@ export class AuthController {
   //   }
   // }
 
-  // static async deleteUser(req: Request, res: Response): Promise<void> {
-  //   try {
-  //     const { id } = req.params // Added a check to ensure id is a number before parsing
-  //     const userId = parseInt(id)
-  //     if (isNaN(userId)) {
-  //       res.status(400).json({ error: 'Invalid user ID' })
-  //       return
-  //     }
-  //     await prisma.user.delete({ where: { id: userId } })
-  //     res.status(204).send() // Use send() for 204 No Content
-  //   } catch (error) {
-  //     console.error('Delete user error:', error)
-  //     // Check if the error is due to the user not being found
-  //     // Add a type guard to check if error is an object and has a 'code' property
-  //     if (
-  //       typeof error === 'object' &&
-  //       error !== null &&
-  //       'code' in error &&
-  //       error.code === 'P2025'
-  //     ) {
-  //       res.status(404).json({ error: 'User not found' })
-  //     } else {
-  //       res.status(500).json({ error: 'Internal server error' })
-  //     }
-  //   }
-  // }
+  static async deleteUser(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params // Added a check to ensure id is a number before parsing
+      const userId = parseInt(id)
+      if (isNaN(userId)) {
+        res.status(400).json({ error: 'Invalid user ID' })
+        return
+      }
+      await prisma.sYF_USERMASTER.delete({ where: { LID: userId } })
+      // res.status(204).send() // Use send() for 204 No Content
+      res.status(200).json({
+        responseType: 'SUCCESS',
+        responseMessage: 'User deleted!',
+        responseData: null,
+      })
+    } catch (error) {
+      console.error('Delete user error:', error)
+      // Check if the error is due to the user not being found
+      // Add a type guard to check if error is an object and has a 'code' property
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        error.code === 'P2025'
+      ) {
+        res.status(404).json({ error: 'User not found' })
+      } else {
+        res.status(500).json({ error: 'Internal server error' })
+      }
+    }
+  }
 }

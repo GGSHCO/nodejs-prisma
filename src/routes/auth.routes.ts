@@ -17,11 +17,6 @@ const router = Router()
 // router.post('/refresh-token', AuthController.refreshToken)
 // router.post('/forgot-password', AuthController.forgotPassword)
 // router.post('/reset-password', AuthController.resetPassword)
-// router.delete(
-//   '/user/:id',
-//   validate(deleteUserSchema),
-//   AuthController.deleteUser
-// )
 
 // Registration
 router.post('/register', validate(registerSchema), AuthController.register)
@@ -36,8 +31,14 @@ router.get(
 // Login
 router.post('/login', validate(loginSchema), AuthController.login)
 
-// // Refresh token
-// router.post('/refresh', AuthController.refreshToken)
+// Refresh token
+router.post('/refresh', AuthController.refreshToken)
+
+router.delete(
+  '/delete/user/:id',
+  validate(deleteUserSchema),
+  AuthController.deleteUser
+)
 
 // // Logout
 // router.post('/logout', AuthController.logout)
