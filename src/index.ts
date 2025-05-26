@@ -23,14 +23,6 @@ import cors from 'cors'
 const app = express()
 const port = process.env.PORT || 3000
 
-app.post('/test-post', (req, res) => {
-  res.status(200).send('POST test from home')
-})
-
-app.get('/test-get', (req, res) => {
-  res.json({ status: 'ok' })
-})
-
 // app.use(cors())
 
 // --- Core Express Middleware ---
