@@ -15,6 +15,7 @@ import cookieParser from 'cookie-parser'
 import crypto from 'crypto'
 import { securityMiddleware } from './middleware/security'
 import authRoutes from './routes/auth.routes'
+import mastersRoutes from './routes/masters.routes'
 import logger from './config/logger'
 import { setCookie } from './utils/setCookie'
 import cors from 'cors'
@@ -56,6 +57,7 @@ app.get('/api/csrf-token', (req, res) => {
 app.use(securityMiddleware)
 
 app.use('/api', authRoutes)
+app.use('/api/masters', mastersRoutes)
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() })
