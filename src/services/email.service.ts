@@ -20,7 +20,7 @@ export const sendVerificationEmail = async (
   token: string
 ) => {
   try {
-    const verificationUrl = `${env.CLIENT_URL}/api/verify-email/${token}`
+    const verificationUrl = `${env.CLIENT_URL}/verify-email/${token}`
 
     await transporter.sendMail({
       from: env.SMTP_FROM,
