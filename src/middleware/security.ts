@@ -8,14 +8,14 @@ import { verifyToken } from '../utils/jwt'
 import { env } from '../config/env'
 
 // Validate CORS origin
-const corsOrigin = process.env.CLIENT_URL
+// const corsOrigin = process.env.CLIENT_URL
 
-// const corsOrigin = process.env.NODE_ENV === 'prod'
-//   ? [
-//       env.CLIENT_URL,
-//       'https://www.your-production-domain.com' // Add additional production domains
-//     ]
-//   : env.CLIENT_URL;
+const corsOrigin =
+  process.env.NODE_ENV === 'prod'
+    ? [env.CLIENT_URL, 'https://www.speedyourfin.ai']
+    : [env.CLIENT_URL, 'http://192.168.1.15:3001']
+
+console.log('CORS Origin:', corsOrigin)
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes

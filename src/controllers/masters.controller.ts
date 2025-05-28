@@ -32,7 +32,7 @@ export class MastersController {
           type: true,
         },
         orderBy: {
-          assignmentNature: 'asc',
+          lid: 'asc',
         },
       })
 
@@ -101,7 +101,7 @@ export class MastersController {
         logger.error('Error creating assignment nature:', error)
         res.status(500).json({
           responseType: 'ERROR',
-          responseMessage: 'Failed to create assignment nature',
+          responseMessage: 'Failed to create assignment nature test',
           responseData: null,
         })
       }

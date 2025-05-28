@@ -48,24 +48,50 @@ export const createAssignmentNatureSchema = z.object({
               code: z.ZodIssueCode.custom,
               message: 'Frequency is required for Recurring type',
             })
-          }
-          if (data.multiplier === undefined || data.multiplier === null) {
-            ctx.addIssue({
-              path: ['multiplier'],
-              code: z.ZodIssueCode.custom,
-              message: 'Multiplier is required for Recurring type',
-            })
+          } else {
+            // Set multiplier based on frequency
+            switch (data.frequency) {
+              case 'Monthly':
+                data.multiplier = 12
+                break
+              case 'Quarterly':
+                data.multiplier = 4
+                break
+              case 'Half yearly':
+                data.multiplier = 6
+                break
+              case 'Annually':
+                data.multiplier = 1
+                break
+              case 'Other':
+                data.multiplier = 0
+                break
+              // For 'other' frequency, multiplier should be provided in payload
+              // if (data.multiplier === undefined || data.multiplier === null) {
+              //   ctx.addIssue({
+              //     path: ['multiplier'],
+              //     code: z.ZodIssueCode.custom,
+              //     message: 'Multiplier is required for Other frequency',
+              //   })
+              // }
+              // break
+              default:
+                ctx.addIssue({
+                  path: ['frequency'],
+                  code: z.ZodIssueCode.custom,
+                  message: 'Invalid frequency value',
+                })
+            }
           }
         }
 
         if (type === 'non recurring') {
           // Set default values for missing fields
-          if (!data.frequency) {
-            data.frequency = 'No'
-          }
-          if (data.multiplier === undefined || data.multiplier === null) {
-            data.multiplier = 0
-          }
+          // if (!data.frequency) {
+          //   data.frequency = 'No'
+          // }
+          data.frequency = 'No'
+          data.multiplier = 0
         }
       }),
   }),
