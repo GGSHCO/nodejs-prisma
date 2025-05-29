@@ -156,12 +156,15 @@ export class AuthController {
         Date.now() + EMAIL_VERIFICATION_TOKEN_EXPIRY
       )
 
+      const base64Password = Buffer.from(password, 'utf-8').toString('base64')
+
       const newUser = await prisma.sYF_USERMASTER.create({
         data: {
           EMAIL: email,
           NAME: name,
-          PASSWORD: bcryptHash,
-          SALT: uniqueSalt,
+          PASSWORD: base64Password, // base64 encoded password for legacy support
+          encPassword: bcryptHash,
+          salt: uniqueSalt,
           ISTALLYSUBSCRIBED: true,
           ZBStatus: 'Not Connected',
           emailVerificationToken: emailVerificationToken,
@@ -221,7 +224,7 @@ export class AuthController {
       await prisma.sYF_USERMASTER.update({
         where: { LID: user.LID },
         data: {
-          STATUS: 'active',
+          STATUS: 'login',
           emailVerificationToken: null,
           verificationExpires: null,
         },
@@ -257,7 +260,7 @@ export class AuthController {
 
       console.log(user)
 
-      if (!user || !user.PASSWORD || !user.SALT) {
+      if (!user || !user.encPassword || !user.salt) {
         res.status(401).json({
           responseType: 'ERROR',
           responseMessage: 'Invalid credentials',
@@ -282,7 +285,7 @@ export class AuthController {
       }
 
       // Email verification check
-      if (user.STATUS !== 'active') {
+      if (user.STATUS !== 'login') {
         res.status(403).json({
           responseType: 'ERROR',
           responseMessage: 'Verify email before login',
@@ -294,8 +297,8 @@ export class AuthController {
       // Verify password with multiple layers
       const isValid = await this.verifyPassword(
         password,
-        user.SALT,
-        user.PASSWORD
+        user.salt,
+        user.encPassword
       )
 
       if (!isValid) {

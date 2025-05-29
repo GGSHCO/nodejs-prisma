@@ -86,10 +86,6 @@ export const createAssignmentNatureSchema = z.object({
         }
 
         if (type === 'non recurring') {
-          // Set default values for missing fields
-          // if (!data.frequency) {
-          //   data.frequency = 'No'
-          // }
           data.frequency = 'No'
           data.multiplier = 0
         }

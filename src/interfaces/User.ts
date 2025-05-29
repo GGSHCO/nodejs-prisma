@@ -4,10 +4,11 @@ export interface User {
   LID: number
   EMAIL: string | null
   NAME: string | null
+  PASSWORD: string | null // Deprecated, use encPassword
 
   // === Authentication ===
-  PASSWORD: string | null
-  SALT: string | null
+  encPassword: string | null
+  salt: string | null
   resetToken: string | null
   tokenExpiration: string | null
   failedLoginAttempts: number | null

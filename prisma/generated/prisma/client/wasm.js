@@ -1274,7 +1274,8 @@ exports.Prisma.CreditcardScalarFieldEnum = {
   ded3: 'ded3',
   net: 'net',
   ISREDFLAG: 'ISREDFLAG',
-  ISVALIDATED: 'ISVALIDATED'
+  ISVALIDATED: 'ISVALIDATED',
+  booksid: 'booksid'
 };
 
 exports.Prisma.DcrScalarFieldEnum = {
@@ -1957,6 +1958,21 @@ exports.Prisma.PARENTFORMTEMPLATEScalarFieldEnum = {
   radiotest: 'radiotest'
 };
 
+exports.Prisma.PettyTaskScalarFieldEnum = {
+  lid: 'lid',
+  assigner: 'assigner',
+  assignedTo: 'assignedTo',
+  task: 'task',
+  comment: 'comment',
+  edoc: 'edoc',
+  status: 'status',
+  companyName: 'companyName',
+  companyId: 'companyId',
+  addedTime: 'addedTime',
+  modifiedTime: 'modifiedTime',
+  priority: 'priority'
+};
+
 exports.Prisma.PlanTableScalarFieldEnum = {
   planscheme: 'planscheme',
   Amount: 'Amount',
@@ -2007,6 +2023,13 @@ exports.Prisma.ProposalBlobScalarFieldEnum = {
   addedTime: 'addedTime',
   modifiedUser: 'modifiedUser',
   modifiedTime: 'modifiedTime'
+};
+
+exports.Prisma.PytForexScalarFieldEnum = {
+  LID: 'LID',
+  SYNCTIMESTAMP: 'SYNCTIMESTAMP',
+  DATE: 'DATE',
+  DATA: 'DATA'
 };
 
 exports.Prisma.QuestionTemplateScalarFieldEnum = {
@@ -2567,35 +2590,36 @@ exports.Prisma.SYF_TANMASTERScalarFieldEnum = {
 exports.Prisma.SYF_USERMASTERScalarFieldEnum = {
   LID: 'LID',
   EMAIL: 'EMAIL',
-  PASSWORD: 'PASSWORD',
-  SALT: 'SALT',
-  resetToken: 'resetToken',
-  tokenExpiration: 'tokenExpiration',
-  failedLoginAttempts: 'failedLoginAttempts',
-  lastFailedLogin: 'lastFailedLogin',
-  lastLogin: 'lastLogin',
-  emailVerificationToken: 'emailVerificationToken',
-  verificationExpires: 'verificationExpires',
   NAME: 'NAME',
+  PASSWORD: 'PASSWORD',
+  COUNTRY: 'COUNTRY',
+  PHONENUMBER: 'PHONENUMBER',
+  SUBSCRIPTION: 'SUBSCRIPTION',
+  ADDEDTIME: 'ADDEDTIME',
+  MODIFIEDTIME: 'MODIFIEDTIME',
+  STATUS: 'STATUS',
+  PROFILEIMAGE: 'PROFILEIMAGE',
+  ISTALLYSUBSCRIBED: 'ISTALLYSUBSCRIBED',
+  ISZOHOSUBSCRIBED: 'ISZOHOSUBSCRIBED',
+  ISWEBAPPSUBSCRIBED: 'ISWEBAPPSUBSCRIBED',
+  TYPE: 'TYPE',
   FIRSTNAME: 'FIRSTNAME',
   LASTNAME: 'LASTNAME',
   DOB: 'DOB',
   GENDER: 'GENDER',
   MARITALSTATUS: 'MARITALSTATUS',
-  PHONENUMBER: 'PHONENUMBER',
-  COUNTRY: 'COUNTRY',
-  PROFILEIMAGE: 'PROFILEIMAGE',
-  SUBSCRIPTION: 'SUBSCRIPTION',
-  ADDEDTIME: 'ADDEDTIME',
-  MODIFIEDTIME: 'MODIFIEDTIME',
+  resetToken: 'resetToken',
+  tokenExpiration: 'tokenExpiration',
   SECRETQUESTIONS: 'SECRETQUESTIONS',
   SECRETANSWERS: 'SECRETANSWERS',
-  ISTALLYSUBSCRIBED: 'ISTALLYSUBSCRIBED',
-  ISZOHOSUBSCRIBED: 'ISZOHOSUBSCRIBED',
-  ISWEBAPPSUBSCRIBED: 'ISWEBAPPSUBSCRIBED',
   ZBStatus: 'ZBStatus',
-  TYPE: 'TYPE',
-  STATUS: 'STATUS'
+  salt: 'salt',
+  failedLoginAttempts: 'failedLoginAttempts',
+  lastFailedLogin: 'lastFailedLogin',
+  lastLogin: 'lastLogin',
+  emailVerificationToken: 'emailVerificationToken',
+  verificationExpires: 'verificationExpires',
+  encPassword: 'encPassword'
 };
 
 exports.Prisma.SysdiagramsScalarFieldEnum = {
@@ -3555,10 +3579,12 @@ exports.Prisma.ModelName = {
   observations: 'observations',
   pagebuilder_form: 'pagebuilder_form',
   PARENTFORMTEMPLATE: 'PARENTFORMTEMPLATE',
+  pettyTask: 'pettyTask',
   planTable: 'planTable',
   proposal_editLog: 'proposal_editLog',
   proposal_templateTransactions: 'proposal_templateTransactions',
   proposalBlob: 'proposalBlob',
+  pytForex: 'pytForex',
   questionTemplate: 'questionTemplate',
   questionTransaction: 'questionTransaction',
   Raw_ContactMaster: 'Raw_ContactMaster',
