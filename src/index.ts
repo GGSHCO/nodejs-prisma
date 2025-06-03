@@ -23,8 +23,6 @@ import cors from 'cors'
 const app = express()
 const port = process.env.PORT || 3000
 
-// app.use(cors())
-
 // --- Core Express Middleware ---
 app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
 
@@ -45,15 +43,15 @@ app.get('/api/csrf-token', (req, res) => {
   })
 })
 
-// --- Security Middleware (including CSRF) ---
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date() })
+})
+
+// --- Security Middleware (including CSRF, Cors) ---
 app.use(securityMiddleware)
 
 app.use('/api', authRoutes)
 app.use('/api/masters', mastersRoutes)
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date() })
-})
 
 app.use(
   (
