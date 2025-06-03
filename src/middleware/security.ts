@@ -6,14 +6,10 @@ import express from 'express'
 import logger from '../config/logger'
 import { verifyToken } from '../utils/jwt'
 import { env } from '../config/env'
+import { corsOrigin } from '../utils/corsOrgin'
 
 // Validate CORS origin
 // const corsOrigin = process.env.CLIENT_URL
-
-const corsOrigin =
-  process.env.NODE_ENV === 'prod'
-    ? ['https://www.speedyourfin.ai', 'https://syf-nextjs.vercel.app']
-    : ['http://localhost:3001', 'http://192.168.1.15:3001']
 
 console.log('CORS Origin:', corsOrigin)
 

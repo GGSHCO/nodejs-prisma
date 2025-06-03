@@ -1,4 +1,5 @@
 import { Response } from 'express'
+import { cookieDomain } from './corsOrgin'
 
 type SameSite = 'lax' | 'strict' | 'none'
 
@@ -23,8 +24,7 @@ export function setCookie(
     httpOnly: options.httpOnly ?? true,
     secure: options.secure ?? isProduction,
     sameSite: options.sameSite ?? (isProduction ? 'none' : 'lax'),
-    domain:
-      options.domain ?? (isProduction ? process.env.CLIENT_URL : undefined),
+    domain: options.domain ?? cookieDomain,
     path: options.path ?? '/',
     maxAge: options.maxAge,
   })
