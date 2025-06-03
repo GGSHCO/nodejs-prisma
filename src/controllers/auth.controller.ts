@@ -12,6 +12,7 @@ import crypto from 'crypto'
 import logger from '../config/logger'
 import { User, UserCheck } from '../interfaces/User'
 import { setCookie } from '../utils/setCookie'
+import { cookieDomain } from '../utils/corsOrgin'
 
 // Security constants
 const PEPPER = process.env.PEPPER_SECRET! // Store in environment variables
@@ -367,7 +368,7 @@ export class AuthController {
       res.status(500).json({
         responseType: 'ERROR',
         responseMessage: 'Internal server error',
-        responseData: null,
+        responseData: cookieDomain,
       })
     }
   }
