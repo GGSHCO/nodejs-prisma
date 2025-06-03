@@ -372,6 +372,127 @@ export class AuthController {
     }
   }
 
+  /**
+   * Initiate password reset process
+   */
+  static forgotPassword = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { email } = res.locals.sanitized.body.data
+
+      // Find user by email
+      const user = await prisma.sYF_USERMASTER.findUnique({
+        where: { EMAIL: email },
+      })
+
+      // Even if user doesn't exist, return success to prevent email enumeration
+      if (!user) {
+        logger.info(`Password reset requested for non-existent email: ${email}`)
+        res.status(200).json({
+          responseType: 'SUCCESS',
+          responseMessage: 'If the email exists, a reset link has been sent',
+          responseData: null,
+        })
+        return
+      }
+
+      // Generate reset token and expiry
+      const resetToken = crypto.randomBytes(32).toString('hex')
+      const expiresAt = new Date(Date.now() + PASSWORD_RESET_TOKEN_EXPIRY)
+
+      // Update user with reset token
+      await prisma.sYF_USERMASTER.update({
+        where: { LID: user.LID },
+        data: {
+          resetToken,
+          tokenExpiration: expiresAt.toISOString(),
+        },
+      })
+
+      // Send password reset email
+      await sendPasswordResetEmail(user.NAME || 'User', user.EMAIL!, resetToken)
+      logger.info(`Password reset email sent to: ${email}`)
+
+      res.status(200).json({
+        responseType: 'SUCCESS',
+        responseMessage: 'If the email exists, a reset link has been sent',
+        responseData: null,
+      })
+    } catch (error) {
+      logger.error('Forgot password error:', error)
+      res.status(500).json({
+        responseType: 'ERROR',
+        responseMessage: 'Internal server error',
+        responseData: null,
+      })
+    }
+  }
+
+  /**
+   * Reset user password with token
+   */
+  static resetPassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { token, newPassword } = res.locals.sanitized.body.data
+
+      // Find user by valid reset token
+      const user = await prisma.sYF_USERMASTER.findFirst({
+        where: {
+          resetToken: token,
+          tokenExpiration: {
+            gt: new Date().toISOString(), // Token must not be expired
+          },
+        },
+      })
+
+      if (!user) {
+        res.status(400).json({
+          responseType: 'ERROR',
+          responseMessage: 'Invalid or expired token',
+          responseData: null,
+        })
+        return
+      }
+
+      // Hash the new password
+      const { bcryptHash, uniqueSalt } = await this.hashPassword(newPassword)
+      const base64Password = Buffer.from(newPassword, 'utf-8').toString(
+        'base64'
+      )
+
+      // Update user with new password and clear reset token
+      await prisma.sYF_USERMASTER.update({
+        where: { LID: user.LID },
+        data: {
+          PASSWORD: base64Password, // Legacy base64 encoded password
+          encPassword: bcryptHash, // New encrypted password
+          salt: uniqueSalt,
+          resetToken: null,
+          tokenExpiration: null,
+          failedLoginAttempts: 0, // Reset failed attempts
+          lastFailedLogin: null,
+        },
+      })
+
+      logger.info(`Password reset successful for user: ${user.EMAIL}`)
+
+      res.status(200).json({
+        responseType: 'SUCCESS',
+        responseMessage: 'Password updated successfully',
+        responseData: null,
+      })
+    } catch (error) {
+      logger.error('Reset password error:', error)
+      res.status(500).json({
+        responseType: 'ERROR',
+        responseMessage: 'Internal server error',
+        responseData: null,
+      })
+    }
+  }
+
   // static async forgotPassword(req: Request, res: Response): Promise<void> {
   //   try {
   //     const { email } = req.body

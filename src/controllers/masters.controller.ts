@@ -30,6 +30,7 @@ export class MastersController {
           statutoryAssignment: true,
           assignmentFrequency: true,
           type: true,
+          standardPrice: true,
         },
         orderBy: {
           lid: 'asc',

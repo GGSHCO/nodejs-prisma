@@ -7,6 +7,8 @@ import {
   registerSchema,
   deleteUserSchema,
   verifyEmailSchema,
+  resetPasswordSchema,
+  forgotPasswordSchema,
 } from '../validation/auth.schema'
 
 const router = Router()
@@ -33,6 +35,18 @@ router.post('/login', validate(loginSchema), AuthController.login)
 
 // Refresh token
 router.post('/refresh', AuthController.refreshToken)
+
+router.post(
+  '/forgot-password',
+  validate(forgotPasswordSchema),
+  AuthController.forgotPassword
+)
+
+router.post(
+  '/reset-password',
+  validate(resetPasswordSchema),
+  AuthController.resetPassword
+)
 
 router.delete(
   '/delete/user/:id',
