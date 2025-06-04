@@ -22,21 +22,21 @@ export function setCookie(
 
   console.log('Env:', process.env.NODE_ENV, 'Cookie domain:', cookieDomain)
 
-  res.cookie(name, value, {
-    httpOnly: options.httpOnly ?? true,
-    secure: options.secure ?? true,
-    sameSite: options.sameSite ?? 'none',
-    domain: options.domain ?? cookieDomain,
-    path: options.path ?? '/',
-    maxAge: options.maxAge,
-  })
-
   // res.cookie(name, value, {
   //   httpOnly: options.httpOnly ?? true,
-  //   secure: options.secure ?? isProduction,
-  //   sameSite: options.sameSite ?? (isProduction ? 'none' : 'lax'),
+  //   secure: options.secure ?? true,
+  //   sameSite: options.sameSite ?? 'none',
   //   domain: options.domain ?? cookieDomain,
   //   path: options.path ?? '/',
   //   maxAge: options.maxAge,
   // })
+
+  res.cookie(name, value, {
+    httpOnly: options.httpOnly ?? true,
+    secure: options.secure ?? isProduction,
+    sameSite: options.sameSite ?? (isProduction ? 'none' : 'lax'),
+    domain: options.domain ?? cookieDomain,
+    path: options.path ?? '/',
+    maxAge: options.maxAge,
+  })
 }
