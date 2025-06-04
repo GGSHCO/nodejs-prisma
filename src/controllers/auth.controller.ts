@@ -345,32 +345,6 @@ export class AuthController {
         email: userEmail,
       })
 
-      // res.cookie('accessToken', tokens.accessToken, {
-      //   httpOnly: true,
-      //   secure: true, // Required for SameSite=None
-      //   sameSite: 'none', // Required for cross-site cookies
-      //   domain: '.speedyourfin.ai', // Must start with dot to allow subdomains
-      //   path: '/',
-      //   maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
-      // })
-
-      // // Set Refresh Token cookie (optional)
-      // res.cookie('refreshToken', tokens.refreshToken, {
-      //   httpOnly: true,
-      //   secure: true,
-      //   sameSite: 'none',
-      //   domain: '.speedyourfin.ai',
-      //   path: '/api/refresh',
-      //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      // })
-
-      // setCookie(res, 'accessToken', tokens.accessToken, {
-      //   maxAge: 15 * 60 * 1000,
-      //   sameSite: 'none', // Required for cross-site
-      //   secure: true, // Required when SameSite is 'none'
-      //   domain: '.speedyourfin.ai', // Required for subdomains
-      // })
-
       setCookie(res, 'accessToken', tokens.accessToken, {
         maxAge: 15 * 60 * 1000,
       })
@@ -519,64 +493,6 @@ export class AuthController {
       })
     }
   }
-
-  // static async forgotPassword(req: Request, res: Response): Promise<void> {
-  //   try {
-  //     const { email } = req.body
-  //     const user = await prisma.user.findUnique({ where: { email } })
-
-  //     if (user) {
-  //       const resetToken = crypto.randomBytes(32).toString('hex')
-  //       const expiresAt = new Date(Date.now() + 3600000) // 1 hour
-
-  //       await prisma.user.update({
-  //         where: { id: user.id },
-  //         data: { resetToken, resetExpires: expiresAt },
-  //       })
-
-  //       await sendPasswordResetEmail(email, resetToken)
-  //     }
-
-  //     res.json({
-  //       message: 'If the email exists, a reset link has been sent',
-  //     })
-  //   } catch (error) {
-  //     console.error('Forgot password error:', error)
-  //     res.status(500).json({ error: 'Internal server error' })
-  //   }
-  // }
-
-  // static async resetPassword(req: Request, res: Response): Promise<void> {
-  //   try {
-  //     const { token, newPassword } = req.body
-  //     const user = await prisma.user.findFirst({
-  //       where: {
-  //         resetToken: token,
-  //         resetExpires: { gt: new Date() },
-  //       },
-  //     })
-
-  //     if (!user) {
-  //       res.status(400).json({ error: 'Invalid or expired token' })
-  //       return // Added return
-  //     }
-
-  //     const hashedPassword = await bcrypt.hash(newPassword, 12)
-  //     await prisma.user.update({
-  //       where: { id: user.id },
-  //       data: {
-  //         password: hashedPassword,
-  //         resetToken: null,
-  //         resetExpires: null,
-  //       },
-  //     })
-
-  //     res.json({ message: 'Password updated successfully' })
-  //   } catch (error) {
-  //     console.error('Reset password error:', error)
-  //     res.status(500).json({ error: 'Internal server error' })
-  //   }
-  // }
 
   static async deleteUser(req: Request, res: Response): Promise<void> {
     try {
