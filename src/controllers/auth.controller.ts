@@ -347,9 +347,9 @@ export class AuthController {
 
       setCookie(res, 'accessToken', tokens.accessToken, {
         maxAge: 15 * 60 * 1000,
-        sameSite: 'none', // Required for cross-site
-        secure: true, // Required when SameSite is 'none'
-        domain: '.speedyourfin.ai', // Required for subdomains
+        // sameSite: 'none', // Required for cross-site
+        // secure: true, // Required when SameSite is 'none'
+        // domain: '.speedyourfin.ai', // Required for subdomains
       })
 
       // setCookie(res, 'accessToken', tokens.accessToken, {
