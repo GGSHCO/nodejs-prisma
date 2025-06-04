@@ -350,8 +350,8 @@ export class AuthController {
       })
 
       setCookie(res, 'refreshToken', tokens.refreshToken, {
-        maxAge: 7 * 24 * 60 * 60 * 1000,
         path: '/api/refresh',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       })
 
       res.status(200).json({
