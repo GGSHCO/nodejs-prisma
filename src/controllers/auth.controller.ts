@@ -345,12 +345,21 @@ export class AuthController {
         email: userEmail,
       })
 
-      setCookie(res, 'accessToken', tokens.accessToken, {
-        maxAge: 15 * 60 * 1000,
-        sameSite: 'none', // Required for cross-site
-        secure: true, // Required when SameSite is 'none'
-        domain: '.speedyourfin.ai', // Required for subdomains
+      res.cookie('accessToken', tokens.accessToken, {
+        httpOnly: true,
+        secure: true, // Required for SameSite=None
+        sameSite: 'none', // Required for cross-site cookies
+        domain: '.speedyourfin.ai', // Must start with dot to allow subdomains
+        path: '/',
+        maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
       })
+
+      // setCookie(res, 'accessToken', tokens.accessToken, {
+      //   maxAge: 15 * 60 * 1000,
+      //   sameSite: 'none', // Required for cross-site
+      //   secure: true, // Required when SameSite is 'none'
+      //   domain: '.speedyourfin.ai', // Required for subdomains
+      // })
 
       // setCookie(res, 'accessToken', tokens.accessToken, {
       //   maxAge: 15 * 60 * 1000,
