@@ -365,6 +365,8 @@ export class AuthController {
         responseType: 'SUCCESS',
         responseMessage: 'Login successful',
         responseData: {
+          token:
+            'Env:' + process.env.NODE_ENV + 'Cookie domain:' + cookieDomain,
           LID: user.LID,
           EMAIL: user.EMAIL,
           NAME: user.NAME,

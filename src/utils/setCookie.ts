@@ -30,4 +30,13 @@ export function setCookie(
     path: options.path ?? '/',
     maxAge: options.maxAge,
   })
+
+  // res.cookie(name, value, {
+  //   httpOnly: options.httpOnly ?? true,
+  //   secure: options.secure ?? isProduction,
+  //   sameSite: options.sameSite ?? (isProduction ? 'none' : 'lax'),
+  //   domain: options.domain ?? cookieDomain,
+  //   path: options.path ?? '/',
+  //   maxAge: options.maxAge,
+  // })
 }
