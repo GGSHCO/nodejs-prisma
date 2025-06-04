@@ -24,7 +24,7 @@ export function setCookie(
     httpOnly: options.httpOnly ?? true,
     secure: options.secure ?? isProduction,
     sameSite: options.sameSite ?? (isProduction ? 'none' : 'lax'),
-    // domain: options.domain ?? cookieDomain,
+    domain: options.domain ?? cookieDomain,
     path: options.path ?? '/',
     maxAge: options.maxAge,
   })
