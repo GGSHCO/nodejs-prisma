@@ -345,24 +345,24 @@ export class AuthController {
         email: userEmail,
       })
 
-      res.cookie('accessToken', tokens.accessToken, {
-        httpOnly: true,
-        secure: true, // Required for SameSite=None
-        sameSite: 'none', // Required for cross-site cookies
-        domain: '.speedyourfin.ai', // Must start with dot to allow subdomains
-        path: '/',
-        maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
-      })
+      // res.cookie('accessToken', tokens.accessToken, {
+      //   httpOnly: true,
+      //   secure: true, // Required for SameSite=None
+      //   sameSite: 'none', // Required for cross-site cookies
+      //   domain: '.speedyourfin.ai', // Must start with dot to allow subdomains
+      //   path: '/',
+      //   maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
+      // })
 
-      // Set Refresh Token cookie (optional)
-      res.cookie('refreshToken', tokens.refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        domain: '.speedyourfin.ai',
-        path: '/api/refresh',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      })
+      // // Set Refresh Token cookie (optional)
+      // res.cookie('refreshToken', tokens.refreshToken, {
+      //   httpOnly: true,
+      //   secure: true,
+      //   sameSite: 'none',
+      //   domain: '.speedyourfin.ai',
+      //   path: '/api/refresh',
+      //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      // })
 
       // setCookie(res, 'accessToken', tokens.accessToken, {
       //   maxAge: 15 * 60 * 1000,
@@ -371,14 +371,14 @@ export class AuthController {
       //   domain: '.speedyourfin.ai', // Required for subdomains
       // })
 
-      // setCookie(res, 'accessToken', tokens.accessToken, {
-      //   maxAge: 15 * 60 * 1000,
-      // })
+      setCookie(res, 'accessToken', tokens.accessToken, {
+        maxAge: 15 * 60 * 1000,
+      })
 
-      // setCookie(res, 'refreshToken', tokens.refreshToken, {
-      //   maxAge: 7 * 24 * 60 * 60 * 1000,
-      //   path: '/api/refresh',
-      // })
+      setCookie(res, 'refreshToken', tokens.refreshToken, {
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/api/refresh',
+      })
 
       res.status(200).json({
         responseType: 'SUCCESS',
