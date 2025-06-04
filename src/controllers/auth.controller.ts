@@ -354,6 +354,16 @@ export class AuthController {
         maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
       })
 
+      // Set Refresh Token cookie (optional)
+      res.cookie('refreshToken', tokens.refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        // domain: '.speedyourfin.ai'/,
+        path: '/api/refresh',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      })
+
       // setCookie(res, 'accessToken', tokens.accessToken, {
       //   maxAge: 15 * 60 * 1000,
       //   sameSite: 'none', // Required for cross-site
