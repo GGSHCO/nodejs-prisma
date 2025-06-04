@@ -44,7 +44,7 @@ app.get('/api/csrf-token', (req, res) => {
 })
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '5:21' })
+  res.json({ status: 'ok', timestamp: new Date(), message: '5:33' })
 })
 
 // --- Security Middleware (including CSRF, Cors) ---
