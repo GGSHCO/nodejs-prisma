@@ -20,16 +20,7 @@ export function setCookie(
 ) {
   const isProduction = process.env.NODE_ENV === 'prod'
 
-  console.log('Env:', process.env.NODE_ENV, 'Cookie domain:', cookieDomain)
-
-  // res.cookie(name, value, {
-  //   httpOnly: options.httpOnly ?? true,
-  //   secure: options.secure ?? true,
-  //   sameSite: options.sameSite ?? 'none',
-  //   domain: options.domain ?? cookieDomain,
-  //   path: options.path ?? '/',
-  //   maxAge: options.maxAge,
-  // })
+  // console.log('Env:', process.env.NODE_ENV, 'Cookie domain:', cookieDomain)
 
   res.cookie(name, value, {
     httpOnly: options.httpOnly ?? true,
