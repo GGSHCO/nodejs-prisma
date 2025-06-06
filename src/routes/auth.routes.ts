@@ -54,8 +54,7 @@ router.delete(
   AuthController.deleteUser
 )
 
-// // Logout
-// router.post('/logout', AuthController.logout)
+router.post('/logout', AuthController.logout)
 
 // // Forgot password
 // router.post(
