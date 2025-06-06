@@ -494,6 +494,9 @@ export class AuthController {
     }
   }
 
+  /**
+   * Delete user
+   */
   static async deleteUser(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params // Added a check to ensure id is a number before parsing
@@ -523,6 +526,43 @@ export class AuthController {
       } else {
         res.status(500).json({ error: 'Internal server error' })
       }
+    }
+  }
+
+  /**
+   * Logout
+   */
+  static logout = async (req: Request, res: Response): Promise<void> => {
+    try {
+      // Clear the access token
+      res.clearCookie('accessToken', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        domain: '.speedyourfin.ai',
+      })
+
+      // Clear the refresh token
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        path: '/api/refresh',
+        domain: '.speedyourfin.ai',
+      })
+
+      res.status(200).json({
+        responseType: 'SUCCESS',
+        responseMessage: 'Logout successful',
+        responseData: null,
+      })
+    } catch (error) {
+      logger.error('Logout error:', error)
+      res.status(500).json({
+        responseType: 'ERROR',
+        responseMessage: 'Logout failed',
+        responseData: null,
+      })
     }
   }
 }
