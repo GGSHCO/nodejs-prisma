@@ -94,6 +94,7 @@ export const securityMiddleware = [
     crossOriginResourcePolicy: {
       policy: process.env.NODE_ENV === 'prod' ? 'same-site' : 'cross-origin',
     },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   }),
 
   // CORS
@@ -106,7 +107,7 @@ export const securityMiddleware = [
   }),
 
   // CSRF protection
-  // csrfProtection,
+  csrfProtection,
 
   express.json({ limit: '10kb' }),
   express.urlencoded({ extended: true, limit: '10kb' }),

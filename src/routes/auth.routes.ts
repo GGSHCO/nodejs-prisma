@@ -56,20 +56,6 @@ router.delete(
 
 router.post('/logout', AuthController.logout)
 
-// // Forgot password
-// router.post(
-//   '/forgot-password',
-//   validate(forgotPasswordSchema),
-//   AuthController.forgotPassword
-// )
-
-// // Reset password
-// router.post(
-//   '/reset-password',
-//   validate(resetPasswordSchema),
-//   AuthController.resetPassword
-// )
-
 // // Legacy endpoint (to deprecate)
 // router.post(
 //   '/window_createAccountNew',
