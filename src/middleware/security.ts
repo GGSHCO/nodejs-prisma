@@ -94,7 +94,6 @@ export const securityMiddleware = [
     crossOriginResourcePolicy: {
       policy: process.env.NODE_ENV === 'prod' ? 'same-site' : 'cross-origin',
     },
-    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   }),
 
   // CORS
