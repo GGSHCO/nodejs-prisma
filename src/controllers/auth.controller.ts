@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 // import { AuthService } from '../services/auth.service'
 import { prisma } from '../config/prisma'
 import bcrypt from 'bcryptjs'
-import { generateTokens, verifyToken } from '../utils/jwt'
+import { generateRandomToken, generateTokens, verifyToken } from '../utils/jwt'
 import {
   sendPasswordResetEmail,
   sendVerificationEmail,
@@ -352,6 +352,13 @@ export class AuthController {
       setCookie(res, 'refreshToken', tokens.refreshToken, {
         path: '/api/refresh',
         maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+
+      const csrfToken = generateRandomToken()
+      setCookie(res, 'XSRF-TOKEN', csrfToken, {
+        sameSite: 'lax', // 'strict' breaks cross-origin if frontend/backend are on different subdomains
+        httpOnly: false, // Allow JS to read it
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
       })
 
       res.status(200).json({

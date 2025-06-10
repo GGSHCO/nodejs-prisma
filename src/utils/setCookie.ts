@@ -24,7 +24,7 @@ export function setCookie(
 
   res.cookie(name, value, {
     httpOnly: options.httpOnly ?? true,
-    secure: options.secure ?? isProduction,
+    secure: options.secure ?? true,
     sameSite: options.sameSite ?? (isProduction ? 'none' : 'lax'),
     domain: options.domain ?? cookieDomain,
     path: options.path ?? '/',

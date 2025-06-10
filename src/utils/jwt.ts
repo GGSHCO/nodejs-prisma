@@ -1,6 +1,7 @@
 // src/utils/jwt.ts
 import jwt from 'jsonwebtoken'
 import { env } from '../config/env'
+import crypto from 'crypto';
 
 interface TokenPayload {
   id: number
@@ -70,3 +71,7 @@ export const verifyToken = (token: string, type: 'access' | 'refresh') => {
     throw new Error('Token verification failed')
   }
 }
+
+export const generateRandomToken = (): string => {
+  return crypto.randomBytes(32).toString('hex'); // 64-character hex string
+};

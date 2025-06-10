@@ -12,13 +12,14 @@ if (process.env.NODE_ENV !== 'prod') {
 
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import crypto from 'crypto'
+
 import { securityMiddleware } from './middleware/security'
 import authRoutes from './routes/auth.routes'
 import mastersRoutes from './routes/masters.routes'
 import logger from './config/logger'
 import { setCookie } from './utils/setCookie'
-import cors from 'cors'
+
+import { generateRandomToken } from './utils/jwt'
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -30,10 +31,12 @@ app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
 // This endpoint is essential for frontends and Postman to get the XSRF-TOKEN cookie.
 // It should be placed after cookieParser but before stricter security checks.
 app.get('/api/csrf-token', (req, res) => {
-  const csrfToken = crypto.randomBytes(32).toString('hex')
+  // const csrfToken = crypto.randomBytes(32).toString('hex')
+
+  const csrfToken = generateRandomToken()
 
   setCookie(res, 'XSRF-TOKEN', csrfToken, {
-    maxAge: 60 * 60 * 1000,
+    maxAge: 24 * 60 * 60 * 1000, 
   })
 
   res.status(200).json({
@@ -44,7 +47,7 @@ app.get('/api/csrf-token', (req, res) => {
 })
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '5:33' })
+  res.json({ status: 'ok', timestamp: new Date(), message: '10/06/2025, 12:00' })
 })
 
 // --- Security Middleware (including CSRF, Cors) ---

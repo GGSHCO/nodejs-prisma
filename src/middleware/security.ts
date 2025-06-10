@@ -29,7 +29,7 @@ const apiLimiter = rateLimit({
 })
 
 const authLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 15 minutes
+  windowMs: 10 * 60 * 1000, // 10 minutes
   max: 5, // Limit each IP to 5 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
@@ -45,16 +45,18 @@ const authLimiter = rateLimit({
 
 const csrfProtection = (req: Request, res: Response, next: NextFunction) => {
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
-    const csrfToken = req.headers['x-csrf-token'] || req.headers['X-CSRF-Token']
-    if (!csrfToken || csrfToken !== req.cookies['XSRF-TOKEN']) {
+    const csrfHeader = req.headers['x-csrf-token'] || req.headers['X-CSRF-Token'];
+    const csrfCookie = req.cookies['XSRF-TOKEN'];
+    
+    if (!csrfHeader || !csrfCookie || csrfHeader !== csrfCookie) {
       return res.status(403).json({
         responseType: 'ERROR',
         responseMessage: 'Invalid CSRF token',
         responseData: null,
-      })
+      });
     }
   }
-  next()
+  next();
 }
 
 export const securityMiddleware = [
