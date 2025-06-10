@@ -27,6 +27,12 @@ const port = process.env.PORT || 3000
 // --- Core Express Middleware ---
 app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
 
+
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date(), message: '10/06/2025, 12:00' })
+})
+
 // --- CSRF Token Endpoint ---
 // This endpoint is essential for frontends and Postman to get the XSRF-TOKEN cookie.
 // It should be placed after cookieParser but before stricter security checks.
@@ -44,10 +50,6 @@ app.get('/api/csrf-token', (req, res) => {
     responseMessage: 'CSRF token set in cookie',
     responseData: null,
   })
-})
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '10/06/2025, 12:00' })
 })
 
 // --- Security Middleware (including CSRF, Cors) ---
