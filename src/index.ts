@@ -59,7 +59,7 @@ app.get('/api/csrf-token', (req, res) => {
   res.status(200).json({
     responseType: 'SUCCESS',
     responseMessage: 'CSRF token set in cookie',
-    responseData: null,
+    responseData: {csrfToken: csrfToken},
   })
 })
 
