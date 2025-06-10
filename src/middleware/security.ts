@@ -51,7 +51,7 @@ const csrfProtection = (req: Request, res: Response, next: NextFunction) => {
       return res.status(403).json({
         responseType: 'ERROR',
         responseMessage: 'Invalid CSRF token',
-        responseData: null,
+        responseData: {csrfHeader, csrfCookie},
       });
     }
   }
