@@ -1,17 +1,16 @@
 import { Request, Response, NextFunction } from 'express'
 import helmet from 'helmet'
-import cors from 'cors'
+
 import { rateLimit } from 'express-rate-limit'
 import express from 'express'
 import logger from '../config/logger'
 import { verifyToken } from '../utils/jwt'
 import { env } from '../config/env'
-import { corsOrigin } from '../utils/corsOrgin'
 
 // Validate CORS origin
 // const corsOrigin = process.env.CLIENT_URL
 
-console.log('CORS Origin:', corsOrigin)
+
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -98,14 +97,14 @@ export const securityMiddleware = [
     },
   }),
 
-  // CORS
-  cors({
-    origin: corsOrigin,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
-    credentials: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  }),
+  // CORS Moved to index page
+  // cors({
+  //   origin: corsOrigin,
+  //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
+  //   credentials: true,
+  //   maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  // }),
 
   // CSRF protection
   csrfProtection,

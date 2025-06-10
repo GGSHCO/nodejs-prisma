@@ -20,6 +20,8 @@ import logger from './config/logger'
 import { setCookie } from './utils/setCookie'
 
 import { generateRandomToken } from './utils/jwt'
+import cors from 'cors'
+import { corsOrigin } from './utils/corsOrgin'
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -27,11 +29,20 @@ const port = process.env.PORT || 3000
 // --- Core Express Middleware ---
 app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
 
-
+console.log('CORS Origin:', corsOrigin)
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '10/06/2025, 12:00' })
+  res.json({ status: 'ok', timestamp: new Date(), message: '10/06/2025, 15:40' })
 })
+
+app.use(cors({
+  origin: corsOrigin,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
+  credentials: true,
+  exposedHeaders: ['set-cookie'], // Important for CSRF cookie visibility
+  maxAge: 24 * 60 * 60 * 1000,
+}))
 
 // --- CSRF Token Endpoint ---
 // This endpoint is essential for frontends and Postman to get the XSRF-TOKEN cookie.
@@ -52,7 +63,7 @@ app.get('/api/csrf-token', (req, res) => {
   })
 })
 
-// --- Security Middleware (including CSRF, Cors) ---
+// --- Security Middleware (including CSRF, Helmet) ---
 app.use(securityMiddleware)
 
 app.use('/api', authRoutes)
