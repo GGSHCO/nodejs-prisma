@@ -7,5 +7,5 @@ const corsOrigin =
     : ['http://localhost:3080']
 
 const cookieDomain =
-  process.env.NODE_ENV === 'prod' ? 'speedyourfin.ai' : undefined
+  process.env.NODE_ENV === 'prod' ? '.speedyourfin.ai' : undefined
 export { corsOrigin, cookieDomain }
