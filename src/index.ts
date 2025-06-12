@@ -13,7 +13,7 @@ if (process.env.NODE_ENV !== 'prod') {
 import express from 'express'
 import cookieParser from 'cookie-parser'
 
-import { securityMiddleware } from './middleware/security'
+import { securityMiddleware, apiRateLimiter, authRateLimiter } from './middleware/security'
 import authRoutes from './routes/auth.routes'
 import mastersRoutes from './routes/masters.routes'
 import logger from './config/logger'
@@ -24,7 +24,7 @@ import cors from 'cors'
 import { corsOrigin } from './utils/corsOrgin'
 
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 4000
 
 // --- Core Express Middleware ---
 app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
@@ -66,8 +66,8 @@ app.get('/api/csrf-token', (req, res) => {
 // --- Security Middleware (including CSRF, Helmet) ---
 app.use(securityMiddleware)
 
-app.use('/api', authRoutes)
-app.use('/api/masters', mastersRoutes)
+app.use('/api', authRateLimiter, authRoutes)
+app.use('/api/masters', apiRateLimiter, mastersRoutes)
 
 app.use(
   (

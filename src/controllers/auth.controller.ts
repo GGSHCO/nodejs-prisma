@@ -11,7 +11,7 @@ import {
 import crypto from 'crypto'
 import logger from '../config/logger'
 import { User, UserCheck } from '../interfaces/User'
-import { setCookie } from '../utils/setCookie'
+import { removeCookie, setCookie } from '../utils/setCookie'
 import { cookieDomain } from '../utils/corsOrgin'
 
 // Security constants
@@ -142,7 +142,7 @@ export class AuthController {
       })
 
       if (existingUser) {
-        res.status(200).json({
+        res.status(400).json({
           responseType: 'ERROR',
           responseMessage: 'User already exist',
           responseData: null,
@@ -541,21 +541,14 @@ export class AuthController {
    */
   static logout = async (req: Request, res: Response): Promise<void> => {
     try {
-      // Clear the access token
-      res.clearCookie('accessToken', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        domain: '.speedyourfin.ai',
-      })
 
-      // Clear the refresh token
-      res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        path: '/api/refresh',
-        domain: '.speedyourfin.ai',
+      removeCookie(res, 'accessToken')
+
+      removeCookie(res, 'refreshToken', { path: '/api/refresh' })
+
+      removeCookie(res, 'XSRF-TOKEN', { 
+        httpOnly: false, 
+        sameSite: 'lax'
       })
 
       res.status(200).json({

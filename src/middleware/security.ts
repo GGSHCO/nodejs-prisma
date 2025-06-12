@@ -1,3 +1,5 @@
+// src/middleware/security.ts
+
 import { Request, Response, NextFunction } from 'express'
 import helmet from 'helmet'
 
@@ -6,11 +8,6 @@ import express from 'express'
 import logger from '../config/logger'
 import { verifyToken } from '../utils/jwt'
 import { env } from '../config/env'
-
-// Validate CORS origin
-// const corsOrigin = process.env.CLIENT_URL
-
-
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -98,16 +95,10 @@ export const securityMiddleware = [
   }),
 
   // CORS Moved to index page
-  // cors({
-  //   origin: corsOrigin,
-  //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
-  //   credentials: true,
-  //   maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  // }),
+
 
   // CSRF protection
-  csrfProtection,
+  // csrfProtection,
 
   express.json({ limit: '10kb' }),
   express.urlencoded({ extended: true, limit: '10kb' }),
@@ -149,7 +140,7 @@ export const authenticate = (
 
     const decoded = verifyToken(accessToken, 'access')
 
-    // Verify user status in database || Currently not done to ensure performance
+    // Verify user status in database || Currently commented to ensure performance
     // const user = await prisma.sYF_USERMASTER.findUnique({
     //   where: { LID: decoded.id },
     //   select: { STATUS: true },
@@ -159,7 +150,7 @@ export const authenticate = (
 
     next()
   } catch (error) {
-    let errorMessage = 'An unknown error occurred' // Default error message
+    let errorMessage = 'An unknown error occurred' 
     if (error instanceof Error) {
       errorMessage = error.message
     }

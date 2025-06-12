@@ -64,8 +64,8 @@ export const verifyEmailSchema = z.object({
     token: z
       .string()
       .min(1, 'Verification token is required')
-      .length(64, 'Invalid token length') // Assuming your token is a 32-byte hex string (32 * 2 = 64 chars)
-      .regex(/^[a-f0-9]+$/, 'Invalid token format') // Ensure it's a hex string
+      // .length(64, 'Invalid token length') // Assuming your token is a 32-byte hex string (32 * 2 = 64 chars)
+      // .regex(/^[a-f0-9]+$/, 'Invalid token format') // Ensure it's a hex string
       .transform(sanitizeString), // Apply sanitization if needed, though for a hex token it's less critical
   }),
 })

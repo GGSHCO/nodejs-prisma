@@ -31,3 +31,19 @@ export function setCookie(
     maxAge: options.maxAge,
   })
 }
+
+export function removeCookie(
+  res: Response,
+  name: string,
+  options: CookieOptions = {}
+) {
+  const isProduction = process.env.NODE_ENV === 'prod'
+
+  res.clearCookie(name, {
+    httpOnly: options.httpOnly ?? true,
+    secure: options.secure ?? true,
+    sameSite: options.sameSite ?? (isProduction ? 'none' : 'lax'),
+    domain: options.domain ?? cookieDomain,
+    path: options.path ?? '/',
+  })
+}
