@@ -66,7 +66,7 @@ app.get('/api/csrf-token', (req, res) => {
 // --- Security Middleware (including CSRF, Helmet) ---
 app.use(securityMiddleware)
 
-app.use('/api', authRateLimiter, authRoutes) // Production
+app.use('/api', authRoutes) // Production
 app.use('/api/masters', apiRateLimiter, mastersRoutes) // Production
 
 // app.use('/api', authRoutes) // Local

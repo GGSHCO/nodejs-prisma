@@ -10,6 +10,7 @@ import {
   resetPasswordSchema,
   forgotPasswordSchema,
 } from '../validation/auth.schema'
+import { authRateLimiter } from '../middleware/security'
 
 const router = Router()
 
@@ -21,29 +22,29 @@ const router = Router()
 // router.post('/reset-password', AuthController.resetPassword)
 
 // Registration
-router.post('/register', validate(registerSchema), AuthController.register)
+router.post('/register', authRateLimiter, validate(registerSchema), AuthController.register)
 
 // Email verification
 router.get(
-  '/verify-email/:token',
+  '/verify-email/:token', authRateLimiter,
   validate(verifyEmailSchema),
   AuthController.verifyEmail
 )
 
 // Login
-router.post('/login', validate(loginSchema), AuthController.login)
+router.post('/login', authRateLimiter, validate(loginSchema), AuthController.login)
 
 // Refresh token
 router.post('/refresh', AuthController.refreshToken)
 
 router.post(
-  '/forgot-password',
+  '/forgot-password', authRateLimiter,
   validate(forgotPasswordSchema),
   AuthController.forgotPassword
 )
 
 router.post(
-  '/reset-password',
+  '/reset-password', authRateLimiter,
   validate(resetPasswordSchema),
   AuthController.resetPassword
 )
