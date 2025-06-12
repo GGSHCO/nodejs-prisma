@@ -32,7 +32,7 @@ app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
 console.log('CORS Origin:', corsOrigin)
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '12/06/2025, 15:44' })
+  res.json({ status: 'ok', timestamp: new Date(), message: '12/06/2025, 07:24' })
 })
 
 app.use(cors({
@@ -67,8 +67,10 @@ app.get('/api/csrf-token', (req, res) => {
 app.use(securityMiddleware)
 
 app.use('/api', authRateLimiter, authRoutes) // Production
+app.use('/api/masters', apiRateLimiter, mastersRoutes) // Production
+
 // app.use('/api', authRoutes) // Local
-app.use('/api/masters', apiRateLimiter, mastersRoutes)
+// app.use('/api/masters', mastersRoutes) // Local
 
 app.use(
   (
