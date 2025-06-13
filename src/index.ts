@@ -64,13 +64,13 @@ app.get('/api/csrf-token', (req, res) => {
 })
 
 app.set('trust proxy', 1);
-app.use((req, res, next) => {
-  const rawIp = req.ip;
-  const cleanedIp = rawIp?.includes(':') ? rawIp.split(':')[0] : rawIp;
-  console.log('Cleaned IP:', cleanedIp);
-  console.log('X-Forwarded-For:', req.headers['x-forwarded-for']);
-  next();
-});
+// app.use((req, res, next) => {
+//   const rawIp = req.ip;
+//   const cleanedIp = rawIp?.includes(':') ? rawIp.split(':')[0] : rawIp;
+//   console.log('Cleaned IP:', cleanedIp);
+//   console.log('X-Forwarded-For:', req.headers['x-forwarded-for']);
+//   next();
+// });
 
 // --- Security Middleware (including CSRF, Helmet) ---
 app.use(securityMiddleware)
