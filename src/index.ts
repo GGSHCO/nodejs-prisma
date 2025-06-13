@@ -13,7 +13,7 @@ if (process.env.NODE_ENV !== 'prod') {
 import express from 'express'
 import cookieParser from 'cookie-parser'
 
-import { securityMiddleware, apiRateLimiter, authRateLimiter } from './middleware/security'
+import { securityMiddleware, apiRateLimiter, authenticate } from './middleware/security'
 import authRoutes from './routes/auth.routes'
 import mastersRoutes from './routes/masters.routes'
 import logger from './config/logger'
@@ -76,7 +76,7 @@ app.set('trust proxy', 1);
 app.use(securityMiddleware)
 
 app.use('/api', authRoutes) // Production
-app.use('/api/masters', apiRateLimiter, mastersRoutes) // Production
+app.use('/api/masters', authenticate, apiRateLimiter, mastersRoutes) // Production
 
 // app.use('/api', authRoutes) // Local
 // app.use('/api/masters', mastersRoutes) // Local

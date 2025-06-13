@@ -11,17 +11,37 @@ import { env } from '../config/env'
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'prod' ? 100 : 1000,
+  max: process.env.NODE_ENV === 'prod' ? 10 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req, res) => {
-    // Strip the port from IP if present
     const rawIp = req.ip || ''
     const cleanedIp = rawIp.includes(':') ? rawIp.split(':')[0] : rawIp
-    return cleanedIp
+
+    const userId = (req as CustomRequest).user?.id ?? null;
+    if (userId) {
+      return `USER-${userId}`;
+    }
+
+    return `IP-${cleanedIp}`
   },
   handler: (req, res) => {
-    logger.warn(`Rate limit exceeded for IP: ${req.ip}`)
+    const userId = (req as CustomRequest).user?.id ?? 'anonymous'
+    const rawIp = req.ip || ''
+    const cleanedIp = rawIp.includes(':') ? rawIp.split(':')[0] : rawIp
+    const now = new Date().toISOString()
+    const endpoint = req.originalUrl
+    const method = req.method
+    const userAgent = req.headers['user-agent'] || 'unknown'
+
+    logger.warn(`[${now}] Rate limit exceeded:
+      IP: ${cleanedIp} (raw: ${rawIp}),
+      UserID: ${userId},
+      Method: ${method},
+      Endpoint: ${endpoint},
+      User-Agent: ${userAgent}
+    `)
+
     res.status(429).json({
       responseType: 'ERROR',
       responseMessage: 'Too many requests, please try again later',
@@ -35,14 +55,33 @@ const authLimiter = rateLimit({
   max: 5, // Limit each IP to 5 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
+  // keyGenerator: (req, res) => {
+  //   // Strip the port from IP if present
+  //   const rawIp = req.ip || ''
+  //   const cleanedIp = rawIp.includes(':') ? rawIp.split(':')[0] : rawIp
+  //   return cleanedIp
+  // },
   keyGenerator: (req, res) => {
-    // Strip the port from IP if present
-    const rawIp = req.ip || ''
-    const cleanedIp = rawIp.includes(':') ? rawIp.split(':')[0] : rawIp
-    return cleanedIp
+    const ip = (req.ip || '').split(':')[0]
+    const email = req.body?.email || 'unknown'
+    return `${ip}-${email}`
   },
   handler: (req, res) => {
-    logger.warn(`Auth rate limit exceeded for IP: ${req.ip}`)
+    const rawIp = req.ip || ''
+    const cleanedIp = rawIp.includes(':') ? rawIp.split(':')[0] : rawIp
+    const email = req.body?.email || 'unknown'
+    const now = new Date().toISOString()
+    const endpoint = req.originalUrl
+    const method = req.method
+    const userAgent = req.headers['user-agent'] || 'unknown'
+
+    logger.warn(`[${now}] Auth rate limit exceeded:
+      IP: ${cleanedIp} (raw: ${rawIp}),
+      Email: ${email},
+      Method: ${method},
+      Endpoint: ${endpoint},
+      User-Agent: ${userAgent}
+    `)
     res.status(429).json({
       responseType: 'ERROR',
       responseMessage: 'Too many attempts, please try again later',
@@ -138,16 +177,17 @@ export const authenticate = (
   req: CustomRequest, // Use the custom request type here
   res: Response,
   next: NextFunction
-) => {
+): void | Promise<void> => {
   try {
     const accessToken = req.cookies.accessToken
 
     if (!accessToken) {
-      return res.status(401).json({
+      res.status(401).json({
         responseType: 'ERROR',
         responseMessage: 'Authentication required',
         responseData: null,
       })
+      return
     }
 
     const decoded = verifyToken(accessToken, 'access')
@@ -172,5 +212,6 @@ export const authenticate = (
       responseMessage: 'Invalid or expired token',
       responseData: null,
     })
+    return
   }
 }
