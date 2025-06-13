@@ -92,6 +92,11 @@ app.use((req, res) => {
   })
 })
 
+app.use((req, res, next) => {
+  console.log('Client IP:', req.ip);
+  next();
+});
+
 app.listen(port, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)
 })
