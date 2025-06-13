@@ -14,6 +14,12 @@ const apiLimiter = rateLimit({
   max: process.env.NODE_ENV === 'prod' ? 100 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req, res) => {
+    // Strip the port from IP if present
+    const rawIp = req.ip || ''
+    const cleanedIp = rawIp.includes(':') ? rawIp.split(':')[0] : rawIp
+    return cleanedIp
+  },
   handler: (req, res) => {
     logger.warn(`Rate limit exceeded for IP: ${req.ip}`)
     res.status(429).json({
@@ -29,6 +35,12 @@ const authLimiter = rateLimit({
   max: 5, // Limit each IP to 5 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req, res) => {
+    // Strip the port from IP if present
+    const rawIp = req.ip || ''
+    const cleanedIp = rawIp.includes(':') ? rawIp.split(':')[0] : rawIp
+    return cleanedIp
+  },
   handler: (req, res) => {
     logger.warn(`Auth rate limit exceeded for IP: ${req.ip}`)
     res.status(429).json({
