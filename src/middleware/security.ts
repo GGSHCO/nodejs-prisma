@@ -63,13 +63,13 @@ const authLimiter = rateLimit({
   // },
   keyGenerator: (req, res) => {
     const ip = (req.ip || '').split(':')[0]
-    const email = req.body?.email || 'unknown'
+    const email = req.body?.data.email || 'unknown'
     return `${ip}-${email}`
   },
   handler: (req, res) => {
     const rawIp = req.ip || ''
     const cleanedIp = rawIp.includes(':') ? rawIp.split(':')[0] : rawIp
-    const email = req.body?.email || 'unknown'
+    const email = req.body?.data.email || 'unknown'
     const now = new Date().toISOString()
     const endpoint = req.originalUrl
     const method = req.method
