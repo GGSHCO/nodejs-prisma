@@ -32,7 +32,7 @@ app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
 console.log('CORS Origin:', corsOrigin)
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '12/06/2025, 07:24' })
+  res.json({ status: 'ok', timestamp: new Date(), message: '13/06/2025, 10:33' })
 })
 
 app.use(cors({
@@ -63,6 +63,13 @@ app.get('/api/csrf-token', (req, res) => {
   })
 })
 
+app.set('trust proxy', true);
+app.use((req, res, next) => {
+  console.log('Client IP from req.ip:', req.ip);
+  console.log('X-Forwarded-For:', req.headers['x-forwarded-for']);
+  next();
+});
+
 // --- Security Middleware (including CSRF, Helmet) ---
 app.use(securityMiddleware)
 
@@ -92,10 +99,7 @@ app.use((req, res) => {
   })
 })
 
-app.use((req, res, next) => {
-  console.log('Client IP:', req.ip);
-  next();
-});
+
 
 app.listen(port, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)
