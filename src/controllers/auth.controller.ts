@@ -262,6 +262,8 @@ export class AuthController {
           NAME: true,
           encPassword: true,
           salt: true,
+          failedLoginAttempts: true,
+          STATUS: true,
         }, 
         where: { EMAIL: email },
       })
@@ -326,14 +328,16 @@ export class AuthController {
       }
 
       // Reset failed attempts
-      await prisma.sYF_USERMASTER.update({
-        where: { LID: user.LID },
-        data: {
-          failedLoginAttempts: 0,
-          lastFailedLogin: null,
-          lastLogin: new Date(),
-        },
-      })
+      if (user.failedLoginAttempts && user.failedLoginAttempts > 0) {
+        await prisma.sYF_USERMASTER.update({
+          where: { LID: user.LID },
+          data: {
+            failedLoginAttempts: 0,
+            lastFailedLogin: null,
+            lastLogin: new Date(),
+          },
+        })
+      }
 
       if (!user.EMAIL) {
         res.status(500).json({
