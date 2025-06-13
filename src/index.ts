@@ -32,7 +32,7 @@ app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
 console.log('CORS Origin:', corsOrigin)
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '13/06/2025, 10:33' })
+  res.json({ status: 'ok', timestamp: new Date(), message: '13/06/2025, 10:51' })
 })
 
 app.use(cors({

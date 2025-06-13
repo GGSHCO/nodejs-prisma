@@ -256,6 +256,13 @@ export class AuthController {
       const { email, password } = res.locals.sanitized.body.data
 
       const user: UserCheck = await prisma.sYF_USERMASTER.findUnique({
+        select: {
+          LID: true,
+          EMAIL: true,
+          NAME: true,
+          encPassword: true,
+          salt: true,
+        }, 
         where: { EMAIL: email },
       })
 
