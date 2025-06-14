@@ -149,7 +149,7 @@ export const securityMiddleware = [
 
 
   // CSRF protection
-  csrfProtection,
+  // csrfProtection,
 
   express.json({ limit: '10kb' }),
   express.urlencoded({ extended: true, limit: '10kb' }),

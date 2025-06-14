@@ -16,6 +16,7 @@ import cookieParser from 'cookie-parser'
 import { securityMiddleware, apiRateLimiter, authenticate } from './middleware/security'
 import authRoutes from './routes/auth.routes'
 import mastersRoutes from './routes/masters.routes'
+import userRoutes from './routes/user.routes'
 import logger from './config/logger'
 import { setCookie } from './utils/setCookie'
 
@@ -75,11 +76,13 @@ app.set('trust proxy', 1);
 // --- Security Middleware (including CSRF, Helmet) ---
 app.use(securityMiddleware)
 
-app.use('/api', authRoutes) // Production
-app.use('/api/masters', authenticate, apiRateLimiter, mastersRoutes) // Production
+app.use('/api', authRoutes)
 
-// app.use('/api', authRoutes) // Local
+app.use('/api/masters', authenticate, apiRateLimiter, mastersRoutes) // Production
+app.use('/api/user', authenticate, apiRateLimiter, userRoutes) // Production
+
 // app.use('/api/masters', mastersRoutes) // Local
+// app.use('/api/user', userRoutes) // Local
 
 app.use(
   (

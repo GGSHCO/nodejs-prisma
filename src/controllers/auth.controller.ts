@@ -134,7 +134,6 @@ export class AuthController {
    * Register a new user
    */
   static register = async (req: Request, res: Response): Promise<void> => {
-    // Changed to arrow function
     try {
       const { email, name, password } = res.locals.sanitized.body.data
       const existingUser = await prisma.sYF_USERMASTER.findUnique({
@@ -249,7 +248,7 @@ export class AuthController {
   }
 
   /**
-   * Updated login method
+   * login method
    */
   static login = async (req: Request, res: Response): Promise<void> => {
     try {
