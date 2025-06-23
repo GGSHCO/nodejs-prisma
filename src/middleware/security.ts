@@ -149,10 +149,10 @@ export const securityMiddleware = [
 
 
   // CSRF protection
-  csrfProtection,
+  // csrfProtection,
 
-  express.json({ limit: '1000kb' }),
-  express.urlencoded({ extended: true, limit: '1000kb' }),
+  express.json({ limit: '100kb' }),
+  express.urlencoded({ extended: true, limit: '100kb' }),
 
   // Remove X-Powered-By header
   (req: Request, res: Response, next: NextFunction) => {
