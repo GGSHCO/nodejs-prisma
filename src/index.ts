@@ -40,7 +40,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
   credentials: true,
-  exposedHeaders: ['set-cookie', 'XSRF-TOKEN'], // Important for CSRF cookie visibility
+  exposedHeaders: ['set-cookie'], // Important for CSRF cookie visibility
   maxAge: 24 * 60 * 60 * 1000,
 }))
 
