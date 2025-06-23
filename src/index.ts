@@ -15,7 +15,7 @@ import cookieParser from 'cookie-parser'
 
 import { securityMiddleware, apiRateLimiter, authenticate } from './middleware/security'
 
-// import legacyApp from './legacy/app.js'
+import legacyApp from './legacy/app.js'
 
 
 import authRoutes from './routes/auth.routes'
@@ -72,7 +72,7 @@ app.set('trust proxy', 1);
 // --- Security Middleware (including CSRF, Helmet) ---
 app.use(securityMiddleware)
 
-// app.use('/', legacyApp);
+app.use('/', legacyApp);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date(), message: '23/06/2025, 06:12' })
