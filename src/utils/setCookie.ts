@@ -32,6 +32,25 @@ export function setCookie(
   })
 }
 
+// export function setCookie(
+//   res: Response,
+//   name: string,
+//   value: string,
+//   options: CookieOptions = {}
+// ) {
+//   const isProduction = process.env.NODE_ENV === 'prod'
+//   const isLocalIP = process.env.SERVER_URL?.includes('192.168.') // Add your IP check logic
+  
+//   res.cookie(name, value, {
+//     httpOnly: options.httpOnly ?? (name !== 'XSRF-TOKEN'), // XSRF-TOKEN needs to be readable by JS
+//     secure: options.secure ?? true,
+//     sameSite: isLocalIP ? 'none' : (options.sameSite ?? (isProduction ? 'none' : 'lax')),
+//     domain: isLocalIP ? undefined : (options.domain ?? cookieDomain), // Don't set domain for IP addresses
+//     path: options.path ?? '/',
+//     maxAge: options.maxAge,
+//   })
+// }
+
 export function removeCookie(
   res: Response,
   name: string,

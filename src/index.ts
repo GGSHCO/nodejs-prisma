@@ -14,13 +14,18 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 
 import { securityMiddleware, apiRateLimiter, authenticate } from './middleware/security'
+
+// import legacyApp from './legacy/app.js'
+
+
 import authRoutes from './routes/auth.routes'
 import mastersRoutes from './routes/masters.routes'
 import userRoutes from './routes/user.routes'
+
 import logger from './config/logger'
 import { setCookie } from './utils/setCookie'
-
 import { generateRandomToken } from './utils/jwt'
+
 import cors from 'cors'
 import { corsOrigin } from './utils/corsOrgin'
 
@@ -28,30 +33,20 @@ const app = express()
 const port = process.env.PORT || 4000
 
 // --- Core Express Middleware ---
-app.use(cookieParser()) // Crucial: Parses cookies and populates req.cookies
-
-console.log('CORS Origin:', corsOrigin)
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '13/06/2025, 12:35' })
-})
+app.use(cookieParser())
 
 app.use(cors({
   origin: corsOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
   credentials: true,
-  exposedHeaders: ['set-cookie'], // Important for CSRF cookie visibility
+  exposedHeaders: ['set-cookie', 'XSRF-TOKEN'], // Important for CSRF cookie visibility
   maxAge: 24 * 60 * 60 * 1000,
 }))
 
 // --- CSRF Token Endpoint ---
-// This endpoint is essential for frontends and Postman to get the XSRF-TOKEN cookie.
-// It should be placed after cookieParser but before stricter security checks.
 app.get('/api/csrf-token', (req, res) => {
-  // const csrfToken = crypto.randomBytes(32).toString('hex')
-
-  const csrfToken = generateRandomToken()
+const csrfToken = generateRandomToken()
 
   setCookie(res, 'XSRF-TOKEN', csrfToken, {
     maxAge: 24 * 60 * 60 * 1000, 
@@ -73,16 +68,20 @@ app.set('trust proxy', 1);
 //   next();
 // });
 
+
 // --- Security Middleware (including CSRF, Helmet) ---
 app.use(securityMiddleware)
+
+// app.use('/', legacyApp);
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date(), message: '23/06/2025, 06:12' })
+})
 
 app.use('/api', authRoutes)
 
 app.use('/api/masters', authenticate, apiRateLimiter, mastersRoutes) // Production
 app.use('/api/user', authenticate, apiRateLimiter, userRoutes) // Production
-
-// app.use('/api/masters', mastersRoutes) // Local
-// app.use('/api/user', userRoutes) // Local
 
 app.use(
   (
@@ -104,8 +103,23 @@ app.use((req, res) => {
   })
 })
 
-
+console.log('CORS Origin:', corsOrigin)
 
 app.listen(port, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)
-})
+  const os = require('os');
+  const interfaces = os.networkInterfaces();
+  const addresses: string[] = [];
+
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name] || []) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        addresses.push(iface.address);
+      }
+    }
+  }
+
+  console.log(`\nLocal:   http://localhost:${port}`);
+  addresses.forEach(addr => {
+    console.log(`Network: http://${addr}:${port}`);
+  });
+});

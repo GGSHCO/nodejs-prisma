@@ -11,7 +11,7 @@ import { env } from '../config/env'
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'prod' ? 10 : 1000,
+  max: process.env.NODE_ENV === 'prod' ? 100 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req, res) => {
@@ -151,8 +151,8 @@ export const securityMiddleware = [
   // CSRF protection
   // csrfProtection,
 
-  express.json({ limit: '10kb' }),
-  express.urlencoded({ extended: true, limit: '10kb' }),
+  express.json({ limit: '1000kb' }),
+  express.urlencoded({ extended: true, limit: '1000kb' }),
 
   // Remove X-Powered-By header
   (req: Request, res: Response, next: NextFunction) => {
