@@ -1,29 +1,42 @@
 // src/legacy/app.js
 
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-const cors = require('cors')
-
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const express = require('express');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 
 const router = express.Router();
-
-const port = process.env.PORT || 4080
-
-router.use(cors());
-router.use(express.json({ limit: '100mb' }));
-router.use(express.urlencoded({ limit: '100mb', extended: true }));
-router.use(cookieParser());
-router.use(logger('dev'));
 
 router.use('/', indexRouter);
 router.use('/users', usersRouter);
 
 module.exports = router;
+
+
+
+// var createError = require('http-errors');
+// var express = require('express');
+// var path = require('path');
+// var cookieParser = require('cookie-parser');
+// var logger = require('morgan');
+// const cors = require('cors')
+
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
+
+// const router = express.Router();
+
+// const port = process.env.PORT || 4080
+
+// router.use(cors());
+// router.use(express.json({ limit: '100mb' }));
+// router.use(express.urlencoded({ limit: '100mb', extended: true }));
+// router.use(cookieParser());
+// router.use(logger('dev'));
+
+// router.use('/', indexRouter);
+// router.use('/users', usersRouter);
+
+// module.exports = router;
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));

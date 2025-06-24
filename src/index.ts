@@ -32,8 +32,13 @@ import { corsOrigin } from './utils/corsOrgin'
 const app = express()
 const port = process.env.PORT || 4000
 
-// --- Core Express Middleware ---
+app.set('trust proxy', 1);
 app.use(cookieParser())
+
+
+
+
+app.use(securityMiddleware)
 
 app.use(cors({
   origin: corsOrigin,
@@ -59,29 +64,17 @@ const csrfToken = generateRandomToken()
   })
 })
 
-app.set('trust proxy', 1);
-// app.use((req, res, next) => {
-//   const rawIp = req.ip;
-//   const cleanedIp = rawIp?.includes(':') ? rawIp.split(':')[0] : rawIp;
-//   console.log('Cleaned IP:', cleanedIp);
-//   console.log('X-Forwarded-For:', req.headers['x-forwarded-for']);
-//   next();
-// });
-
-
-// --- Security Middleware (including CSRF, Helmet) ---
-app.use(securityMiddleware)
-
 app.use('/', legacyApp);
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '23/06/2025, 07:22' })
-})
 
 app.use('/api', authRoutes)
 
 app.use('/api/masters', authenticate, apiRateLimiter, mastersRoutes) // Production
 app.use('/api/user', authenticate, apiRateLimiter, userRoutes) // Production
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date(), message: '23/06/2025, 07:22' })
+})
+
 
 app.use(
   (
