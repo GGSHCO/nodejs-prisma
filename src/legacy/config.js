@@ -350,7 +350,7 @@ async function getCompanyDetails({ mainJsonData, companyid }) {
 
 async function getUserRoles(params){
     try{
-     let userRoles=await fetchTable(`select role from invitedusers where inviteduseremail='${params.email}'`)
+     let userRoles=await fetchTable(`select role from invitedusers where inviteduseremail='${params.email}' and companyid='${params.companyid}'`)
         console.log(userRoles)
      return userRoles;
     }

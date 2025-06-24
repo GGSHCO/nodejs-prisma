@@ -56,7 +56,7 @@ async function getTransactionId() {
 }
 async function updateGlobalMaster(params) {
     try {
-        let res = await exeQuery(`UPDATE GlobalReportMaster SET templateName='${params.templateValue}',template='${params.jsonData}' WHERE lid='${params.GlobalLid}'`)
+        let res = await exeQuery(`UPDATE GlobalReportMaster SET templateName='${params.templateName}',template='${params.template}' WHERE lid='${params.lid}'`)
         return res
     }
     catch (error) {
@@ -78,7 +78,8 @@ async function insertGlobalMaster(params) {
 
 async function updateTransactionMaster(params) {
     try {
-        let res = await exeQuery(`UPDATE transactionReportMaster SET template='${params.jsonData}',templateName='${params.templateValue}' WHERE lid='${params.transactionLid}'`)
+        console.log(params.transactionLid)
+        let res = await exeQuery(`UPDATE transactionReportMaster SET template='${params.jsonData}',templateName='${params.templateValue}' WHERE lid='${params.lid}'`)
         return res
     }
     catch (error) {
@@ -88,8 +89,9 @@ async function updateTransactionMaster(params) {
 
 async function insertTransactionMaster(params) {
     try {
+        console.log(params.companyNames)
         let date = dateTimeGeneration(new Date());
-        let res = await exeQuery(`INSERT INTO GlobalReportMaster(template,templateName,companyName,documentPath,documentID,addedUser,addedTime)
+        let res = await exeQuery(`INSERT INTO transactionReportMaster(template,templateName,companyName,documentPath,documentID,addedUser,addedTime)
          VALUES('${params.template}','${params.templateName}','${params.companyName}','${params.documentPath}','${params.documentID}','${params.adddedUser}','${date}')`);
         return res
     }

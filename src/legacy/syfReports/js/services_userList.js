@@ -1,4 +1,9 @@
-const { fetchTable,fetchOptions,queryGet,exeQuery } = require('../../config')
+const {
+  fetchTable,
+  fetchOptions,
+  queryGet,
+  exeQuery,
+} = require("../../config");
 
 // async function getCoaOptionsDocs(params){
 //     try {
@@ -20,18 +25,40 @@ const { fetchTable,fetchOptions,queryGet,exeQuery } = require('../../config')
 //     }
 // }
 
-async function services_userList_zohoData(params){
-    try {
-        let res = await fetchTable(`select * from zohoContacts where companyId='${params.companyid}'`)
-        
-        return res
-    }
-    catch (error) {
-        
-        return { error: true, message: error.message, details: error };
-    }
+async function services_userList_zohoData(params) {
+  try {
+    let res = await fetchTable(
+      `select * from zohoContacts where companyId='${params.companyid}'`
+    );
+
+    return res;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
+async function services_userList_zohocontact(user) {
+  try {
+    const query = `
+        INSERT INTO portal_clients (zohoContactId,createdBy)
+        OUTPUT Inserted.id
+        VALUES ('${user.zohoContactId}', '${user.createdBy}')
+      `;
+
+    let res = await exeQuery(query);
+    let serviceId = res.responseData.table[0].id;
+    console.log("Inserted ID:", serviceId);
+    user["Id"] = serviceId;
+    user["res"] = res;
+    return user;
+  } catch (error) {
+    console.log("Error inserting user:", user.email, error);
+     return { error: true, message: error.message, details: error };
+
+  }
+
+
+}
 // async function insertExtData(params){
 //     try {
 //         let data = params.data
@@ -72,5 +99,4 @@ async function services_userList_zohoData(params){
 //     }
 // }
 
-
-module.exports={services_userList_zohoData}
+module.exports = { services_userList_zohoData, services_userList_zohocontact };

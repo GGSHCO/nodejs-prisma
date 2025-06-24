@@ -102,8 +102,9 @@ const insertRoleFileRecord = async (item) => {
     let date = dateTimeGeneration(new Date());
     let res =
       await exeQuery(`insert into speedDrive(userName,filesSaved,type,role,companyid,userid,addedUser,addedTime) values
-            ('${item.userName}','${item.filesSaved}','${item.type}','${item.role}','${item.companyid}',''${item.lid}',${item.addedUser}','${date}')`);
-    return res;
+            ('${item.userName}','${item.filesSaved}','${item.type}','${item.role}','${item.companyid}','${item.lid}','${item.addedUser}','${date}')`);
+   console.log(res)
+            return res;
   } catch (e) {
     return { error: e.message };
   }
@@ -159,6 +160,7 @@ async function getMonth() {
 
 module.exports = {
   getGlobalReport,
+  getLidGlobalReport,
   getGlobalTemplate,
   getTemplateTransaction,
   getTransactionCompany,

@@ -64,9 +64,11 @@ const csrfToken = generateRandomToken()
   })
 })
 
-app.use('/', legacyApp);
+
 
 app.use('/api', authRoutes)
+
+app.use('/', authenticate,  apiRateLimiter, legacyApp);
 
 app.use('/api/masters', authenticate, apiRateLimiter, mastersRoutes) // Production
 app.use('/api/user', authenticate, apiRateLimiter, userRoutes) // Production

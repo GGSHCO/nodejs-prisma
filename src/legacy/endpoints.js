@@ -1,5 +1,4 @@
-// let backendUrl = "http://desktop-dssus3g:3000/api"; // Local Ranjith node
-let backendUrl = "http://http://192.168.1.2:4000/api"; // Local
+let backendUrl = "http://desktop-dssus3g:3000/api"; // Local
 // let backendUrl = "https://finspeednodejs.azurewebsites.net/api"
 // let backendUrl = "https://syfnodejsprod-d7b9bsc4b7gwaeev.southindia-01.azurewebsites.net/api"; // Production
 
@@ -32,17 +31,17 @@ async function getEndpoints() {
     pm_deleteAssignment: `${backendUrl}/pm_deleteAssignment`,
     pm_assignmentBulkUpload: `${backendUrl}/pm_assignmentBulkUpload`,
     pm_getAssignmentUvData: `${backendUrl}/pm_getAssignmentUvData`,
-    pm_displayTermsConditions:`${backendUrl}/pm_displayTermsConditions`,
-    pm_getContractStatusQuery:`${backendUrl}/pm_getContractStatusQuery`,
-    pm_insertTemplateTransaction:`${backendUrl}/pm_insertTemplateTransaction`,
-    pm_updateProposalTemplateTransaction:`${backendUrl}/pm_updateProposalTemplateTransaction`,
-    pm_getChatFromProposalTrans:`${backendUrl}/pm_getChatFromProposalTrans`,
-    pm_updateChatProposal:`${backendUrl}/pm_updateChatProposal`,
-    pm_updateProposalStatus:`${backendUrl}/pm_updateProposalStatus`,
-    pm_getAssignmentNatureName:`${backendUrl}/pm_getAssignmentNatureName`,
-    pm_getClientDetails:`${backendUrl}/pm_getClientDetails`,
-    pm_getContractMasterDetails:`${backendUrl}/pm_getContractMasterDetails`,
-    pm_checkEmailClients:`${backendUrl}/pm_checkEmailClients`,
+    pm_displayTermsConditions: `${backendUrl}/pm_displayTermsConditions`,
+    pm_getContractStatusQuery: `${backendUrl}/pm_getContractStatusQuery`,
+    pm_insertTemplateTransaction: `${backendUrl}/pm_insertTemplateTransaction`,
+    pm_updateProposalTemplateTransaction: `${backendUrl}/pm_updateProposalTemplateTransaction`,
+    pm_getChatFromProposalTrans: `${backendUrl}/pm_getChatFromProposalTrans`,
+    pm_updateChatProposal: `${backendUrl}/pm_updateChatProposal`,
+    pm_updateProposalStatus: `${backendUrl}/pm_updateProposalStatus`,
+    pm_getAssignmentNatureName: `${backendUrl}/pm_getAssignmentNatureName`,
+    pm_getClientDetails: `${backendUrl}/pm_getClientDetails`,
+    pm_getContractMasterDetails: `${backendUrl}/pm_getContractMasterDetails`,
+    pm_checkEmailClients: `${backendUrl}/pm_checkEmailClients`,
     /////gstTracker
     gst_zohoNames: `${backendUrl}/gst_zohoNames`,
     gst_insertIntoGstNotices: `${backendUrl}/gst_insertIntoGstNotices`,
@@ -192,6 +191,13 @@ async function getEndpoints() {
     settings_updateGroup: `${backendUrl}/settings_updateGroup`,
     settings_updateCompany: `${backendUrl}/settings_updateCompany`,
     settings_updateGroupName: `${backendUrl}/settings_updateGroupName`,
+
+    services_userAdd_GetExsistingUserList: `${backendUrl}/services_userAdd_GetExsistingUserList`,
+
+    services_userAdd_addNewUser: `${backendUrl}/services_userAdd_addNewUser`,
+
+    services_userAdd_addToPivot: `${backendUrl}/services_userAdd_addToPivot`,
+
     settings_displayRole: `${backendUrl}/settings_displayRole`,
     settings_saveRole: `${backendUrl}/settings_saveRole`,
     settings_updateRole: `${backendUrl}/settings_updateRole`,
@@ -236,7 +242,7 @@ async function getEndpoints() {
     config_sendMail: `${backendUrl}/config_sendMail`,
     config_getSchema: `${backendUrl}/config_getSchema`,
     config_getCompanyInfo: `${backendUrl}/config_getCompanyInfo`,
-    config_getUserRoles:`${backendUrl}/config_getUserRoles`,
+    config_getUserRoles: `${backendUrl}/config_getUserRoles`,
     config_getUserModules: `${backendUrl}/config_getUserModules`,
     config_getRoles: `${backendUrl}/config_getRoles`,
     config_getCountry: `${backendUrl}/config_getCountry`,
@@ -331,6 +337,11 @@ async function getEndpoints() {
     master_saveDropdown: `${backendUrl}/master_saveDropdown`,
     pm_changeStatus: `${backendUrl}/pm_changeStatus`,
     pm_updateOngoing: `${backendUrl}/pm_updateOngoing`,
+    pm_getAssigmentCriteria: `${backendUrl}/pm_getAssigmentCriteria`,
+    pm_addAssignmentService: `${backendUrl}/pm_addAssignmentService`,
+    pm_updateAssignmentService: `${backendUrl}/pm_updateAssignmentService`,
+    pm_deleteCritDoc: `${backendUrl}/pm_deleteCritDoc`,
+    pm_deleteAssignmentCriteria: `${backendUrl}/pm_deleteAssignmentCriteria`,
     extDocs_getBalance: `${backendUrl}/extDocs_getBalance`,
     extDocs_getTableData: `${backendUrl}/extDocs_getTableData`,
     extDocs_checkData: `${backendUrl}/extDocs_checkData`,
@@ -354,9 +365,11 @@ async function getEndpoints() {
     extDocs_getAllExtTabs: `${backendUrl}/extDocs_getAllExtTabs`,
     records_getAllRecords: `${backendUrl}/records_getAllRecords`,
     records_deleteRecords: `${backendUrl}/records_deleteRecords`,
-//////////services_userList.js
-    services_userList_zohoData:`${backendUrl}/services_userList_zohoData`,
-//////////
+    //////////services_userList.js
+    services_userList_zohoData: `${backendUrl}/services_userList_zohoData`,
+    services_userList_zohocontact: `${backendUrl}/services_userList_zohocontact`,
+
+    //////////
     records_addRecords: `${backendUrl}/records_addRecords`,
     records_getRecordData: `${backendUrl}/records_getRecordData`,
     records_getRecordsGroupBy: `${backendUrl}/records_getRecordsGroupBy`,
@@ -366,11 +379,14 @@ async function getEndpoints() {
     // jobcard
     jobcard_getProjectDataObservation: `${backendUrl}/jobcard_getProjectDataObservation`,
     jobcard_fetchProjects: `${backendUrl}/jobcard_fetchProjects`,
+    // projectdesk
+    projectdesk_getObservstionDetail: `${backendUrl}/projectdesk_getObservstionDetail`,
+    projectdesk_getMilestoneDetails: `${backendUrl}/projectdesk_getMilestoneDetails`,
     pm_getPendingLeads: `${backendUrl}/pm_getPendingLeads`,
-    contractStatusChange:`${backendUrl}/contractStatusChange`,
-    obs_getPreSalesValidationData:`${backendUrl}/obs_getPreSalesValidationData`,
-    obs_saveMilestonePsvalidation:`${backendUrl}/obs_saveMilestonePsvalidation`,
-    obs_PSsalesAllcontractsstatusChange:`${backendUrl}/obs_PSsalesAllcontractsstatusChange`
+    contractStatusChange: `${backendUrl}/contractStatusChange`,
+    obs_getPreSalesValidationData: `${backendUrl}/obs_getPreSalesValidationData`,
+    obs_saveMilestonePsvalidation: `${backendUrl}/obs_saveMilestonePsvalidation`,
+    obs_PSsalesAllcontractsstatusChange: `${backendUrl}/obs_PSsalesAllcontractsstatusChange`,
   };
   let result = Buffer.from(JSON.stringify(endpoints)).toString("base64");
   return result;

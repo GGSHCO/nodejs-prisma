@@ -228,19 +228,28 @@ async function getReportForBulk(stateCodeDetails,company,companyData,totalData,v
         let stateCode;
         let stateName;
         let companyStateCode;
-        if (vendorData.gstin.toLowerCase() == 'urp' || vendorData.gstin == "") {
-            stateCode = 'UR'
-            stateName = 'NA'
-        }
-        else {
-            let gstCode = vendorData.gstin.slice(0, 2)
+        if (
+            vendorData.gstin.toLowerCase() === 'urp' ||
+            vendorData.gstin === "" ||
+            vendorData.gstin.toLowerCase().startsWith('urp')) {
+            stateCode = 'UR';
+            stateName = 'NA';
+        } else {
+            let gstCode = vendorData.gstin.slice(0, 2);
             let data = stateCodeDetails.filter((item) => {
                 if (item.gstcode == gstCode) {
-                    return item
+                    return item;
                 }
-            })
-            stateCode = data[0].shortform
-            stateName = data[0].stateorutname
+            });
+            if( data.length == 0) {
+                stateCode = 'UR';
+                stateName = 'NA';
+            }
+            else{
+                 stateCode = data[0].shortform;
+                 stateName = data[0].stateorutname;
+            }
+           
         }
         if (data.clientGstin == "") {
             companyStateCode = 'UR'

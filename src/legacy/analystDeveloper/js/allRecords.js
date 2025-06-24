@@ -9,14 +9,13 @@ const getAllRecords = async (params) => {
             tableName=`specificModules`
         }
         let res = await fetchTable(`select * from ${tableName} where particulars='${params.particulars}' ${condition}`)
-       
+      
         let records=[]
         let specificNames = []
         if(res.length>0){
             res.filter((item)=>{
                 if(!records.includes(item.name)){
                     records.push(item.name)
-                    console.log(item.name)           
                 }
                 let json = JSON.parse(item.jsonData)
                 if(json.hasOwnProperty('recordDisplayName')&&!specificNames.includes(json.recordDisplayName)){
@@ -24,12 +23,12 @@ const getAllRecords = async (params) => {
                 }
             })
         }
-        console.log(records)
         return {
             records:records,
             data:res,
             specificNames
         }
+
     }
     catch (error) {
         return { error: true, message: error.message, details: error };

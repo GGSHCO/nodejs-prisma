@@ -6,6 +6,9 @@ const {
   workPaper,
 } = require("../../config");
 
+// fetch query for allobservations
+
+
 const fetchProjects = async (params) => {
   // let currentDate = new Date();
   // let currentDate_temp = new Date(currentDate);
@@ -403,8 +406,8 @@ const saveTasks = async (params) => {
     let insertQueries = params.taskData.map((task) => {
       return Buffer.from(
         `
-    INSERT INTO pettyTask (task, assignedTo, assigner, edoc, priority, comment, status, companyName, companyId, addedTime)
-    VALUES ('${task.task}', '${task.assignedTo}', '${task.assigner}', '${task.edoc}', '${task.priority}', '${task.Comment}', '${task.status}', '${task.companyName}', '${task.companyId}','${date}')
+    INSERT INTO pettyTask (task, assignedTo, assigner, edoc, priority, comment, status, companyName, companyId, addedTime,filesAttached)
+    VALUES ('${task.task}', '${task.assignedTo}', '${task.assigner}', '${task.edoc}', '${task.priority}', '${task.Comment}', '${task.status}', '${task.companyName}', '${task.companyId}','${date}','${task.files}')
   `
       ).toString("base64");
     });
@@ -677,10 +680,9 @@ async function getObservationType(params) {
 
 async function getPresalesvalidation(params) {
   let status = "Pending Proposal";
-  let ps_validation = "Open";
   try {
     let res = await fetchTable(
-      `SELECT urn FROM AllContracts WHERE companyId='${params.companyid}' AND ps_validation='${ps_validation}' AND status='${status}'`
+      `SELECT urn,ps_validation FROM AllContracts WHERE companyId='${params.companyid}' AND ps_validation IN ('Open', 'Closed')  AND status='${status}'`
     );
 
     let results = [];
@@ -696,16 +698,17 @@ async function getPresalesvalidation(params) {
       // Step 2: For each assignment, get milestones (assuming contractID or assignmentNature used)
       for (let assign of assignments) {
         let milestones = await fetchTable(`
-          SELECT milestone, standardHours 
+          SELECT milestone, standardHours ,milestoneId
           FROM milestoneSubform 
           WHERE contractID = '${item.urn}' AND assignmentNature = '${assign.assignmentNature}' AND status='${status}'
         `);
 
         results.push({
           contractID: item.urn,
+          ps_validation:item.ps_validation,
           clientName: assign.clientName,
           assignmentNature: assign.assignmentNature,
-          milestones: milestones, // this will be an array
+          milestones: milestones, 
         });
       }
     }
@@ -718,19 +721,38 @@ async function getPresalesvalidation(params) {
 
 async function saveMilestonePsvalidation(params) {
   let status = "Pending Proposal";
+  let res;
   try {
     for (const item of params.milestones) {
-      const updateQuery = `
-    UPDATE milestoneSubform
-    SET milestone = '${item.milestone}' ,standardHours = '${item.standardHours}'
-    WHERE contractID = '${item.contractID}'
-      AND assignmentNature = '${item.assignmentNature}'
-      AND status='${status}'
-  `;
-      await queryExecute(updateQuery);
-    }
 
-    return { success: true, message: "Milestones updated successfully." };
+      const updateQuery = `
+       UPDATE milestoneSubform
+  SET milestone = '${item.newMilestone}'
+  WHERE contractID = '${item.contractID}'
+  AND milestoneId='${item.lid}'
+    AND assignmentNature = '${item.assignmentNature}'
+    AND milestone = '${item.oldMilestone}'
+    AND status = '${status}'
+      `;
+
+      console.log("Executing Query:", updateQuery); // Debug
+      res = await exeQuery(updateQuery);
+      console.log(res)
+    }
+    return res;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
+}
+
+async function allContractsValidationChange(params) {
+  let status = "Pending Proposal";
+  let ps_validation = "Closed";
+  try {
+    let res = await exeQuery(
+      `update AllContracts set ps_validation='${ps_validation}' where companyId='${params.companyid}' AND status='${status}'  `
+    );
+    return res;
   } catch (error) {
     return { error: true, message: error.message, details: error };
   }
@@ -767,6 +789,8 @@ module.exports = {
   getObservationType,
   getPresalesvalidation,
   saveMilestonePsvalidation,
+allContractsValidationChange,
+
 };
 
 // get milestone with amount to generate invoice

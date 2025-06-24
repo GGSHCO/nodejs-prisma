@@ -9,11 +9,21 @@ const {
 // fetch query for allobservations
 
 
-const jobcard_fetchProjects = async (params) => {
+const fetchProjects = async (params) => {
   try {
-    let allProjects =
-      await fetchTable(`select * from allprojects where companyid='${params.companyid}' AND projectCode='${params.projectCode}'`);
-    return allProjects;
+    if(params.jobcard){
+      let allProjects =
+        await fetchTable(`select * from allprojects where companyid='${params.companyid}'
+              AND projectCode='${params.projectCode}'
+          `);
+    }else{
+      let allProjects =
+        await fetchTable(`select * from allprojects where companyid='${params.companyid}'
+              AND (managerResponsible='${params.name}' OR personResponsible1='${params.name}' OR personResponsible2='${params.name}' OR personResponsible3='${params.name}' OR partner='${params.name}')
+              ORDER BY status desc, CAST(relevantStartDate as date) asc
+          `);
+      return allProjects;
+      }
   } catch (e) {
     return { error: e };
   }
@@ -22,7 +32,21 @@ const jobcard_fetchProjects = async (params) => {
 // Fetch allobservations based on projectCode
 async function markProjectCompletion(params) {
   try {
-    let completionDate = dateTimeGeneration(
+    if(params.jobcard){
+      let completionDate = dateTimeGeneration(
+      new Date(params.projectCompletionDate)
+    );
+    let projectQuery = Buffer.from(
+      `update AllProjects set status='Completed',completionStatus='Completed',projectStatus='Completed',completionDate='${completionDate}' where companyid='${params.companyid}' AND projectCode='${params.projectCode}'`
+    ).toString("base64");
+    let updateQuery = Buffer.from(
+      `update AllObservations set issueStatus='Completed',completionDate='${completionDate}' where companyid='${params.companyid}' AND projectCode='${params.projectCode}'`
+    ).toString("base64");
+    let result = await queryGet([projectQuery, updateQuery]);
+    // let milestones = await fetchTable(`select * from allobservations where projectCode='${params.projectCode}' and companyid='${params.companyid}' order by observationCode asc`);
+    return result;
+    }else{
+      let completionDate = dateTimeGeneration(
       new Date(params.projectCompletionDate)
     );
     let projectQuery = Buffer.from(
@@ -34,6 +58,8 @@ async function markProjectCompletion(params) {
     let result = await queryGet([projectQuery, updateQuery]);
     // let milestones = await fetchTable(`select * from allobservations where projectCode='${params.projectCode}' and companyid='${params.companyid}' order by observationCode asc`);
     return result;
+    }
+    
   } catch (error) {
     console.log(error);
     return { error: error };
@@ -42,12 +68,105 @@ async function markProjectCompletion(params) {
 
 async function fetchMilestones(params) {
   try {
-    // let res = await fetchTable(` SELECT  allobservations.*,  assignmentNature.classification, assignmentNature.checkpoints FROM  allobservations LEFT JOIN  assignmentNature  ON  allobservations.assignmentNature = assignmentNature.lid WHERE
-    //     allobservations.projectCode = '${params.projectid}'`)
-    // return res
+    if(params.jobcard){
+      let milestones = await fetchTable(
+      `select * from milestoneSubform where assignmentid='${params.assignmentID}' AND companyId='${params.companyid}'`
+    );
+    let check = await fetchTable(
+      `select * from myworks where companyId='${params.companyid}' AND projectcode='${params.projectid}'`
+    );
+    if (check.length == 0) {
+      let res = await fetchTable(`SELECT DISTINCT
+                allobservations.*,  
+                assignmentNature.classification, 
+                assignmentNature.checkpoints,
+                milestoneSubform.milestoneId
+            FROM  
+                allobservations 
+            LEFT JOIN 
+                assignmentNature  
+            ON  
+                allobservations.assignmentNature = assignmentNature.lid
+            LEFT JOIN 
+                milestoneSubform
+            ON  
+                allobservations.assignmentid = milestoneSubform.assignmentid and allobservations.caption = milestoneSubform.milestone
+            WHERE 
+                allobservations.companyId='${params.companyid}' AND allobservations.projectCode = '${params.projectid}'`);
+      let data = res;
+      let query = [];
+      let classify = false;
+      let classifyOptions = [];
 
-    // check if myworks is empty
-    let milestones = await fetchTable(
+      for (let i of data) {
+        let item = i;
+
+        if (item.classification) {
+          // check if there is classification
+          let classifyList = JSON.parse(item.classification);
+          let totalClassify = classifyList.classification;
+          // if total classification is greater than 1 send classification for user to choose
+          if (totalClassify.length > 1 && !params.hasOwnProperty("classify")) {
+            classify = true;
+            classifyOptions = totalClassify;
+            break;
+          } else if (totalClassify.length == 0) {
+            break;
+          } else if (totalClassify.length == 1) {
+            let checkpointData = JSON.parse(item.checkpoints);
+            if (checkpointData) {
+              let checkpoints = JSON.parse(checkpointData.data);
+              let keys = Object.keys(checkpoints);
+              let firstClassification = keys[0];
+              let values = checkpoints[firstClassification];
+              let response = await populateMyworks(values, item);
+              if (response.responseType == "SUCCESS") {
+                check = await fetchTable(
+                  `select * from myworks where companyId='${params.companyid}' AND projectcode='${params.projectid}'`
+                );
+              } 
+            }
+          } else if (
+            totalClassify.length > 1 &&
+            params.hasOwnProperty("classify")
+          ) {
+            let checkpointData = JSON.parse(item.checkpoints);
+            let classifyName = params.classify;
+            if (checkpointData) {
+              let checkpoints = JSON.parse(checkpointData.data);
+              let values = checkpoints[classifyName];
+              let response = await populateMyworks(values, item);
+            }
+          }
+        }
+      }
+      // data.map(async (item) => {
+
+      // })
+      check = await fetchTable(
+        `select * from myworks where companyId='${params.companyid}' AND projectcode='${params.projectid}'`
+      );
+
+      if (classify) {
+        return {
+          milestones: milestones,
+          myworks: check,
+          classify: classifyOptions,
+        };
+        // return { classify: classifyOptions }
+      }
+      if (query.length == 0) {
+        return { milestones: milestones, myworks: check };
+      } else {
+        return { milestones: milestones, myworks: check };
+      }
+    } else {
+      return { milestones: milestones, myworks: check };
+    }
+
+    }
+    else{
+      let milestones = await fetchTable(
       `select * from milestoneSubform where assignmentid='${params.assignmentID}'`
     );
     let check = await fetchTable(
@@ -141,6 +260,13 @@ async function fetchMilestones(params) {
     } else {
       return { milestones: milestones, myworks: check };
     }
+    }
+    // let res = await fetchTable(` SELECT  allobservations.*,  assignmentNature.classification, assignmentNature.checkpoints FROM  allobservations LEFT JOIN  assignmentNature  ON  allobservations.assignmentNature = assignmentNature.lid WHERE
+    //     allobservations.projectCode = '${params.projectid}'`)
+    // return res
+
+    // check if myworks is empty
+    
   } catch (e) {
     return { error: e.message };
   }
@@ -148,15 +274,27 @@ async function fetchMilestones(params) {
 
 async function changeStatus(params) {
   try {
-    let date = ``;
-    let newDate = dateTimeGeneration(new Date());
-    if (params.hasOwnProperty("planDate")) {
-      date = `, planDate='${params.planDate}'`;
+    if(params.jobcard){
+      let date = ``;
+      let newDate = dateTimeGeneration(new Date());
+      if (params.hasOwnProperty("planDate")) {
+        date = `, planDate='${params.planDate}'`;
+      }
+      let res = await exeQuery(
+        `update allProjects set modifiedTime='${newDate}',modifiedUser='${params.user}',${params.column}='${params.value}'${date} where companyId='${params.companyid}' AND projectCode='${params.projectCode}'`
+      );
+      return res;
+    }else{
+      let date = ``;
+      let newDate = dateTimeGeneration(new Date());
+      if (params.hasOwnProperty("planDate")) {
+        date = `, planDate='${params.planDate}'`;
+      }
+      let res = await exeQuery(
+        `update allProjects set modifiedTime='${newDate}',modifiedUser='${params.user}',${params.column}='${params.value}'${date} where projectCode='${params.projectCode}'`
+      );
+      return res;
     }
-    let res = await exeQuery(
-      `update allProjects set modifiedTime='${newDate}',modifiedUser='${params.user}',${params.column}='${params.value}'${date} where projectCode='${params.projectCode}'`
-    );
-    return res;
   } catch (e) {
     return { error: e.message };
   }
@@ -164,17 +302,32 @@ async function changeStatus(params) {
 
 async function reverseProject(params) {
   try {
-    let newDate = dateTimeGeneration(new Date());
-    let user = params.user;
-    let invoice = `delete from allInvoices where projectCode='${params.projectCode}'`;
-    let invoiceQuery = Buffer.from(invoice).toString("base64");
-    let milestones = `update allObservations set issueStatus='Pending',completionDate=NULL,modifiedUser='${user}',modifiedTime='${newDate}' where projectCode='${params.projectCode}' and type='Milestone'`;
-    let milestoneQuery = Buffer.from(milestones).toString("base64");
-    let projects = `update allProjects set status='Pending',projectStatus='Pipeline',completionStatus=NULL,completionDate=NULL,planDate=NULL,modifiedUser='${user}',modifiedTime='${newDate}' where projectCode='${params.projectCode}'`;
-    let projectQuery = Buffer.from(projects).toString("base64");
-    let query = [invoiceQuery, milestoneQuery, projectQuery];
-    let res = await queryGet(query);
+    if(params.jobcard){
+      let newDate = dateTimeGeneration(new Date());
+      let user = params.user;
+      let invoice = `delete from allInvoices where companyid='${params.companyid}' AND projectCode='${params.projectCode}'`;
+      let invoiceQuery = Buffer.from(invoice).toString("base64");
+      let milestones = `update allObservations set issueStatus='Pending',completionDate=NULL,modifiedUser='${user}',modifiedTime='${newDate}' where companyid='${params.companyid}' AND projectCode='${params.projectCode}' and type='Milestone'`;
+      let milestoneQuery = Buffer.from(milestones).toString("base64");
+      let projects = `update allProjects set status='Pending',projectStatus='Pipeline',completionStatus=NULL,completionDate=NULL,planDate=NULL,modifiedUser='${user}',modifiedTime='${newDate}' where companyid='${params.companyid}' AND projectCode='${params.projectCode}'`;
+      let projectQuery = Buffer.from(projects).toString("base64");
+      let query = [invoiceQuery, milestoneQuery, projectQuery];
+      let res = await queryGet(query);
+      return res;
+
+    }else{
+      let newDate = dateTimeGeneration(new Date());
+      let user = params.user;
+      let invoice = `delete from allInvoices where projectCode='${params.projectCode}'`;
+      let invoiceQuery = Buffer.from(invoice).toString("base64");
+      let milestones = `update allObservations set issueStatus='Pending',completionDate=NULL,modifiedUser='${user}',modifiedTime='${newDate}' where projectCode='${params.projectCode}' and type='Milestone'`;
+      let milestoneQuery = Buffer.from(milestones).toString("base64");
+      let projects = `update allProjects set status='Pending',projectStatus='Pipeline',completionStatus=NULL,completionDate=NULL,planDate=NULL,modifiedUser='${user}',modifiedTime='${newDate}' where projectCode='${params.projectCode}'`;
+      let projectQuery = Buffer.from(projects).toString("base64");
+      let query = [invoiceQuery, milestoneQuery, projectQuery];
+      let res = await queryGet(query);
     return res;
+    }
   } catch (e) {
     return { error: e.message };
   }
@@ -182,6 +335,76 @@ async function reverseProject(params) {
 
 async function updateMilestoneStatus(params) {
   try {
+    if(params.jobcard){
+      let date = dateTimeGeneration(new Date());
+      let response = await exeQuery(
+        `update allObservations set issueStatus='Completed', completionDate='${date}' where observationCode='${params.observationCode}' companyid='${params.companyid}' AND projectCode='${params.projectCode}'`
+      );
+      if (response.responseType == "SUCCESS") {
+        let res = await fetchTable(`
+              SELECT COUNT(*) AS total,SUM(CASE WHEN issueStatus = 'Completed' THEN 1 ELSE 0 END) AS completed FROM allObservations WHERE companyid='${params.companyid}' AND projectCode = '${params.projectCode}' and type='Milestone'`);
+        if (res[0].total != null && res[0].completed != null) {
+          let lastproject = Number(res[0].total) - Number(res[0].completed);
+          let queries = [];
+          // generate invoice if amount of current milestone is not 0
+          let getObservation = await fetchTable(
+            `select * from allObservations where observationCode='${params.observationCode}' AND companyid='${params.companyid}' AND projectCode='${params.projectCode}'`
+          );
+          if (getObservation.length > 0) {
+            let amount = getObservation[0].amountInvolved;
+            if (amount != 0) {
+              let checkInvoice = await fetchTable(
+                `select * from allInvoices where companyid='${params.companyid}' AND projectCode='${params.projectCode}'`
+              );
+              let invoiceNumber = BigInt(`${params.projectCode}000`);
+              if (checkInvoice.length > 0) {
+                invoiceNumber =
+                  BigInt(invoiceNumber) + BigInt(checkInvoice.length + 1);
+              } else {
+                invoiceNumber = BigInt(invoiceNumber) + BigInt(1);
+              }
+              let invoiceStatus = `update allprojects set billingStatus='Non-billed' where companyid='${params.companyid}' AND projectCode='${params.projectCode}'`;
+              let encryptstatus = Buffer.from(invoiceStatus).toString("base64");
+              queries.push(encryptstatus);
+
+              let invoiceQuery = `insert into allInvoices (projectCode,amount,invoiceNumber,status,assignmentNature,date,edoc,projectName,remarks,contractID,assignmentID,milestones,clientName,companyName,companyId) 
+                      values('${
+                        params.projectCode
+                      }','${amount}','${invoiceNumber}','Pending','${
+                getObservation[0].assignmentNature
+              }','${getObservation[0].date}','${getObservation[0].edoc}','${
+                getObservation[0].projectName
+              }','${getObservation[0].projectremarks}','${
+                getObservation[0].contractCode
+              }','${getObservation[0].assignmentID}','${
+                getObservation[0].caption
+              }','${getObservation[0].clientName.replace(/'/g, "''")}','${
+                getObservation[0].companyName
+              }','${getObservation[0].companyId}')`;
+              let encryptInvoice = Buffer.from(invoiceQuery).toString("base64");
+              queries.push(encryptInvoice);
+            }
+          }
+          if (res[0].total == res[0].completed) {
+            let completionDate = dateTimeGeneration(new Date());
+            let completeProject = `update allProjects set status='Completed',projectStatus='Completed',completionDate='${completionDate}',completionStatus='Completed' where companyid='${params.companyid}' AND projectCode='${params.projectCode}'`;
+            let encrypt = Buffer.from(completeProject).toString("base64");
+            queries.push(encrypt);
+          }
+          if (queries.length > 0) {
+            let response = await queryGet(queries);
+            return response;
+          } else {
+            return response;
+          }
+        }
+        return res;
+      }
+    }else{
+      
+    if(params.jobcard){
+      
+    }
     let date = dateTimeGeneration(new Date());
     let response = await exeQuery(
       `update allObservations set issueStatus='Completed', completionDate='${date}' where observationCode='${params.observationCode}'`
@@ -245,6 +468,7 @@ async function updateMilestoneStatus(params) {
         }
       }
       return res;
+    }
     }
   } catch (e) {
     return { error: e.message };
@@ -383,28 +607,28 @@ const getTeamProgress = async (params) => {
   }
 };
 
-// const saveTasks = async (params) => {
-//   try {
-//     console.log(params.taskData);
-//     // Assuming params.taskData is an array of task objects
-//     let date = dateTimeGeneration(new Date());
-//     let insertQueries = params.taskData.map((task) => {
-//       return Buffer.from(
-//         `
-//     INSERT INTO pettyTask (task, assignedTo, assigner, edoc, priority, comment, status, companyName, companyId, addedTime,filesAttached)
-//     VALUES ('${task.task}', '${task.assignedTo}', '${task.assigner}', '${task.edoc}', '${task.priority}', '${task.Comment}', '${task.status}', '${task.companyName}', '${task.companyId}','${date}','${task.files}')
-//   `
-//       ).toString("base64");
-//     });
+const saveTasks = async (params) => {
+  try {
+    console.log(params.taskData);
+    // Assuming params.taskData is an array of task objects
+    let date = dateTimeGeneration(new Date());
+    let insertQueries = params.taskData.map((task) => {
+      return Buffer.from(
+        `
+    INSERT INTO pettyTask (task, assignedTo, assigner, edoc, priority, comment, status, companyName, companyId, addedTime,filesAttached)
+    VALUES ('${task.task}', '${task.assignedTo}', '${task.assigner}', '${task.edoc}', '${task.priority}', '${task.Comment}', '${task.status}', '${task.companyName}', '${task.companyId}','${date}','${task.files}')
+  `
+      ).toString("base64");
+    });
 
-//     // Call queryGet with the array of base64-encoded queries
-//     let result = await queryGet(insertQueries);
+    // Call queryGet with the array of base64-encoded queries
+    let result = await queryGet(insertQueries);
 
-//     return result;
-//   } catch (e) {
-//     return { error: e.message };
-//   }
-// };
+    return result;
+  } catch (e) {
+    return { error: e.message };
+  }
+};
 const statusUpdate = (params) => {
   try {
     return { hai: "hai" };
@@ -413,69 +637,69 @@ const statusUpdate = (params) => {
   }
 };
 
-// const getTableDataPettyTask = async (params) => {
-//   try {
-//     console.log(params.email);
-//     let getObservation = await fetchTable(`SELECT * 
-// FROM pettyTask
-// WHERE companyId = '${params.companyId}'
-//   AND (assigner = '${params.email}' OR assignedTo = '${params.email}');
+const getTableDataPettyTask = async (params) => {
+  try {
+    console.log(params.email);
+    let getObservation = await fetchTable(`SELECT * 
+FROM pettyTask
+WHERE companyId = '${params.companyId}'
+  AND (assigner = '${params.email}' OR assignedTo = '${params.email}');
 
 
-// `);
-//     return getObservation;
-//   } catch (e) {
-//     return { error: e.message };
-//   }
-// };
+`);
+    return getObservation;
+  } catch (e) {
+    return { error: e.message };
+  }
+};
 
 let res;
-// const updatePettyTaskStatus = async (params) => {
-//   try {
-//     if (params.hasOwnProperty("flag")) {
-//       res = await exeQuery(`UPDATE pettyTask
-// SET status = '${params.status}',
-// completedDate ='${params.completedDate}'
-// WHERE lid = '${params.lid}';
-// `);
-//     } else if (params.hasOwnProperty("files")) {
-//       res = await exeQuery(`UPDATE pettyTask
-// SET status = '${params.status}',
-// filesAttached = '${params.files}',
-// comment = '${params.comment}'
-// WHERE lid = '${params.lid}';
-// `);
-//     } else if (params.hasOwnProperty("comment")) {
-//       res = await exeQuery(`UPDATE pettyTask
-// SET status = '${params.status}',
-// comment = '${params.comment}'
-// WHERE lid = '${params.lid}';
-// `);
-//     } else {
-//       res = await exeQuery(`UPDATE pettyTask
-// SET status = '${params.status}'
-// WHERE lid = '${params.lid}';
-// `);
-//     }
+const updatePettyTaskStatus = async (params) => {
+  try {
+    if (params.hasOwnProperty("flag")) {
+      res = await exeQuery(`UPDATE pettyTask
+SET status = '${params.status}',
+completedDate ='${params.completedDate}'
+WHERE lid = '${params.lid}';
+`);
+    } else if (params.hasOwnProperty("files")) {
+      res = await exeQuery(`UPDATE pettyTask
+SET status = '${params.status}',
+filesAttached = '${params.files}',
+comment = '${params.comment}'
+WHERE lid = '${params.lid}';
+`);
+    } else if (params.hasOwnProperty("comment")) {
+      res = await exeQuery(`UPDATE pettyTask
+SET status = '${params.status}',
+comment = '${params.comment}'
+WHERE lid = '${params.lid}';
+`);
+    } else {
+      res = await exeQuery(`UPDATE pettyTask
+SET status = '${params.status}'
+WHERE lid = '${params.lid}';
+`);
+    }
 
-//     return res;
-//   } catch (e) {
-//     return { error: e.message };
-//   }
-// };
+    return res;
+  } catch (e) {
+    return { error: e.message };
+  }
+};
 
-// const updatePettyTaskComment = async (params) => {
-//   try {
-//     let res = await exeQuery(`UPDATE pettyTask
-// SET comment = '${params.comment}'
-// WHERE lid = '${params.lid}';
-// `);
+const updatePettyTaskComment = async (params) => {
+  try {
+    let res = await exeQuery(`UPDATE pettyTask
+SET comment = '${params.comment}'
+WHERE lid = '${params.lid}';
+`);
 
-//     return res;
-//   } catch (e) {
-//     return { error: e.message };
-//   }
-// };
+    return res;
+  } catch (e) {
+    return { error: e.message };
+  }
+};
 
 //  observation-->dashboards/observation.html-->below pettytask--> observation
 
@@ -553,18 +777,34 @@ const updateAllObservationObs = async (params) => {
   }
 };
 
-const getProjectDataObservationJob = async (params) => {
+const getProjectDataObservation = async (params) => {
   try {
-    let getProjectData = await fetchTable(`
-  SELECT observationCode, projectCode, clientName, caption, assignedBy, 
-         personResponsible, addedUser, addedTime, type, companyName,projectName,
-         companyId, edoc, steps,issueStatus,remarks,filesAttached
-  FROM AllObservations 
-  WHERE companyId = '${params.companyid}' AND projectCode='${params.projectCode}'
-    AND type = 'observation'
-`);
+    if(params.jobcard){
+      let getProjectData = await fetchTable(`
+      SELECT observationCode, projectCode, clientName, caption, assignedBy, 
+            personResponsible, addedUser, addedTime, type, companyName,projectName,
+            companyId, edoc, steps,issueStatus,remarks,filesAttached
+      FROM AllObservations 
+      WHERE companyId = '${params.companyid}' AND projectCode='${params.projectCode}'
+        AND type = 'observation'
+      `);
 
-    return getProjectData;
+      return getProjectData;
+    }else{   
+      let getProjectData = await fetchTable(`
+      SELECT observationCode, projectCode, clientName, caption, assignedBy, 
+            personResponsible, addedUser, addedTime, type, companyName,projectName,
+            companyId, edoc, steps,issueStatus,remarks,filesAttached
+      FROM AllObservations 
+      WHERE companyId = '${params.companyid}' 
+        AND type = 'observation'
+        AND (
+          personResponsible = '${params.name}' OR  
+          assignedBy = '${params.name}'
+          )
+      `);
+        return getProjectData;
+    }
   } catch (e) {
     return { error: e.message };
   }
@@ -629,14 +869,14 @@ const cancelProject = async (params) => {
   }
 };
 
-// async function pettyTaskStatus() {
-//   try {
-//     let res = await fetchTable(`select * from pettyTask`);
-//     return res;
-//   } catch (error) {
-//     return { error: true, message: error.message, details: error };
-//   }
-// }
+async function pettyTaskStatus() {
+  try {
+    let res = await fetchTable(`select * from pettyTask`);
+    return res;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
+}
 async function totalUsersCount(params) {
   try {
     let res = await fetchTable(
@@ -708,13 +948,13 @@ async function saveMilestonePsvalidation(params) {
 
       const updateQuery = `
        UPDATE milestoneSubform
-  SET milestone = '${item.newMilestone}'
-  WHERE contractID = '${item.contractID}'
-  AND milestoneId='${item.lid}'
-    AND assignmentNature = '${item.assignmentNature}'
-    AND milestone = '${item.oldMilestone}'
-    AND status = '${status}'
-      `;
+      SET milestone = '${item.newMilestone}'
+      WHERE contractID = '${item.contractID}'
+      AND milestoneId='${item.lid}'
+      AND assignmentNature = '${item.assignmentNature}'
+      AND milestone = '${item.oldMilestone}'
+      AND status = '${status}'
+        `;
 
       console.log("Executing Query:", updateQuery); // Debug
       res = await exeQuery(updateQuery);
@@ -740,37 +980,37 @@ async function allContractsValidationChange(params) {
 }
 
 module.exports = {
-//   updateObservationremarks,
-//   cancelProject,
-//   updateObservationComment,
-//   updateObservationStatus,
-  getProjectDataObservationJob,
-//   updateAllObservationObs,
-//   reverseProject,
-//   getMilestonesCount,
-//   getProjectNames,
-// //   updatePettyTaskComment,
-// //   updatePettyTaskStatus,
-// //   getTableDataPettyTask,
-//   statusUpdate,
-  jobcard_fetchProjects,
-//   getTeamProgress,
-//   saveTasks,
-//   updatePersonResponsible,
-//   deleteMyWorkTasks,
-//   addNewTasks,
-//   myworksUpdateColumns,
-//   updateMilestoneStatus,
-//   markProjectCompletion,
-//   fetchMilestones,
-//   changeStatus,
-//   updateMilestoneStatus,
-// //   pettyTaskStatus,
-//   totalUsersCount,
-//   getObservationType,
-//   getPresalesvalidation,
-//   saveMilestonePsvalidation,
-// allContractsValidationChange,
+  updateObservationremarks,
+  cancelProject,
+  updateObservationComment,
+  updateObservationStatus,
+  getProjectDataObservation,
+  updateAllObservationObs,
+  reverseProject,
+  getMilestonesCount,
+  getProjectNames,
+  updatePettyTaskComment,
+  updatePettyTaskStatus,
+  getTableDataPettyTask,
+  statusUpdate,
+  fetchProjects,
+  getTeamProgress,
+  saveTasks,
+  updatePersonResponsible,
+  deleteMyWorkTasks,
+  addNewTasks,
+  myworksUpdateColumns,
+  updateMilestoneStatus,
+  markProjectCompletion,
+  fetchMilestones,
+  changeStatus,
+  updateMilestoneStatus,
+  pettyTaskStatus,
+  totalUsersCount,
+  getObservationType,
+  getPresalesvalidation,
+  saveMilestonePsvalidation,
+allContractsValidationChange,
 
 };
 
