@@ -35,11 +35,6 @@ const port = process.env.PORT || 4000
 app.set('trust proxy', 1);
 app.use(cookieParser())
 
-
-
-
-
-
 app.use(cors({
   origin: corsOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -64,6 +59,10 @@ const csrfToken = generateRandomToken()
   })
 })
 
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date(), message: '25/06/2025, 06:30' })
+})
+
 app.use(securityMiddleware)
 
 app.use('/api', authRoutes)
@@ -73,9 +72,7 @@ app.use('/', authenticate,  apiRateLimiter, legacyApp);
 app.use('/api/masters', authenticate, apiRateLimiter, mastersRoutes) // Production
 app.use('/api/user', authenticate, apiRateLimiter, userRoutes) // Production
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '25/06/2025, 03:10' })
-})
+
 
 
 app.use(
