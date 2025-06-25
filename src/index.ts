@@ -38,7 +38,7 @@ app.use(cookieParser())
 
 
 
-app.use(securityMiddleware)
+
 
 app.use(cors({
   origin: corsOrigin,
@@ -64,7 +64,7 @@ const csrfToken = generateRandomToken()
   })
 })
 
-
+app.use(securityMiddleware)
 
 app.use('/api', authRoutes)
 
