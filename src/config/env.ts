@@ -1,10 +1,10 @@
 // src/config/env.ts
 
-// This file assumes dotenv has been loaded elsewhere (e.g., in index.ts)
+// dotenv has been loaded in index.ts
 
 import { z } from 'zod'
 
-// Define the schema
+
 const envSchema = z.object({
   NODE_ENV: z.enum(['dev', 'prod']).default('dev'),
   DATABASE_URL: z.string(),

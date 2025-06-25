@@ -74,7 +74,7 @@ app.use('/api/masters', authenticate, apiRateLimiter, mastersRoutes) // Producti
 app.use('/api/user', authenticate, apiRateLimiter, userRoutes) // Production
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '23/06/2025, 07:22' })
+  res.json({ status: 'ok', timestamp: new Date(), message: '25/06/2025, 03:10' })
 })
 
 

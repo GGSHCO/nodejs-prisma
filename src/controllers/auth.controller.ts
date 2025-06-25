@@ -347,12 +347,12 @@ export class AuthController {
         return
       }
 
-      const userEmail = user.EMAIL
+      // const userEmail = user.EMAIL
 
       // Generate tokens
       const tokens = generateTokens({
         id: user.LID,
-        email: userEmail,
+        email: user.EMAIL,
       })
 
       setCookie(res, 'accessToken', tokens.accessToken, {
@@ -459,16 +459,16 @@ export class AuthController {
       const user = await prisma.sYF_USERMASTER.findFirst({
         where: {
           resetToken: token,
-          tokenExpiration: {
-            gt: new Date().toISOString(), // Token must not be expired
-          },
+          // tokenExpiration: {
+          //   gt: new Date().toISOString(), // Token expiration logic is currently disabled
+          // },
         },
       })
 
       if (!user) {
         res.status(400).json({
           responseType: 'ERROR',
-          responseMessage: 'Invalid or expired token',
+          responseMessage: 'Invalid token',
           responseData: null,
         })
         return
@@ -476,6 +476,7 @@ export class AuthController {
 
       // Hash the new password
       const { bcryptHash, uniqueSalt } = await this.hashPassword(newPassword)
+      // base64 encoded for old login password (Will be deprecated in future)
       const base64Password = Buffer.from(newPassword, 'utf-8').toString(
         'base64'
       )
@@ -491,6 +492,8 @@ export class AuthController {
           tokenExpiration: null,
           failedLoginAttempts: 0, // Reset failed attempts
           lastFailedLogin: null,
+          emailVerificationToken: null, // Clear email verification fields if any
+          verificationExpires: null, // Clear email verification fields if any
         },
       })
 
