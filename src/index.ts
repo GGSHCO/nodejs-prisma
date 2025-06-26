@@ -15,7 +15,7 @@ import cookieParser from 'cookie-parser'
 
 import { securityMiddleware, apiRateLimiter, authenticate } from './middleware/security'
 
-import legacyApp from './legacy/app.js'
+// import legacyApp from './legacy/app.js'
 
 
 import authRoutes from './routes/auth.routes'
@@ -60,14 +60,14 @@ const csrfToken = generateRandomToken()
 })
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date(), message: '25/06/2025, 06:30' })
+  res.json({ status: 'ok', timestamp: new Date(), message: '25/06/2025, 07:38' })
 })
 
 app.use(securityMiddleware)
 
 app.use('/api', authRoutes)
 
-app.use('/', authenticate,  apiRateLimiter, legacyApp);
+// app.use('/', authenticate,  apiRateLimiter, legacyApp);
 
 app.use('/api/masters', authenticate, apiRateLimiter, mastersRoutes) // Production
 app.use('/api/user', authenticate, apiRateLimiter, userRoutes) // Production
