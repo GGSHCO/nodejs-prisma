@@ -78,7 +78,7 @@ export class UserController {
 
       res.status(200).json({
         responseType: 'SUCCESS',
-        responseMessage: 'User data',
+        responseMessage: 'Logged user data',
         responseData: user,
       })
     } catch (error) {
@@ -98,6 +98,8 @@ export class UserController {
   ): Promise<void> => {
     try {
       const userId = (req as any).user?.id
+
+      console.log("logged userId:", userId)
 
       const user = await prisma.sYF_USERMASTER.findUnique({
         where: { LID: userId },
@@ -125,6 +127,7 @@ export class UserController {
       })
     } catch (error) {
       logger.error('Error fetching current user:', error)
+      console.log(error)
       res.status(500).json({
         responseType: 'ERROR',
         responseMessage: 'Internal server error',

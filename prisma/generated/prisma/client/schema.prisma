@@ -4,9 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "sqlserver"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
 }
 
 model academyCartTable {
@@ -382,6 +381,8 @@ model AllContracts {
   CONTRACTENDDATE   DateTime?
   urn               String?   @db.VarChar(255)
   contractID        String?   @db.VarChar(255)
+  validation        String?   @db.NVarChar(10)
+  ps_validation     String?   @db.NVarChar(10)
 
   @@ignore
 }
@@ -558,7 +559,7 @@ model AllObservations {
   ObservationCode    String      @db.NVarChar(50)
   ProjectCode        String      @db.NVarChar(155)
   ClientName         String?     @db.VarChar(255)
-  Caption            String?     @db.VarChar(255)
+  Caption            String?     @db.NVarChar(Max)
   Comment            String?     @db.NVarChar(Max)
   AmountInvolved     Float?
   Impact             String?     @db.VarChar(255)
@@ -593,6 +594,7 @@ model AllObservations {
   amountCovered      String?     @db.NVarChar(255)
   completionDate     DateTime?
   steps              String?     @db.NVarChar(Max)
+  filesAttached      String?     @db.NVarChar(Max)
   AllProjects        AllProjects @relation(fields: [ProjectCode], references: [ProjectCode], onUpdate: NoAction, map: "FK_AllObservations_AllProjects")
 
   @@ignore
@@ -629,44 +631,45 @@ model allOptions {
 }
 
 model AllProjects {
-  ProjectCode             String            @id(map: "PK_AllProjects") @db.NVarChar(155)
-  ClientName              String?           @db.VarChar(255)
-  AssignmentNature        String?           @db.VarChar(255)
-  ProjectDescription      String?           @db.NVarChar(Max)
+  ProjectCode             String                    @id(map: "PK_AllProjects") @db.NVarChar(155)
+  ClientName              String?                   @db.VarChar(255)
+  AssignmentNature        String?                   @db.VarChar(255)
+  ProjectDescription      String?                   @db.NVarChar(Max)
   Amount                  Float?
-  status                  String?           @db.VarChar(Max)
-  quarter                 String?           @db.VarChar(Max)
-  contractStatus          String?           @db.VarChar(Max)
-  PersonResponsible1      String?           @db.NVarChar(Max)
-  PersonResponsible2      String?           @db.NVarChar(Max)
-  PersonResponsible3      String?           @db.NVarChar(Max)
-  managerResponsible      String?           @db.NVarChar(Max)
+  status                  String?                   @db.VarChar(Max)
+  quarter                 String?                   @db.VarChar(Max)
+  contractStatus          String?                   @db.VarChar(Max)
+  PersonResponsible1      String?                   @db.NVarChar(Max)
+  PersonResponsible2      String?                   @db.NVarChar(Max)
+  PersonResponsible3      String?                   @db.NVarChar(Max)
+  managerResponsible      String?                   @db.NVarChar(Max)
   date                    DateTime?
-  assignmentID            String?           @db.NVarChar(255)
-  addedUser               String?           @db.VarChar(255)
+  assignmentID            String?                   @db.NVarChar(255)
+  addedUser               String?                   @db.VarChar(255)
   addedTime               DateTime?
-  modifiedUser            String?           @db.VarChar(255)
+  modifiedUser            String?                   @db.VarChar(255)
   modifiedTime            DateTime?
-  companyName             String?           @db.NVarChar(255)
-  companyId               String?           @db.NVarChar(255)
+  companyName             String?                   @db.NVarChar(255)
+  companyId               String?                   @db.NVarChar(255)
   edoc                    DateTime?
-  duration                String?           @db.NVarChar(Max)
-  zbId                    String?           @db.NVarChar(255)
-  partner                 String?           @db.NVarChar(255)
-  REMARKS                 String?           @db.NVarChar(Max)
-  contractID              String?           @db.VarChar(255)
-  relevantStartDate       String?           @db.NVarChar(255)
-  relevantEndDate         String?           @db.NVarChar(255)
-  relevantYear            String?           @db.NVarChar(255)
-  assignmentNatureDisplay String?           @db.NVarChar(255)
+  duration                String?                   @db.NVarChar(Max)
+  zbId                    String?                   @db.NVarChar(255)
+  partner                 String?                   @db.NVarChar(255)
+  REMARKS                 String?                   @db.NVarChar(Max)
+  contractID              String?                   @db.NVarChar(Max)
+  relevantStartDate       String?                   @db.NVarChar(255)
+  relevantEndDate         String?                   @db.NVarChar(255)
+  relevantYear            String?                   @db.NVarChar(255)
+  assignmentNatureDisplay String?                   @db.NVarChar(255)
   completionDate          DateTime?
-  liveOrCancelled         String?           @db.VarChar(255)
-  projectStatus           String?           @db.VarChar(255)
-  completionStatus        String?           @db.VarChar(255)
-  billingStatus           String?           @db.VarChar(255)
-  projectRemarks          String?           @db.NVarChar(Max)
-  planDate                String?           @db.NVarChar(255)
-  AllObservations         AllObservations[] @ignore
+  liveOrCancelled         String?                   @db.VarChar(255)
+  projectStatus           String?                   @db.VarChar(255)
+  completionStatus        String?                   @db.VarChar(255)
+  billingStatus           String?                   @db.VarChar(255)
+  projectRemarks          String?                   @db.NVarChar(Max)
+  planDate                String?                   @db.NVarChar(255)
+  AllObservations         AllObservations[]         @ignore
+  portal_service_userDocs portal_service_userDocs[]
 }
 
 model allPythonFunctions {
@@ -891,29 +894,42 @@ model AR_ReminderSettings {
 }
 
 model AssignmentNature {
-  assignmentNature     String?      @unique(map: "an_add") @db.NVarChar(255)
-  statutoryAssignment  String?      @db.NVarChar(Max)
-  relevantYearBlcok    String?      @db.NVarChar(Max)
-  spiralBoundNecessary String?      @db.NVarChar(Max)
-  geography            String?      @db.NVarChar(Max)
-  department           String?      @db.NVarChar(Max)
-  subDepartment        String?      @db.NVarChar(Max)
-  standardPrice        String?      @db.NVarChar(Max)
-  type                 String?      @db.NVarChar(Max)
-  assignmentFrequency  String?      @db.NVarChar(Max)
-  isUDIN_applicable    String?      @db.NVarChar(Max)
-  ZCID                 String?      @db.NVarChar(Max)
-  multiplier           Int?
-  lid                  Int          @id(map: "pk_lid") @default(autoincrement())
-  addedTime            DateTime?
-  addedUser            String?      @db.NVarChar(50)
-  modifiedTime         DateTime?
-  modifiedUser         String?      @db.NVarChar(50)
-  classification       String?      @db.NVarChar(Max)
-  checkpoints          String?      @db.NVarChar(Max)
-  companyName          String?      @db.NVarChar(255)
-  companyId            String?      @db.NVarChar(255)
-  Milestones           Milestones[]
+  assignmentNature       String?                  @unique(map: "an_add") @db.NVarChar(255)
+  statutoryAssignment    String?                  @db.NVarChar(Max)
+  relevantYearBlcok      String?                  @db.NVarChar(Max)
+  spiralBoundNecessary   String?                  @db.NVarChar(Max)
+  geography              String?                  @db.NVarChar(Max)
+  department             String?                  @db.NVarChar(Max)
+  subDepartment          String?                  @db.NVarChar(Max)
+  standardPrice          String?                  @db.NVarChar(Max)
+  type                   String?                  @db.NVarChar(Max)
+  assignmentFrequency    String?                  @db.NVarChar(Max)
+  isUDIN_applicable      String?                  @db.NVarChar(Max)
+  ZCID                   String?                  @db.NVarChar(Max)
+  multiplier             Int?
+  lid                    Int                      @id(map: "pk_lid") @default(autoincrement())
+  addedTime              DateTime?
+  addedUser              String?                  @db.NVarChar(50)
+  modifiedTime           DateTime?
+  modifiedUser           String?                  @db.NVarChar(50)
+  classification         String?                  @db.NVarChar(Max)
+  checkpoints            String?                  @db.NVarChar(Max)
+  companyName            String?                  @db.NVarChar(255)
+  companyId              String?                  @db.NVarChar(255)
+  deliverables           String?                  @db.NVarChar(99)
+  scopeInclusions        String?                  @db.NVarChar(Max)
+  scopeExclusions        String?                  @db.NVarChar(Max)
+  timelines              String?                  @db.NVarChar(10)
+  timelineCount          Int?
+  timelineManualCount    Int?
+  presalesefforts        String?                  @db.NVarChar(99)
+  termsConditions        String?                  @db.NVarChar(Max)
+  productOwner           String?                  @db.NVarChar(10)
+  standardPriceinputs    String?                  @db.NVarChar(Max)
+  standardHours          DateTime?
+  isListing              Boolean?
+  Milestones             Milestones[]
+  portal_serviceCriteria portal_serviceCriteria[]
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -1445,7 +1461,7 @@ model BILLSORIG {
   CATEGORY2             String?   @db.NVarChar(255)
   EDITLOG               String?   @db.NVarChar(Max)
   CURRENCY              String?   @db.NVarChar(255)
-  TAXABLEVALUEBC        Decimal?  @db.Decimal(18, 2)
+  TAXABLEVALUEBC        Decimal?  @db.Decimal(18, 0)
   CURRENCYRATE          Decimal?  @db.Decimal(18, 2)
   BUDGETCODE            String?   @db.NVarChar(255)
   PROJSTARTDATE         DateTime? @db.Date
@@ -2320,11 +2336,11 @@ model creditcard {
   reference                String?   @db.NVarChar(255)
   grossamount              String?   @db.NVarChar(255)
   currency                 String?   @db.NVarChar(255)
-  fcamount                 String?   @db.NVarChar(255)
+  fcamount                 Decimal?  @db.Decimal(18, 0)
   ded1                     String?   @db.NVarChar(255)
   ded2                     String?   @db.NVarChar(255)
   ded3                     String?   @db.NVarChar(255)
-  net                      String?   @db.NVarChar(255)
+  net                      Decimal?  @db.Decimal(18, 0)
   ISREDFLAG                Boolean?
   ISVALIDATED              Boolean?
   booksid                  String?   @db.NVarChar(255)
@@ -3360,28 +3376,39 @@ model gstr1Portal {
 }
 
 model gstr2b {
-  LID            Int     @id(map: "PK__gstr2b__C6555721D084BAD4") @default(autoincrement())
-  INVDATE        String? @db.NVarChar(255)
-  INVVALUE       String? @db.NVarChar(255)
-  INVNO          String? @db.NVarChar(255)
-  TAXABLEVAL     String? @db.NVarChar(255)
-  RATE           String? @db.NVarChar(255)
-  SGST           String? @db.NVarChar(255)
-  CGST           String? @db.NVarChar(255)
-  IGST           String? @db.NVarChar(255)
-  SUPPLIERNAME   String? @db.NVarChar(255)
-  DATEOFFILING   String? @db.NVarChar(255)
-  SUPPLIERPERIOD String? @db.NVarChar(255)
-  GSTIN          String? @db.NVarChar(255)
-  COMPANYID      String? @db.NVarChar(255)
-  COMPANYNAME    String? @db.NVarChar(255)
-  GSTR2BYEAR     String? @db.NVarChar(255)
-  GSTR2BMONTH    String? @db.NVarChar(255)
-  SYNCDATETIME   String? @db.NVarChar(255)
-  ADDEDUSER      String? @db.NVarChar(255)
-  MODIFIEDTIME   String? @db.NVarChar(255)
-  MODIFIEDUSER   String? @db.NVarChar(255)
-  COMPANYGSTIN   String? @db.NVarChar(15)
+  LID            Int       @id(map: "PK__gstr2b__C6555721D084BAD4") @default(autoincrement())
+  INVDATE        DateTime? @db.Date
+  INVVALUE       String?   @db.NVarChar(255)
+  INVNO          String?   @db.NVarChar(255)
+  TAXABLEVAL     String?   @db.NVarChar(255)
+  RATE           String?   @db.NVarChar(255)
+  SGST           Decimal?  @db.Decimal(18, 2)
+  CGST           Decimal?  @db.Decimal(18, 2)
+  IGST           Decimal?  @db.Decimal(18, 2)
+  SUPPLIERNAME   String?   @db.NVarChar(255)
+  DATEOFFILING   String?   @db.NVarChar(255)
+  SUPPLIERPERIOD String?   @db.NVarChar(255)
+  GSTIN          String?   @db.NVarChar(255)
+  COMPANYID      String?   @db.NVarChar(255)
+  COMPANYNAME    String?   @db.NVarChar(255)
+  GSTR2BYEAR     String?   @db.NVarChar(255)
+  GSTR2BMONTH    String?   @db.NVarChar(255)
+  SYNCDATETIME   String?   @db.NVarChar(255)
+  ADDEDUSER      String?   @db.NVarChar(255)
+  MODIFIEDTIME   String?   @db.NVarChar(255)
+  MODIFIEDUSER   String?   @db.NVarChar(255)
+  COMPANYGSTIN   String?   @db.NVarChar(15)
+  invoicetype    String?   @db.NVarChar(255)
+  placeofsupply  String?   @db.NVarChar(255)
+  revcharge      String?   @db.NVarChar(255)
+  itcavl         String?   @db.NVarChar(255)
+  reason         String?   @db.NVarChar(955)
+  source         String?   @db.NVarChar(255)
+  irn            String?   @db.NVarChar(955)
+  irndate        DateTime? @db.Date
+  RECOSTATUS     String?   @db.NVarChar(255)
+  recoid         String?   @db.NVarChar(255)
+  RECOTAG        String?   @db.NVarChar(255)
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -3665,6 +3692,7 @@ model INVOICESORIG {
   ISTRANACCEPTED        String? @db.NVarChar(255)
   EXTDOCUMENTNUMBER     String? @db.NVarChar(255)
   userid                Int?
+  booksid               String? @db.NVarChar(255)
 
   @@ignore
 }
@@ -4247,7 +4275,7 @@ model paymentgateway {
   CONTACTNAME              String?   @db.NVarChar(255)
   RECONAME                 String?   @db.NVarChar(255)
   RECOID                   String?   @db.NVarChar(255)
-  RECOSTATAUS              String?   @db.NVarChar(255)
+  recostatus               String?   @db.NVarChar(255)
   RECOTAG                  String?   @db.NVarChar(255)
   ZBID                     String?   @db.NVarChar(255)
   LID                      Int       @default(autoincrement())
@@ -4268,7 +4296,7 @@ model paymentgateway {
   ded1                     String?   @db.NVarChar(255)
   ded2                     String?   @db.NVarChar(255)
   ded3                     String?   @db.NVarChar(255)
-  net                      String?   @db.NVarChar(255)
+  net                      Decimal?  @db.Decimal(18, 0)
   ISREDFLAG                Boolean?
   ISVALIDATED              Boolean?
 
@@ -4276,18 +4304,20 @@ model paymentgateway {
 }
 
 model pettyTask {
-  lid          Int       @id(map: "PK__pettyTas__DE105D07AB079919") @default(autoincrement())
-  assigner     String?   @db.VarChar(255)
-  assignedTo   String?   @db.VarChar(255)
-  task         String?   @db.NVarChar(2000)
-  comment      String?   @db.VarChar(Max)
-  edoc         DateTime? @db.Date
-  status       String?   @default("pending", map: "DF__pettyTask__statu__18E19391") @db.VarChar(50)
-  companyName  String?   @db.VarChar(255)
-  companyId    String?   @db.VarChar(100)
-  addedTime    DateTime? @db.DateTime
-  modifiedTime DateTime? @db.DateTime
-  priority     String?   @db.VarChar(255)
+  lid           Int       @id(map: "PK__pettyTas__DE105D07AB079919") @default(autoincrement())
+  assigner      String?   @db.VarChar(255)
+  assignedTo    String?   @db.VarChar(255)
+  task          String?   @db.NVarChar(2000)
+  comment       String?   @db.VarChar(Max)
+  edoc          DateTime? @db.Date
+  status        String?   @default("pending", map: "DF__pettyTask__statu__18E19391") @db.VarChar(50)
+  companyName   String?   @db.VarChar(255)
+  companyId     String?   @db.VarChar(100)
+  addedTime     DateTime? @db.DateTime
+  modifiedTime  DateTime? @db.DateTime
+  priority      String?   @db.VarChar(255)
+  completedDate DateTime? @db.Date
+  filesAttached String?   @db.NVarChar(Max)
 }
 
 model planTable {
@@ -5174,16 +5204,17 @@ model SYF_GLOBALTEMPLATES {
 }
 
 model SYF_GSTMASTER {
-  LID          Int       @id(map: "PK__SYF_GSTM__C655572152EB2A33") @default(autoincrement())
-  USERID       String?   @db.NVarChar(255)
-  COMPANYID    String?   @db.NVarChar(255)
-  GSTIN        String?   @db.NVarChar(255)
-  GSTUSERNAME  String?   @db.NVarChar(255)
-  ACCESSTOKEN  String?
-  ADDEDUSER    String?   @db.NVarChar(255)
-  ADDEDTIME    DateTime?
-  MODIFIEDUSER String?   @db.NVarChar(255)
-  MODIFIEDTIME DateTime?
+  LID           Int       @id(map: "PK__SYF_GSTM__C655572152EB2A33") @default(autoincrement())
+  USERID        String?   @db.NVarChar(255)
+  COMPANYID     String?   @db.NVarChar(255)
+  GSTIN         String?   @db.NVarChar(255)
+  GSTUSERNAME   String?   @db.NVarChar(255)
+  ACCESSTOKEN   String?
+  ADDEDUSER     String?   @db.NVarChar(255)
+  ADDEDTIME     DateTime?
+  MODIFIEDUSER  String?   @db.NVarChar(255)
+  MODIFIEDTIME  DateTime?
+  TOKENSYNCTIME String?   @db.NVarChar(255)
 }
 
 model SYF_LEADS {
@@ -5339,40 +5370,43 @@ model SYF_TANMASTER {
 }
 
 model SYF_USERMASTER {
-  LID                    Int                 @id(map: "PK__SYF_USER__C65557215924AFAD") @default(autoincrement())
-  EMAIL                  String?             @unique(map: "UQ__SYF_USER__161CF72452D889F2") @db.NVarChar(100)
-  NAME                   String?             @db.NVarChar(100)
-  PASSWORD               String?             @db.NVarChar(100)
-  COUNTRY                String?             @db.NVarChar(100)
-  PHONENUMBER            String?             @db.NVarChar(255)
-  SUBSCRIPTION           String?             @db.NVarChar(100)
-  ADDEDTIME              DateTime?
-  MODIFIEDTIME           DateTime?
-  STATUS                 String?             @db.NVarChar(20)
-  PROFILEIMAGE           String?             @db.VarChar(1000)
-  ISTALLYSUBSCRIBED      Boolean?
-  ISZOHOSUBSCRIBED       Boolean?
-  ISWEBAPPSUBSCRIBED     Boolean?
-  TYPE                   String?             @db.NVarChar(255)
-  FIRSTNAME              String?             @db.NVarChar(255)
-  LASTNAME               String?             @db.NVarChar(255)
-  DOB                    DateTime?
-  GENDER                 String?             @db.NVarChar(50)
-  MARITALSTATUS          String?             @db.NVarChar(50)
-  resetToken             String?             @db.NVarChar(Max)
-  tokenExpiration        String?             @db.NVarChar(Max)
-  SECRETQUESTIONS        String?             @db.NVarChar(255)
-  SECRETANSWERS          String?             @db.NVarChar(255)
-  ZBStatus               String?             @db.NVarChar(255)
-  salt                   String?             @db.NVarChar(256)
-  failedLoginAttempts    Int?                @default(0, map: "DF_SYF_USERMASTER_failedLoginAttempts")
-  lastFailedLogin        DateTime?
-  lastLogin              DateTime?
-  emailVerificationToken String?             @db.NVarChar(256)
-  verificationExpires    DateTime?
-  encPassword            String?             @db.NVarChar(256)
-  roles                  roles[]             @ignore
-  SYF_COMPANYMASTER      SYF_COMPANYMASTER[]
+  LID                     Int                       @id(map: "PK__SYF_USER__C65557215924AFAD") @default(autoincrement())
+  EMAIL                   String?                   @unique(map: "UQ__SYF_USER__161CF72452D889F2") @db.NVarChar(100)
+  NAME                    String?                   @db.NVarChar(100)
+  PASSWORD                String?                   @db.NVarChar(100)
+  COUNTRY                 String?                   @db.NVarChar(100)
+  PHONENUMBER             String?                   @db.NVarChar(255)
+  SUBSCRIPTION            String?                   @db.NVarChar(100)
+  ADDEDTIME               DateTime?
+  MODIFIEDTIME            DateTime?
+  STATUS                  String?                   @db.NVarChar(20)
+  PROFILEIMAGE            String?                   @db.VarChar(1000)
+  ISTALLYSUBSCRIBED       Boolean?
+  ISZOHOSUBSCRIBED        Boolean?
+  ISWEBAPPSUBSCRIBED      Boolean?
+  TYPE                    String?                   @db.NVarChar(255)
+  FIRSTNAME               String?                   @db.NVarChar(255)
+  LASTNAME                String?                   @db.NVarChar(255)
+  DOB                     DateTime?
+  GENDER                  String?                   @db.NVarChar(50)
+  MARITALSTATUS           String?                   @db.NVarChar(50)
+  resetToken              String?                   @db.NVarChar(Max)
+  tokenExpiration         String?                   @db.NVarChar(Max)
+  SECRETQUESTIONS         String?                   @db.NVarChar(255)
+  SECRETANSWERS           String?                   @db.NVarChar(255)
+  ZBStatus                String?                   @db.NVarChar(255)
+  salt                    String?                   @db.NVarChar(256)
+  failedLoginAttempts     Int?                      @default(0, map: "DF_SYF_USERMASTER_failedLoginAttempts")
+  lastFailedLogin         DateTime?
+  lastLogin               DateTime?
+  emailVerificationToken  String?                   @db.NVarChar(256)
+  verificationExpires     DateTime?
+  encPassword             String?                   @db.NVarChar(256)
+  accessToken             String?                   @db.VarChar(512)
+  portal_service_userDocs portal_service_userDocs[]
+  portal_usersPivot       portal_usersPivot[]
+  roles                   roles[]                   @ignore
+  SYF_COMPANYMASTER       SYF_COMPANYMASTER[]
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -7065,7 +7099,7 @@ model wallets {
   ded2                     String?   @db.NVarChar(255)
   ded3                     String?   @db.NVarChar(255)
   reference                String?   @db.NVarChar(Max)
-  net                      String?   @db.NVarChar(255)
+  net                      Decimal?  @db.Decimal(18, 0)
   ISREDFLAG                Boolean?
   ISVALIDATED              Boolean?
   booksid                  String?   @db.VarChar(255)
@@ -7260,6 +7294,9 @@ model ZohoBills {
   TOTAL         Decimal?  @db.Decimal(12, 2)
   DUEDATE       DateTime?
   SYNCTIMESTAMP String?   @db.NVarChar(255)
+  tag           String?   @db.NVarChar(255)
+  lastmodified  String?   @db.NVarChar(255)
+  childupdated  Boolean?
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -7396,6 +7433,7 @@ model zohoContacts {
   SOURCESYSTEM     String? @db.NVarChar(100)
   SYNCTIMESTAMP    String? @db.NVarChar(100)
   LASTMODIFIEDTIME String? @db.NVarChar(255)
+  tag              String? @db.NVarChar(255)
 }
 
 model zohoContactsLineItemInfo {
@@ -7475,26 +7513,28 @@ model Zohoexpensessync {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model zohoinvoices {
-  COMPANYID     String? @db.NVarChar(255)
-  COMPANYNAME   String? @db.NVarChar(255)
-  INVOICEID     String? @db.NVarChar(255)
-  CUSTOMERID    String? @db.NVarChar(255)
-  CUSTOMERNAME  String? @db.NVarChar(255)
-  ENTITYNAME    String? @db.NVarChar(255)
-  INVOICENO     String? @db.NVarChar(255)
-  INVOICEDATE   String? @db.NVarChar(255)
-  DUEDATE       String? @db.NVarChar(255)
-  CREATEDBY     String? @db.NVarChar(255)
-  INVTOTAL      String? @db.NVarChar(255)
-  INVCREATETIME String? @db.NVarChar(255)
-  INVMODTIME    String? @db.NVarChar(255)
-  CURRENCYID    String? @db.NVarChar(255)
-  CURRENCY      String? @db.NVarChar(255)
-  INVOICEURL    String? @db.NVarChar(255)
-  EXCHGRATE     String? @db.NVarChar(255)
-  SYNCTIMESTAMP String? @db.NVarChar(255)
-  FY            String? @db.NVarChar(9)
-  ISLINEITEM    String? @db.NVarChar(255)
+  COMPANYID     String?  @db.NVarChar(255)
+  COMPANYNAME   String?  @db.NVarChar(255)
+  INVOICEID     String?  @db.NVarChar(255)
+  CUSTOMERID    String?  @db.NVarChar(255)
+  CUSTOMERNAME  String?  @db.NVarChar(255)
+  ENTITYNAME    String?  @db.NVarChar(255)
+  INVOICENO     String?  @db.NVarChar(255)
+  INVOICEDATE   String?  @db.NVarChar(255)
+  DUEDATE       String?  @db.NVarChar(255)
+  CREATEDBY     String?  @db.NVarChar(255)
+  INVTOTAL      String?  @db.NVarChar(255)
+  INVCREATETIME String?  @db.NVarChar(255)
+  INVMODTIME    String?  @db.NVarChar(255)
+  CURRENCYID    String?  @db.NVarChar(255)
+  CURRENCY      String?  @db.NVarChar(255)
+  INVOICEURL    String?  @db.NVarChar(255)
+  EXCHGRATE     String?  @db.NVarChar(255)
+  SYNCTIMESTAMP String?  @db.NVarChar(255)
+  FY            String?  @db.NVarChar(9)
+  ISLINEITEM    String?  @db.NVarChar(255)
+  childupdated  Boolean?
+  tag           String?  @db.NVarChar(255)
 
   @@ignore
 }
@@ -7642,4 +7682,740 @@ model Zohovendorpaymentssync {
   SOURCESYSTEM              String? @db.VarChar(255)
 
   @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model billsOrigMirror {
+  ENTRYDATE             DateTime? @db.Date
+  LID                   Int       @default(autoincrement())
+  DOCUMENTDATE          DateTime? @db.Date
+  DOCUMENTDUEDATE       DateTime? @db.Date
+  DOCUMENTNUMBER        String?   @db.NVarChar(255)
+  VENDORGSTIN           String?   @db.NVarChar(255)
+  VENDORID              String?   @db.NVarChar(255)
+  VENDORNAME            String?   @db.NVarChar(255)
+  SOURCEOFSUPPLY        String?   @db.NVarChar(255)
+  BILLVALUE             Decimal?  @db.Decimal(18, 2)
+  PLACEOFSUPPLY         String?   @db.NVarChar(255)
+  REVERSECHARGE         String?   @db.NVarChar(255)
+  BEFOREDISCOUNT        Decimal?  @db.Decimal(18, 2)
+  DISCOUNT              Decimal?  @db.Decimal(18, 2)
+  TAXABLEVALUE          Decimal?  @db.Decimal(18, 2)
+  CESSAMOUNT            Decimal?  @db.Decimal(18, 2)
+  SUPPLYTYPE            String?   @db.NVarChar(255)
+  TAXNAME               String?   @db.NVarChar(255)
+  IGST                  Decimal?  @db.Decimal(18, 2)
+  CGST                  Decimal?  @db.Decimal(18, 2)
+  SGST                  Decimal?  @db.Decimal(18, 2)
+  TOTALGST              Decimal?  @db.Decimal(18, 2)
+  TCS                   Decimal?  @db.Decimal(18, 2)
+  LOCATION              String?   @db.NVarChar(255)
+  WAREHOUSE             String?   @db.NVarChar(255)
+  DATASOURCE            String?   @db.NVarChar(255)
+  DATASOURCEPROCESSNAME String?   @db.NVarChar(255)
+  SLNO                  String?   @db.NVarChar(255)
+  UNIQUEID              String    @db.NVarChar(100)
+  COMPANYID             String?   @db.NVarChar(255)
+  COMPANYNAME           String?   @db.NVarChar(255)
+  CREATEDUSER           String?   @db.NVarChar(255)
+  MODIFIEDUSER          String?   @db.NVarChar(255)
+  CREATEDTIME           String?   @db.NVarChar(255)
+  MODIFIEDTIME          String?   @db.NVarChar(255)
+  SOURCECREATOR         String?   @db.NVarChar(255)
+  SOURCEMODIFIER        String?   @db.NVarChar(255)
+  RECOID                String?   @db.NVarChar(255)
+  RECOTAG               String?   @db.NVarChar(255)
+  RECOSTATUS            String?   @db.NVarChar(255)
+  BILLSTATUS            String?   @db.NVarChar(255)
+  NETRECEIVABLE         Decimal?  @db.Decimal(18, 2)
+  PAIDAMOUNT            Decimal?  @db.Decimal(18, 2)
+  OUTSTANDING           Decimal?  @db.Decimal(18, 2)
+  NOTES                 String?   @db.NVarChar(255)
+  SOURCEREFID           String?   @db.NVarChar(255)
+  DESTREFID             String?   @db.NVarChar(255)
+  CATEGORY1             String?   @db.NVarChar(255)
+  CATEGORY2             String?   @db.NVarChar(255)
+  EDITLOG               String?   @db.NVarChar(Max)
+  CURRENCY              String?   @db.NVarChar(255)
+  TAXABLEVALUEBC        Decimal?  @db.Decimal(18, 0)
+  CURRENCYRATE          Decimal?  @db.Decimal(18, 2)
+  BUDGETCODE            String?   @db.NVarChar(255)
+  PROJSTARTDATE         DateTime? @db.Date
+  PROJENDDATE           DateTime? @db.Date
+  PROJSTATUS            String?   @db.NVarChar(255)
+  BUDGET                Decimal?  @db.Decimal(18, 2)
+  TAG1                  String?   @db.NVarChar(255)
+  TAG2                  String?   @db.NVarChar(255)
+  SOURCECREATETIME      String?   @db.NVarChar(255)
+  SOURCEMODIFTIME       String?   @db.NVarChar(255)
+  ISTRANACCEPTED        Boolean?
+  CHARTOFACCOUNTID      String?   @db.NVarChar(255)
+  CHARTOFACCOUNT        String?   @db.NVarChar(255)
+  ITEMID                String?   @db.NVarChar(255)
+  ITEMNAME              String?   @db.NVarChar(255)
+  ITEMDESCRIPTION       String?   @db.NVarChar(255)
+  RATE                  Decimal?  @db.Decimal(18, 2)
+  HSN                   String?   @db.NVarChar(255)
+  UQC                   String?   @db.NVarChar(255)
+  QUANTITY              Decimal?  @db.Decimal(18, 2)
+  LINEITEMDISCRATE      Decimal?  @db.Decimal(18, 2)
+  ISVALIDATED           Boolean?
+  PROJECTID             String?   @db.NVarChar(255)
+  DOCULINEITEMID        Int?
+  ISREDFLAG             Boolean?
+  booksid               String?   @db.NVarChar(200)
+  notes1                String?   @db.NVarChar(255)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model contactsMirror {
+  COMPANYID      String?   @db.NVarChar(255)
+  COMPANYNAME    String?   @db.NVarChar(255)
+  CONTACTID      String?   @db.NVarChar(255)
+  CONTACTNAME    String?   @db.NVarChar(255)
+  CONTACTTYPE    String?   @db.NVarChar(255)
+  GSTIN          String?   @db.NVarChar(15)
+  PLACEOFCONTACT String?   @db.NVarChar(15)
+  PAN            String?   @db.NVarChar(10)
+  UDYAM          String?   @db.NVarChar(255)
+  MSMETYPE       String?   @db.NVarChar(255)
+  GSTTREATMENT   String?   @db.NVarChar(255)
+  LASTMODIFIED   String?   @db.VarChar(255)
+  SYNCTIMESTAMP  DateTime?
+  FIRSTNAME      String?   @db.NVarChar(255)
+  LASTNAME       String?   @db.NVarChar(255)
+  EMAIL          String?   @db.NVarChar(255)
+  PHONE          String?   @db.NVarChar(255)
+  DESIGNATION    String?   @db.NVarChar(255)
+  tag            String?   @db.NVarChar(255)
+
+  @@ignore
+}
+
+model customerPaymentsMirror {
+  lid              Int       @id(map: "PK__customer__DE105D079E794DCE") @default(autoincrement())
+  payment_id       String?   @db.NVarChar(255)
+  invoice_number   String?   @db.NVarChar(255)
+  payment_mode     String?   @db.NVarChar(255)
+  date             DateTime? @db.Date
+  amount           Decimal?  @db.Decimal(18, 0)
+  amount_refunded  Decimal?  @db.Decimal(18, 0)
+  bank_charges     Decimal?  @db.Decimal(18, 0)
+  status           String?   @db.NVarChar(255)
+  reference_number String?   @db.NVarChar(255)
+  description      String?   @db.NVarChar(255)
+  customer_id      String?   @db.NVarChar(255)
+  customer_name    String?   @db.NVarChar(255)
+  invoice_id       String?   @db.NVarChar(255)
+  invoice_amount   Decimal?  @db.Decimal(18, 0)
+  amount_applied   Decimal?  @db.Decimal(18, 0)
+  balance_amount   Decimal?  @db.Decimal(18, 0)
+  companyname      String?   @db.NVarChar(255)
+  companyid        String?   @db.NVarChar(255)
+  lastmodified     String?   @db.NVarChar(255)
+  synctimestamp    DateTime?
+  invoice_date     DateTime? @db.Date
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model expenseMirror {
+  expense_id                String?   @db.VarChar(Max)
+  date                      DateTime? @db.Date
+  account_name              String?   @db.VarChar(Max)
+  paid_through_account_name String?   @db.VarChar(Max)
+  description               String?   @db.VarChar(Max)
+  currency_id               String?   @db.VarChar(Max)
+  currency_code             String?   @db.VarChar(Max)
+  bcy_total                 Decimal?  @db.Decimal(18, 0)
+  total                     Decimal?  @db.Decimal(18, 0)
+  is_billable               String?   @db.VarChar(Max)
+  reference_number          String?   @db.VarChar(Max)
+  customer_id               String?   @db.VarChar(Max)
+  customer_name             String?   @db.VarChar(Max)
+  vendor_id                 String?   @db.VarChar(Max)
+  vendor_name               String?   @db.VarChar(Max)
+  status                    String?   @db.VarChar(Max)
+  created_time              String?   @db.VarChar(Max)
+  expense_receipt_name      String?   @db.VarChar(Max)
+  expense_item_id           String?   @db.VarChar(Max)
+  account_id                String?   @db.VarChar(Max)
+  paid_through_account_id   String?   @db.VarChar(Max)
+  tax_id                    String?   @db.VarChar(Max)
+  tax_name                  String?   @db.VarChar(Max)
+  tax_percentage            String?   @db.VarChar(Max)
+  exchange_rate             String?   @db.VarChar(Max)
+  tax_amount                Decimal?  @db.Decimal(18, 0)
+  sub_total                 Decimal?  @db.Decimal(18, 0)
+  amount                    Decimal?  @db.Decimal(18, 0)
+  is_inclusive_tax          String?   @db.VarChar(Max)
+  last_modified_time        String?   @db.VarChar(Max)
+  invoice_id                String?   @db.VarChar(Max)
+  invoice_number            String?   @db.VarChar(Max)
+  project_id                String?   @db.VarChar(Max)
+  project_name              String?   @db.VarChar(Max)
+  recurring_expense_id      String?   @db.VarChar(Max)
+  organization_id           String?   @db.VarChar(Max)
+  clientID                  String?   @db.VarChar(255)
+  SOURCESYSTEM              String?   @db.VarChar(255)
+  COMPANYNAME               String?   @db.NVarChar(255)
+  COMPANYID                 String?   @db.NVarChar(255)
+  SYNCTIMESTAMP             String?   @db.NVarChar(255)
+
+  @@ignore
+}
+
+model gstr2b_cdnr {
+  lid              Int       @id(map: "PK__gstrcdna__DE105D0729F99FFC") @default(autoincrement())
+  notedate         DateTime? @db.Date
+  notetype         String?   @db.NVarChar(255)
+  notesupplytype   String?   @db.NVarChar(255)
+  notevalue        Decimal?  @db.Decimal(18, 0)
+  notenumber       String?   @db.NVarChar(255)
+  tradename        String?   @db.NVarChar(555)
+  suppliergstin    String?   @db.NVarChar(255)
+  sgst             Decimal?  @db.Decimal(18, 0)
+  igst             Decimal?  @db.Decimal(18, 0)
+  cgst             Decimal?  @db.Decimal(18, 0)
+  cess             Decimal?  @db.Decimal(18, 0)
+  srctype          String?   @db.NVarChar(255)
+  revcharge        String?   @db.NVarChar(255)
+  itcavl           String?   @db.NVarChar(255)
+  reason           String?   @db.NVarChar(999)
+  supplyperiod     String?   @db.NVarChar(255)
+  supplyfilingdate DateTime? @db.Date
+  rate             String?   @db.NVarChar(255)
+  taxablevalue     String?   @db.NVarChar(255)
+  irn              String?   @db.NVarChar(500)
+  irngendate       DateTime? @db.Date
+  placeofsupply    String?   @db.NVarChar(255)
+  companygstin     String?   @db.NVarChar(255)
+  companyname      String?   @db.NVarChar(255)
+  companyid        String?   @db.NVarChar(255)
+  gstr2bMonth      String?   @db.NVarChar(255)
+  gstr2bYear       String?   @db.NVarChar(255)
+  syncdatetime     DateTime?
+}
+
+model gstr2b_impg {
+  lid           Int       @id(map: "PK__gstr2b_i__DE105D0790A38EA3") @default(autoincrement())
+  referencedate DateTime? @db.Date
+  billentrydate DateTime? @db.Date
+  portcode      String?   @db.NVarChar(255)
+  billnumber    String?   @db.NVarChar(255)
+  igst          Decimal?  @db.Decimal(18, 0)
+  cess          Decimal?  @db.Decimal(18, 0)
+  taxablevalue  String?   @db.NVarChar(255)
+  isamended     String?   @db.NVarChar(255)
+  companygstin  String?   @db.NVarChar(255)
+  companyname   String?   @db.NVarChar(255)
+  companyid     String?   @db.NVarChar(255)
+  gstr2bMonth   String?   @db.NVarChar(255)
+  gstr2bYear    String?   @db.NVarChar(255)
+  syncdatetime  DateTime?
+}
+
+model gstr2b_impgsez {
+  lid           Int       @id(map: "PK__gstr2b_i__DE105D07BB152D1D") @default(autoincrement())
+  referencedate DateTime? @db.Date
+  billentrydate DateTime? @db.Date
+  portcode      String?   @db.NVarChar(255)
+  billnumber    String?   @db.NVarChar(255)
+  tradename     String?   @db.NVarChar(555)
+  suppliergstin String?   @db.NVarChar(255)
+  igst          Decimal?  @db.Decimal(18, 0)
+  cess          Decimal?  @db.Decimal(18, 0)
+  taxablevalue  String?   @db.NVarChar(255)
+  isamended     String?   @db.NVarChar(255)
+  companygstin  String?   @db.NVarChar(255)
+  companyname   String?   @db.NVarChar(255)
+  companyid     String?   @db.NVarChar(255)
+  gstr2bMonth   String?   @db.NVarChar(255)
+  gstr2bYear    String?   @db.NVarChar(255)
+  syncdatetime  DateTime?
+}
+
+model gstr2ba {
+  lid               Int       @id(map: "PK__gstr2ba__DE105D073759ABE3") @default(autoincrement())
+  invoicedate       DateTime? @db.Date
+  originvoicedate   DateTime? @db.Date
+  invoicevalue      Decimal?  @db.Decimal(18, 0)
+  invoicenumber     String?   @db.NVarChar(255)
+  originvoicenumber String?   @db.NVarChar(255)
+  tradename         String?   @db.NVarChar(555)
+  suppliergstin     String?   @db.NVarChar(255)
+  sgst              Decimal?  @db.Decimal(18, 0)
+  igst              Decimal?  @db.Decimal(18, 0)
+  cgst              Decimal?  @db.Decimal(18, 0)
+  cess              Decimal?  @db.Decimal(18, 0)
+  type              String?   @db.NVarChar(255)
+  revcharge         String?   @db.NVarChar(255)
+  itcavl            String?   @db.NVarChar(255)
+  reason            String?   @db.NVarChar(999)
+  supplyperiod      String?   @db.NVarChar(255)
+  supplyfilingdate  DateTime? @db.Date
+  placeofsupply     String?   @db.NVarChar(255)
+  companygstin      String?   @db.NVarChar(255)
+  companyname       String?   @db.NVarChar(255)
+  companyid         String?   @db.NVarChar(255)
+  gstr2bMonth       String?   @db.NVarChar(255)
+  gstr2bYear        String?   @db.NVarChar(255)
+  syncdatetime      DateTime?
+  taxablevalue      Decimal?  @db.Decimal(18, 0)
+  rate              String?   @db.NVarChar(255)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model invoicesOrigMirror {
+  ENTRYDATE             String? @db.NVarChar(255)
+  LID                   Int     @default(autoincrement())
+  DOCUMENTDATE          String? @db.NVarChar(255)
+  DOCUMENTDUEDATE       String? @db.NVarChar(255)
+  DOCUMENTNUMBER        String? @db.NVarChar(255)
+  CUSTOMERGSTIN         String? @db.NVarChar(255)
+  CUSTOMERID            String? @db.NVarChar(255)
+  CUSTOMERNAME          String? @db.NVarChar(255)
+  SOURCEOFSUPPLY        String? @db.NVarChar(255)
+  INVOICEVALUE          String? @db.NVarChar(255)
+  PLACEOFSUPPLY         String? @db.NVarChar(255)
+  REVERSECHARGE         String? @db.NVarChar(255)
+  BEFOREDISCOUNT        String? @db.NVarChar(255)
+  DISCOUNT              String? @db.NVarChar(255)
+  TAXABLEVALUE          String? @db.NVarChar(255)
+  CESSAMOUNT            String? @db.NVarChar(255)
+  SUPPLYTYPE            String? @db.NVarChar(255)
+  TAXNAME               String? @db.NVarChar(255)
+  IGST                  String? @db.NVarChar(255)
+  CGST                  String? @db.NVarChar(255)
+  SGST                  String? @db.NVarChar(255)
+  TOTALGST              String? @db.NVarChar(255)
+  TCS                   String? @db.NVarChar(255)
+  LOCATION              String? @db.NVarChar(255)
+  WAREHOUSE             String? @db.NVarChar(255)
+  DATASOURCE            String? @db.NVarChar(255)
+  DATASOURCEPROCESSNAME String? @db.NVarChar(255)
+  SLNO                  String? @db.NVarChar(255)
+  UNIQUEID              String? @db.NVarChar(255)
+  COMPANYID             String? @db.NVarChar(255)
+  COMPANYNAME           String? @db.NVarChar(255)
+  addeduser             String? @db.NVarChar(255)
+  MODIFIEDUSER          String? @db.NVarChar(255)
+  addedtime             String? @db.NVarChar(255)
+  MODIFIEDTIME          String? @db.NVarChar(255)
+  SOURCECREATOR         String? @db.NVarChar(255)
+  SOURCEMODIFIER        String? @db.NVarChar(255)
+  RECOID                String? @db.NVarChar(255)
+  RECOTAG               String? @db.NVarChar(255)
+  RECOSTATUS            String? @db.NVarChar(255)
+  INVOICESTATUS         String? @db.NVarChar(255)
+  NETRECEIVABLE         String? @db.NVarChar(255)
+  PAIDAMOUNT            String? @db.NVarChar(255)
+  OUTSTANDING           String? @db.NVarChar(255)
+  NOTES                 String? @db.NVarChar(255)
+  SOURCEREFID           String? @db.NVarChar(255)
+  DESTREFID             String? @db.NVarChar(255)
+  CATEGORY1             String? @db.NVarChar(255)
+  CATEGORY2             String? @db.NVarChar(255)
+  EDITLOG               String? @db.NVarChar(Max)
+  CURRENCY              String? @db.NVarChar(255)
+  TAXABLEVALUEBC        String? @db.NVarChar(255)
+  CURRENCYRATE          String? @db.NVarChar(255)
+  BUDGETCODE            String? @db.NVarChar(255)
+  PROJSTARTDATE         String? @db.NVarChar(255)
+  PROJENDDATE           String? @db.NVarChar(255)
+  PROJSTATUS            String? @db.NVarChar(255)
+  BUDGET                String? @db.NVarChar(255)
+  TAG1                  String? @db.NVarChar(255)
+  TAG2                  String? @db.NVarChar(255)
+  SOURCECREATETIME      String? @db.NVarChar(255)
+  SOURCEMODIFTIME       String? @db.NVarChar(255)
+  ISTRANACCEPTED        String? @db.NVarChar(255)
+  EXTDOCUMENTNUMBER     String? @db.NVarChar(255)
+  userid                Int?
+  booksid               String? @db.NVarChar(255)
+
+  @@ignore
+}
+
+model noticeTracker {
+  LID                        Int       @id(map: "PK__noticeTr__C65557218FCCBD75") @default(autoincrement())
+  companyid                  Int?
+  addedUser                  String?   @db.VarChar(255)
+  addedTime                  DateTime? @db.DateTime
+  modifiedUser               String?   @db.VarChar(255)
+  modifiedTime               DateTime? @db.DateTime
+  GSTIN                      String?   @db.VarChar(255)
+  Entity                     String?   @db.VarChar(255)
+  Type_of_Notice             String?   @db.VarChar(255)
+  SCN_Ref_no                 String?   @db.VarChar(255)
+  DOI                        DateTime? @db.Date
+  Section                    String?   @db.VarChar(255)
+  FY                         String?   @db.VarChar(255)
+  Time_Extension_Filed       Boolean?
+  Due_Date                   DateTime? @db.Date
+  notice_IGSTtax             Decimal?  @db.Decimal(15, 2)
+  notice_CGSTtax             Decimal?  @db.Decimal(15, 2)
+  notice_SGSTtax             Decimal?  @db.Decimal(15, 2)
+  notice_Cesstax             Decimal?  @db.Decimal(15, 2)
+  notice_Total_Tax           Decimal?  @db.Decimal(15, 2)
+  notice_IGSTInterest        Decimal?  @db.Decimal(15, 2)
+  notice_CGSTInterest        Decimal?  @db.Decimal(15, 2)
+  notice_SGSTInterest        Decimal?  @db.Decimal(15, 2)
+  notice_CessInterest        Decimal?  @db.Decimal(15, 2)
+  notice_Total_Interest      Decimal?  @db.Decimal(15, 2)
+  notice_IGSTPenalty         Decimal?  @db.Decimal(15, 2)
+  notice_CGSTPenalty         Decimal?  @db.Decimal(15, 2)
+  notice_SGSTPenalty         Decimal?  @db.Decimal(15, 2)
+  notice_CessPenalty         Decimal?  @db.Decimal(15, 2)
+  notice_Total_Penalty       Decimal?  @db.Decimal(15, 2)
+  notice_IGSTLatefee         Decimal?  @db.Decimal(15, 2)
+  notice_CGSTLatefee         Decimal?  @db.Decimal(15, 2)
+  notice_SGSTLatefee         Decimal?  @db.Decimal(15, 2)
+  notice_CessLatefee         Decimal?  @db.Decimal(15, 2)
+  notice_Total_Late_fee      Decimal?  @db.Decimal(15, 2)
+  notice_Total_Notice_Amount Decimal?  @db.Decimal(15, 2)
+  Remarks                    String?   @db.Text
+  notice_remarks             String?   @db.VarChar(255)
+  order_Ref_No               String?   @db.VarChar(255)
+  order_Date                 DateTime? @db.Date
+  order_IGSTtax              Decimal?  @db.Decimal(15, 2)
+  order_CGSTtax              Decimal?  @db.Decimal(15, 2)
+  order_SGSTtax              Decimal?  @db.Decimal(15, 2)
+  order_Cesstax              Decimal?  @db.Decimal(15, 2)
+  order_Total_Tax            Decimal?  @db.Decimal(15, 2)
+  order_IGSTInterest         Decimal?  @db.Decimal(15, 2)
+  order_CGSTInterest         Decimal?  @db.Decimal(15, 2)
+  order_SGSTInterest         Decimal?  @db.Decimal(15, 2)
+  order_CessInterest         Decimal?  @db.Decimal(15, 2)
+  order_Total_Interest       Decimal?  @db.Decimal(15, 2)
+  order_IGSTPenalty          Decimal?  @db.Decimal(15, 2)
+  order_CGSTPenalty          Decimal?  @db.Decimal(15, 2)
+  order_SGSTPenalty          Decimal?  @db.Decimal(15, 2)
+  order_CessPenalty          Decimal?  @db.Decimal(15, 2)
+  order_Total_Penalty        Decimal?  @db.Decimal(15, 2)
+  order_IGSTLatefee          Decimal?  @db.Decimal(15, 2)
+  order_CGSTLatefee          Decimal?  @db.Decimal(15, 2)
+  order_SGSTLatefee          Decimal?  @db.Decimal(15, 2)
+  order_CessLatefee          Decimal?  @db.Decimal(15, 2)
+  order_Total_Late_fee       Decimal?  @db.Decimal(15, 2)
+  order_Total_Notice_Amount  Decimal?  @db.Decimal(15, 2)
+  order_Total_Demand_amount  Decimal?  @db.Decimal(15, 2)
+  order_Total_drop_amount    Decimal?  @db.Decimal(15, 2)
+  order_Remarks              String?   @db.VarChar(255)
+  Category                   String?   @db.VarChar(255)
+  Status                     String?   @db.VarChar(255)
+  Manager_responsible        String?   @db.VarChar(255)
+  Personresp_1               String?   @db.VarChar(255)
+  Personresp_2               String?   @db.VarChar(255)
+  Personresp_3               String?   @db.VarChar(255)
+  contractid                 String?   @db.NVarChar(Max)
+  Projectids                 String?   @db.NVarChar(Max)
+  totalDemandAmount          Decimal?  @db.Decimal(15, 2)
+  totalDropAmount            Decimal?  @db.Decimal(15, 2)
+}
+
+model portal_clients {
+  id                  Int                   @id(map: "PK__portal_c__3213E83F64302414") @default(autoincrement())
+  zohoContactId       String?               @unique(map: "UQ_portal_clients_zohoContactId") @db.VarChar(100)
+  isCredit            Boolean?              @default(false, map: "DF__portal_cl__isCre__4A78EF25")
+  paymentStatus       String?               @db.VarChar(50)
+  paymentId           String?               @db.VarChar(100)
+  createdBy           String?               @db.VarChar(100)
+  modifiedBy          String?               @db.VarChar(100)
+  createdOn           DateTime?             @default(now(), map: "DF__portal_cl__creat__4B6D135E") @db.DateTime
+  modifiedOn          DateTime?             @db.DateTime
+  portal_serviceOrder portal_serviceOrder[]
+  portal_usersPivot   portal_usersPivot[]
+}
+
+model portal_service_userDocs {
+  id                     Int                     @id(map: "PK__portal_s__3213E83FDEBC5C33") @default(autoincrement())
+  link_userId            Int?
+  link_docId             Int?
+  link_projectId         String?                 @db.NVarChar(155)
+  blob                   String?                 @db.NVarChar(Max)
+  addedtime              DateTime?
+  addeduser              String?                 @db.NVarChar(255)
+  modifieduser           String?                 @db.NVarChar(255)
+  modifiedtime           DateTime?
+  SYF_USERMASTER         SYF_USERMASTER?         @relation(fields: [link_userId], references: [LID], onDelete: NoAction, onUpdate: NoAction, map: "FK__portal_se__link___6DC22B62")
+  portal_serviceDocs_CMS portal_serviceDocs_CMS? @relation(fields: [link_docId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__portal_se__link___6EB64F9B")
+  AllProjects            AllProjects?            @relation(fields: [link_projectId], references: [ProjectCode], onDelete: NoAction, onUpdate: NoAction, map: "FK__portal_se__link___6FAA73D4")
+}
+
+model portal_serviceCriteria {
+  id                  Int                   @id(map: "PK__portal_s__3213E83FFE360FFF") @default(autoincrement())
+  companyid           String?               @db.NVarChar(255)
+  link_assignmentId   Int?
+  serviceName         String?               @db.NVarChar(255)
+  price               Decimal?              @db.Decimal(18, 0)
+  addedtime           DateTime?
+  addeduser           String?               @db.NVarChar(255)
+  modifieduser        String?               @db.NVarChar(255)
+  modifiedtime        DateTime?
+  AssignmentNature    AssignmentNature?     @relation(fields: [link_assignmentId], references: [lid], onDelete: NoAction, onUpdate: NoAction, map: "FK__portal_se__link___530E3526")
+  portal_serviceOrder portal_serviceOrder[]
+}
+
+model portal_serviceCriteriaDocs_CMS {
+  id              Int       @id(map: "PK__portal_s__3213E83FB77C130F") @default(autoincrement())
+  companyid       String?   @db.NVarChar(255)
+  link_criteriaId Int?
+  document        String?   @db.NVarChar(255)
+  type            String?   @db.NVarChar(255)
+  addedtime       DateTime?
+  addeduser       String?   @db.NVarChar(255)
+  modifieduser    String?   @db.NVarChar(255)
+  modifiedtime    DateTime?
+}
+
+model portal_serviceDocs_CMS {
+  id                      Int                       @id(map: "PK__portal_s__3213E83FC106BA96") @default(autoincrement())
+  link_id                 Int?
+  document                String?                   @db.NVarChar(255)
+  type                    Int?
+  category                Int?
+  addedtime               DateTime?
+  addeduser               String?                   @db.NVarChar(255)
+  modifieduser            String?                   @db.NVarChar(255)
+  modifiedtime            DateTime?
+  portal_service_userDocs portal_service_userDocs[]
+}
+
+model portal_serviceOrder {
+  id                     Int                     @id(map: "PK__portal_s__3213E83FA3211889") @default(autoincrement())
+  link_clientId          Int?
+  link_serviceId         Int?
+  price                  Decimal?                @db.Decimal(18, 0)
+  addedtime              String?                 @db.NVarChar(255)
+  addeduser              String?                 @db.NVarChar(255)
+  modifieduser           String?                 @db.NVarChar(255)
+  modifiedtime           DateTime?
+  portal_clients         portal_clients?         @relation(fields: [link_clientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__portal_se__link___60683044")
+  portal_serviceCriteria portal_serviceCriteria? @relation(fields: [link_serviceId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__portal_se__link___615C547D")
+}
+
+model portal_usersPivot {
+  id             Int            @id(map: "PK__portal_u__3213E83FB80800B6") @default(autoincrement())
+  user_id        Int
+  client_id      Int
+  portal_clients portal_clients @relation(fields: [client_id], references: [id], onUpdate: NoAction, map: "FK__portal_us__clien__5031C87B")
+  SYF_USERMASTER SYF_USERMASTER @relation(fields: [user_id], references: [LID], onUpdate: NoAction, map: "FK__portal_us__user___4F3DA442")
+
+  @@unique([user_id, client_id], map: "UQ_UserClient")
+}
+
+model temp_bots_summary {
+  id      Int     @id(map: "PK__temp_bot__3213E83F5AE00F1C") @default(autoincrement())
+  reco_id Int?
+  summary String? @db.NVarChar(Max)
+}
+
+model vendorcreditsmirror {
+  lid                   Int       @id(map: "PK__vendorcr__DE105D07956DE801") @default(autoincrement())
+  vendor_credit_id      String?   @db.NVarChar(255)
+  vendor_credit_number  String?   @db.NVarChar(255)
+  date                  DateTime? @db.Date
+  status                String?   @db.NVarChar(255)
+  current_sub_status_id String?   @db.NVarChar(255)
+  current_sub_status    String?   @db.NVarChar(255)
+  reference_number      String?   @db.NVarChar(255)
+  vendor_id             String?   @db.NVarChar(255)
+  vendor_name           String?   @db.NVarChar(255)
+  currency_id           String?   @db.NVarChar(255)
+  currency_code         String?   @db.NVarChar(255)
+  exchange_rate         String?   @db.NVarChar(255)
+  source_of_supply      String?   @db.NVarChar(255)
+  destination_of_supply String?   @db.NVarChar(255)
+  gst_no                String?   @db.NVarChar(255)
+  bill_id               String?   @db.NVarChar(255)
+  bill_number           String?   @db.NVarChar(255)
+  line_item_id          String?   @db.NVarChar(255)
+  account_id            String?   @db.NVarChar(255)
+  account_name          String?   @db.NVarChar(255)
+  discount              Decimal?  @db.Decimal(18, 0)
+  description           String?   @db.NVarChar(555)
+  itc_eligibility       String?   @db.NVarChar(255)
+  tax_id                String?   @db.NVarChar(255)
+  tax_name              String?   @db.NVarChar(255)
+  tax_percentage        String?   @db.NVarChar(255)
+  igst                  Decimal?  @db.Decimal(18, 0)
+  cgst                  Decimal?  @db.Decimal(18, 0)
+  sgst                  Decimal?  @db.Decimal(18, 0)
+  total                 Decimal?  @db.Decimal(18, 0)
+  addedtime             String?   @db.NVarChar(255)
+  companyname           String?   @db.NVarChar(255)
+  companyid             String?   @db.NVarChar(255)
+  lastmodified          String?   @db.NVarChar(255)
+  tag                   String?   @db.NVarChar(255)
+  synctimestamp         DateTime?
+  itc_availability      String?   @db.NVarChar(255)
+}
+
+model vendorpaymentsMirror {
+  lid                       Int       @id(map: "PK__vendorpa__DE105D0762C6E189") @default(autoincrement())
+  payment_id                String?   @db.NVarChar(255)
+  payment_number            String?   @db.NVarChar(255)
+  status                    String?   @db.NVarChar(255)
+  vendor_id                 String?   @db.NVarChar(255)
+  vendor_name               String?   @db.NVarChar(255)
+  payment_mode              String?   @db.NVarChar(255)
+  currency_id               String?   @db.NVarChar(255)
+  currency_code             String?   @db.NVarChar(255)
+  date                      DateTime? @db.Date
+  description               String?   @db.NVarChar(500)
+  reference_number          String?   @db.NVarChar(255)
+  exchange_rate             Decimal?  @db.Decimal(18, 0)
+  tax_account_id            String?   @db.NVarChar(255)
+  tax_account_name          String?   @db.NVarChar(255)
+  tax_amount_withheld       Decimal?  @db.Decimal(18, 0)
+  amount                    Decimal?  @db.Decimal(18, 0)
+  total_payment_amount      Decimal?  @db.Decimal(18, 0)
+  destination_of_supply     String?   @db.NVarChar(255)
+  source_of_supply          String?   @db.NVarChar(255)
+  bcy_amount                Decimal?  @db.Decimal(18, 0)
+  paid_through_account_id   String?   @db.NVarChar(255)
+  paid_through_account_name String?   @db.NVarChar(255)
+  balance                   Decimal?  @db.Decimal(18, 0)
+  bill_id                   String?   @db.NVarChar(255)
+  amount_applied            Decimal?  @db.Decimal(18, 0)
+  companyname               String?   @db.NVarChar(255)
+  companyid                 String?   @db.NVarChar(255)
+  lastmodified              String?   @db.NVarChar(255)
+  synctimestamp             DateTime?
+}
+
+model zohocreditnotes {
+  lid               Int       @id(map: "PK__zohocred__DE105D076D3736D1") @default(autoincrement())
+  creditnote_id     String?   @db.NVarChar(255)
+  creditnote_number String?   @db.NVarChar(255)
+  date              DateTime? @db.Date
+  status            String?   @db.NVarChar(255)
+  reference_number  String?   @db.NVarChar(255)
+  total             Decimal?  @db.Decimal(18, 0)
+  balance           Decimal?  @db.Decimal(18, 0)
+  exchange_rate     Decimal?  @db.Decimal(18, 0)
+  customer_id       String?   @db.NVarChar(255)
+  customer_name     String?   @db.NVarChar(255)
+  currency_id       String?   @db.NVarChar(255)
+  currency_code     String?   @db.NVarChar(255)
+  applied_invoices  String?   @db.NVarChar(255)
+  addedtime         String?   @db.NVarChar(255)
+  companyname       String?   @db.NVarChar(255)
+  companyid         String?   @db.NVarChar(255)
+  lastmodified      String?   @db.NVarChar(255)
+  tag               String?   @db.NVarChar(255)
+  synctimestamp     DateTime?
+}
+
+model zohocustomerpayments {
+  lid            Int       @id(map: "PK__zohocust__DE105D072B07050C") @default(autoincrement())
+  payment_id     String?   @db.NVarChar(255)
+  payment_number String?   @db.NVarChar(255)
+  invoice_number String?   @db.NVarChar(255)
+  payment_mode   String?   @db.NVarChar(255)
+  date           DateTime? @db.Date
+  amount         Decimal?  @db.Decimal(18, 0)
+  bcy_amount     Decimal?  @db.Decimal(18, 0)
+  location_id    String?   @db.NVarChar(255)
+  location_name  String?   @db.NVarChar(255)
+  companyname    String?   @db.NVarChar(255)
+  companyid      String?   @db.NVarChar(255)
+  lastmodified   String?   @db.NVarChar(255)
+  synctimestamp  DateTime?
+  tag            String?   @db.NVarChar(255)
+  childUpdated   Boolean?
+}
+
+model zohoexpense {
+  lid           Int       @id(map: "PK__zohoexpe__DE105D07F3B86114") @default(autoincrement())
+  expenseid     String?   @db.NVarChar(255)
+  date          DateTime? @db.Date
+  accountname   String?   @db.NVarChar(255)
+  description   String?   @db.NVarChar(255)
+  currencycode  String?   @db.NVarChar(255)
+  customername  String?   @db.NVarChar(555)
+  customerid    String?   @db.NVarChar(255)
+  total         Decimal?  @db.Decimal(18, 0)
+  bcy_total     Decimal?  @db.Decimal(18, 0)
+  companyname   String?   @db.NVarChar(255)
+  companyid     String?   @db.NVarChar(255)
+  lastmodified  String?   @db.NVarChar(255)
+  synctimestamp DateTime?
+  tag           String?   @db.NVarChar(255)
+  childUpdated  Boolean?
+}
+
+model zohojournals {
+  lid              Int       @id(map: "PK__zohojour__DE105D0738702BA7") @default(autoincrement())
+  journal_id       String?   @db.NVarChar(255)
+  journal_date     DateTime? @db.Date
+  reference_number String?   @db.NVarChar(255)
+  currency_id      String?   @db.NVarChar(255)
+  notes            String?   @db.NVarChar(555)
+  journal_type     String?   @db.NVarChar(255)
+  entity_type      String?   @db.NVarChar(255)
+  total            Decimal?  @db.Decimal(18, 0)
+  bcy_total        Decimal?  @db.Decimal(18, 0)
+  companyname      String?   @db.NVarChar(255)
+  companyid        String?   @db.NVarChar(255)
+  last_modified    String?   @db.NVarChar(255)
+  syncdatetime     DateTime?
+  tag              String?   @db.NVarChar(255)
+  childupdated     Boolean?
+  entry_number     String?   @db.NVarChar(255)
+  SYNCTIMESTAMP    DateTime?
+}
+
+model zohovendorcredits {
+  lid                   Int       @id(map: "PK__zohovend__DE105D0702A04F9B") @default(autoincrement())
+  vendor_credit_id      String?   @db.NVarChar(255)
+  vendor_credit_number  String?   @db.NVarChar(255)
+  status                String?   @db.NVarChar(255)
+  current_sub_status_id String?   @db.NVarChar(255)
+  current_sub_status    String?   @db.NVarChar(255)
+  date                  DateTime? @db.Date
+  total                 Decimal?  @db.Decimal(18, 0)
+  balance               Decimal?  @db.Decimal(18, 0)
+  reference_number      String?   @db.NVarChar(255)
+  vendor_id             String?   @db.NVarChar(255)
+  vendor_name           String?   @db.NVarChar(255)
+  currency_id           String?   @db.NVarChar(255)
+  currency_code         String?   @db.NVarChar(255)
+  addedtime             String?   @db.NVarChar(255)
+  companyname           String?   @db.NVarChar(255)
+  companyid             String?   @db.NVarChar(255)
+  lastmodified          String?   @db.NVarChar(255)
+  tag                   String?   @db.NVarChar(255)
+  synctimestamp         DateTime?
+}
+
+model zohovendorpayments {
+  lid                       Int       @id(map: "PK__vendorpa__DE105D07461570BD") @default(autoincrement())
+  payment_id                String?   @db.NVarChar(255)
+  payment_number            String?   @db.NVarChar(255)
+  bill_numbers              String?   @db.NVarChar(255)
+  vendor_id                 String?   @db.NVarChar(255)
+  vendor_name               String?   @db.NVarChar(255)
+  payment_mode              String?   @db.NVarChar(255)
+  currency_id               String?   @db.NVarChar(255)
+  currency_code             String?   @db.NVarChar(255)
+  date                      DateTime? @db.Date
+  description               String?   @db.NVarChar(500)
+  reference_number          String?   @db.NVarChar(255)
+  exchange_rate             Decimal?  @db.Decimal(18, 0)
+  amount                    Decimal?  @db.Decimal(18, 0)
+  bcy_amount                Decimal?  @db.Decimal(18, 0)
+  paid_through_account_id   String?   @db.NVarChar(255)
+  paid_through_account_name String?   @db.NVarChar(255)
+  balance                   Decimal?  @db.Decimal(18, 0)
+  bcy_balance               Decimal?  @db.Decimal(18, 0)
+  companyname               String?   @db.NVarChar(255)
+  companyid                 String?   @db.NVarChar(255)
+  lastmodified              String?   @db.NVarChar(255)
+  synctimestamp             DateTime?
+  tag                       String?   @db.NVarChar(255)
+  childUpdated              Boolean?
+  status                    String?   @db.NVarChar(255)
 }

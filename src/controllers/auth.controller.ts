@@ -371,6 +371,13 @@ export class AuthController {
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       })
 
+      await prisma.sYF_USERMASTER.update({
+          where: { LID: user.LID },
+          data: {
+            accessToken: tokens.accessToken,
+          },
+        })
+
       res.status(200).json({
         responseType: 'SUCCESS',
         responseMessage: 'Login successful',

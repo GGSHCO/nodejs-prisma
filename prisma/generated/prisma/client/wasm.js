@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.8.2
- * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
+ * Prisma Client JS version: 6.10.1
+ * Query Engine version: 9b628578b3b7cae625e8c927178f15a170e74a9c
  */
 Prisma.prismaVersion = {
-  client: "6.8.2",
-  engine: "2060c79ba17c6bb9f5823312b6f6b7f4a845738e"
+  client: "6.10.1",
+  engine: "9b628578b3b7cae625e8c927178f15a170e74a9c"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -711,7 +711,19 @@ exports.Prisma.AssignmentNatureScalarFieldEnum = {
   classification: 'classification',
   checkpoints: 'checkpoints',
   companyName: 'companyName',
-  companyId: 'companyId'
+  companyId: 'companyId',
+  deliverables: 'deliverables',
+  scopeInclusions: 'scopeInclusions',
+  scopeExclusions: 'scopeExclusions',
+  timelines: 'timelines',
+  timelineCount: 'timelineCount',
+  timelineManualCount: 'timelineManualCount',
+  presalesefforts: 'presalesefforts',
+  termsConditions: 'termsConditions',
+  productOwner: 'productOwner',
+  standardPriceinputs: 'standardPriceinputs',
+  standardHours: 'standardHours',
+  isListing: 'isListing'
 };
 
 exports.Prisma.ATHMABILLSScalarFieldEnum = {
@@ -1676,7 +1688,18 @@ exports.Prisma.Gstr2bScalarFieldEnum = {
   ADDEDUSER: 'ADDEDUSER',
   MODIFIEDTIME: 'MODIFIEDTIME',
   MODIFIEDUSER: 'MODIFIEDUSER',
-  COMPANYGSTIN: 'COMPANYGSTIN'
+  COMPANYGSTIN: 'COMPANYGSTIN',
+  invoicetype: 'invoicetype',
+  placeofsupply: 'placeofsupply',
+  revcharge: 'revcharge',
+  itcavl: 'itcavl',
+  reason: 'reason',
+  source: 'source',
+  irn: 'irn',
+  irndate: 'irndate',
+  RECOSTATUS: 'RECOSTATUS',
+  recoid: 'recoid',
+  RECOTAG: 'RECOTAG'
 };
 
 exports.Prisma.InterviewScalarFieldEnum = {
@@ -1970,7 +1993,9 @@ exports.Prisma.PettyTaskScalarFieldEnum = {
   companyId: 'companyId',
   addedTime: 'addedTime',
   modifiedTime: 'modifiedTime',
-  priority: 'priority'
+  priority: 'priority',
+  completedDate: 'completedDate',
+  filesAttached: 'filesAttached'
 };
 
 exports.Prisma.PlanTableScalarFieldEnum = {
@@ -2460,7 +2485,8 @@ exports.Prisma.SYF_GSTMASTERScalarFieldEnum = {
   ADDEDUSER: 'ADDEDUSER',
   ADDEDTIME: 'ADDEDTIME',
   MODIFIEDUSER: 'MODIFIEDUSER',
-  MODIFIEDTIME: 'MODIFIEDTIME'
+  MODIFIEDTIME: 'MODIFIEDTIME',
+  TOKENSYNCTIME: 'TOKENSYNCTIME'
 };
 
 exports.Prisma.SYF_LEADSScalarFieldEnum = {
@@ -2619,7 +2645,8 @@ exports.Prisma.SYF_USERMASTERScalarFieldEnum = {
   lastLogin: 'lastLogin',
   emailVerificationToken: 'emailVerificationToken',
   verificationExpires: 'verificationExpires',
-  encPassword: 'encPassword'
+  encPassword: 'encPassword',
+  accessToken: 'accessToken'
 };
 
 exports.Prisma.SysdiagramsScalarFieldEnum = {
@@ -3404,7 +3431,10 @@ exports.Prisma.ZohoBillsScalarFieldEnum = {
   CURRENCY: 'CURRENCY',
   TOTAL: 'TOTAL',
   DUEDATE: 'DUEDATE',
-  SYNCTIMESTAMP: 'SYNCTIMESTAMP'
+  SYNCTIMESTAMP: 'SYNCTIMESTAMP',
+  tag: 'tag',
+  lastmodified: 'lastmodified',
+  childupdated: 'childupdated'
 };
 
 exports.Prisma.ZohoContactsScalarFieldEnum = {
@@ -3421,7 +3451,8 @@ exports.Prisma.ZohoContactsScalarFieldEnum = {
   UNUSEDCREDIT: 'UNUSEDCREDIT',
   SOURCESYSTEM: 'SOURCESYSTEM',
   SYNCTIMESTAMP: 'SYNCTIMESTAMP',
-  LASTMODIFIEDTIME: 'LASTMODIFIEDTIME'
+  LASTMODIFIEDTIME: 'LASTMODIFIEDTIME',
+  tag: 'tag'
 };
 
 exports.Prisma.ZohoContactsLineItemInfoScalarFieldEnum = {
@@ -3455,6 +3486,499 @@ exports.Prisma.ZohoItemsMasterScalarFieldEnum = {
   TAXPERCENT: 'TAXPERCENT',
   SKU: 'SKU',
   PRODUCTTYPE: 'PRODUCTTYPE'
+};
+
+exports.Prisma.CustomerPaymentsMirrorScalarFieldEnum = {
+  lid: 'lid',
+  payment_id: 'payment_id',
+  invoice_number: 'invoice_number',
+  payment_mode: 'payment_mode',
+  date: 'date',
+  amount: 'amount',
+  amount_refunded: 'amount_refunded',
+  bank_charges: 'bank_charges',
+  status: 'status',
+  reference_number: 'reference_number',
+  description: 'description',
+  customer_id: 'customer_id',
+  customer_name: 'customer_name',
+  invoice_id: 'invoice_id',
+  invoice_amount: 'invoice_amount',
+  amount_applied: 'amount_applied',
+  balance_amount: 'balance_amount',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  lastmodified: 'lastmodified',
+  synctimestamp: 'synctimestamp',
+  invoice_date: 'invoice_date'
+};
+
+exports.Prisma.Gstr2b_cdnrScalarFieldEnum = {
+  lid: 'lid',
+  notedate: 'notedate',
+  notetype: 'notetype',
+  notesupplytype: 'notesupplytype',
+  notevalue: 'notevalue',
+  notenumber: 'notenumber',
+  tradename: 'tradename',
+  suppliergstin: 'suppliergstin',
+  sgst: 'sgst',
+  igst: 'igst',
+  cgst: 'cgst',
+  cess: 'cess',
+  srctype: 'srctype',
+  revcharge: 'revcharge',
+  itcavl: 'itcavl',
+  reason: 'reason',
+  supplyperiod: 'supplyperiod',
+  supplyfilingdate: 'supplyfilingdate',
+  rate: 'rate',
+  taxablevalue: 'taxablevalue',
+  irn: 'irn',
+  irngendate: 'irngendate',
+  placeofsupply: 'placeofsupply',
+  companygstin: 'companygstin',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  gstr2bMonth: 'gstr2bMonth',
+  gstr2bYear: 'gstr2bYear',
+  syncdatetime: 'syncdatetime'
+};
+
+exports.Prisma.Gstr2b_impgScalarFieldEnum = {
+  lid: 'lid',
+  referencedate: 'referencedate',
+  billentrydate: 'billentrydate',
+  portcode: 'portcode',
+  billnumber: 'billnumber',
+  igst: 'igst',
+  cess: 'cess',
+  taxablevalue: 'taxablevalue',
+  isamended: 'isamended',
+  companygstin: 'companygstin',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  gstr2bMonth: 'gstr2bMonth',
+  gstr2bYear: 'gstr2bYear',
+  syncdatetime: 'syncdatetime'
+};
+
+exports.Prisma.Gstr2b_impgsezScalarFieldEnum = {
+  lid: 'lid',
+  referencedate: 'referencedate',
+  billentrydate: 'billentrydate',
+  portcode: 'portcode',
+  billnumber: 'billnumber',
+  tradename: 'tradename',
+  suppliergstin: 'suppliergstin',
+  igst: 'igst',
+  cess: 'cess',
+  taxablevalue: 'taxablevalue',
+  isamended: 'isamended',
+  companygstin: 'companygstin',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  gstr2bMonth: 'gstr2bMonth',
+  gstr2bYear: 'gstr2bYear',
+  syncdatetime: 'syncdatetime'
+};
+
+exports.Prisma.Gstr2baScalarFieldEnum = {
+  lid: 'lid',
+  invoicedate: 'invoicedate',
+  originvoicedate: 'originvoicedate',
+  invoicevalue: 'invoicevalue',
+  invoicenumber: 'invoicenumber',
+  originvoicenumber: 'originvoicenumber',
+  tradename: 'tradename',
+  suppliergstin: 'suppliergstin',
+  sgst: 'sgst',
+  igst: 'igst',
+  cgst: 'cgst',
+  cess: 'cess',
+  type: 'type',
+  revcharge: 'revcharge',
+  itcavl: 'itcavl',
+  reason: 'reason',
+  supplyperiod: 'supplyperiod',
+  supplyfilingdate: 'supplyfilingdate',
+  placeofsupply: 'placeofsupply',
+  companygstin: 'companygstin',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  gstr2bMonth: 'gstr2bMonth',
+  gstr2bYear: 'gstr2bYear',
+  syncdatetime: 'syncdatetime',
+  taxablevalue: 'taxablevalue',
+  rate: 'rate'
+};
+
+exports.Prisma.NoticeTrackerScalarFieldEnum = {
+  LID: 'LID',
+  companyid: 'companyid',
+  addedUser: 'addedUser',
+  addedTime: 'addedTime',
+  modifiedUser: 'modifiedUser',
+  modifiedTime: 'modifiedTime',
+  GSTIN: 'GSTIN',
+  Entity: 'Entity',
+  Type_of_Notice: 'Type_of_Notice',
+  SCN_Ref_no: 'SCN_Ref_no',
+  DOI: 'DOI',
+  Section: 'Section',
+  FY: 'FY',
+  Time_Extension_Filed: 'Time_Extension_Filed',
+  Due_Date: 'Due_Date',
+  notice_IGSTtax: 'notice_IGSTtax',
+  notice_CGSTtax: 'notice_CGSTtax',
+  notice_SGSTtax: 'notice_SGSTtax',
+  notice_Cesstax: 'notice_Cesstax',
+  notice_Total_Tax: 'notice_Total_Tax',
+  notice_IGSTInterest: 'notice_IGSTInterest',
+  notice_CGSTInterest: 'notice_CGSTInterest',
+  notice_SGSTInterest: 'notice_SGSTInterest',
+  notice_CessInterest: 'notice_CessInterest',
+  notice_Total_Interest: 'notice_Total_Interest',
+  notice_IGSTPenalty: 'notice_IGSTPenalty',
+  notice_CGSTPenalty: 'notice_CGSTPenalty',
+  notice_SGSTPenalty: 'notice_SGSTPenalty',
+  notice_CessPenalty: 'notice_CessPenalty',
+  notice_Total_Penalty: 'notice_Total_Penalty',
+  notice_IGSTLatefee: 'notice_IGSTLatefee',
+  notice_CGSTLatefee: 'notice_CGSTLatefee',
+  notice_SGSTLatefee: 'notice_SGSTLatefee',
+  notice_CessLatefee: 'notice_CessLatefee',
+  notice_Total_Late_fee: 'notice_Total_Late_fee',
+  notice_Total_Notice_Amount: 'notice_Total_Notice_Amount',
+  Remarks: 'Remarks',
+  notice_remarks: 'notice_remarks',
+  order_Ref_No: 'order_Ref_No',
+  order_Date: 'order_Date',
+  order_IGSTtax: 'order_IGSTtax',
+  order_CGSTtax: 'order_CGSTtax',
+  order_SGSTtax: 'order_SGSTtax',
+  order_Cesstax: 'order_Cesstax',
+  order_Total_Tax: 'order_Total_Tax',
+  order_IGSTInterest: 'order_IGSTInterest',
+  order_CGSTInterest: 'order_CGSTInterest',
+  order_SGSTInterest: 'order_SGSTInterest',
+  order_CessInterest: 'order_CessInterest',
+  order_Total_Interest: 'order_Total_Interest',
+  order_IGSTPenalty: 'order_IGSTPenalty',
+  order_CGSTPenalty: 'order_CGSTPenalty',
+  order_SGSTPenalty: 'order_SGSTPenalty',
+  order_CessPenalty: 'order_CessPenalty',
+  order_Total_Penalty: 'order_Total_Penalty',
+  order_IGSTLatefee: 'order_IGSTLatefee',
+  order_CGSTLatefee: 'order_CGSTLatefee',
+  order_SGSTLatefee: 'order_SGSTLatefee',
+  order_CessLatefee: 'order_CessLatefee',
+  order_Total_Late_fee: 'order_Total_Late_fee',
+  order_Total_Notice_Amount: 'order_Total_Notice_Amount',
+  order_Total_Demand_amount: 'order_Total_Demand_amount',
+  order_Total_drop_amount: 'order_Total_drop_amount',
+  order_Remarks: 'order_Remarks',
+  Category: 'Category',
+  Status: 'Status',
+  Manager_responsible: 'Manager_responsible',
+  Personresp_1: 'Personresp_1',
+  Personresp_2: 'Personresp_2',
+  Personresp_3: 'Personresp_3',
+  contractid: 'contractid',
+  Projectids: 'Projectids',
+  totalDemandAmount: 'totalDemandAmount',
+  totalDropAmount: 'totalDropAmount'
+};
+
+exports.Prisma.Portal_clientsScalarFieldEnum = {
+  id: 'id',
+  zohoContactId: 'zohoContactId',
+  isCredit: 'isCredit',
+  paymentStatus: 'paymentStatus',
+  paymentId: 'paymentId',
+  createdBy: 'createdBy',
+  modifiedBy: 'modifiedBy',
+  createdOn: 'createdOn',
+  modifiedOn: 'modifiedOn'
+};
+
+exports.Prisma.Portal_service_userDocsScalarFieldEnum = {
+  id: 'id',
+  link_userId: 'link_userId',
+  link_docId: 'link_docId',
+  link_projectId: 'link_projectId',
+  blob: 'blob',
+  addedtime: 'addedtime',
+  addeduser: 'addeduser',
+  modifieduser: 'modifieduser',
+  modifiedtime: 'modifiedtime'
+};
+
+exports.Prisma.Portal_serviceCriteriaScalarFieldEnum = {
+  id: 'id',
+  companyid: 'companyid',
+  link_assignmentId: 'link_assignmentId',
+  serviceName: 'serviceName',
+  price: 'price',
+  addedtime: 'addedtime',
+  addeduser: 'addeduser',
+  modifieduser: 'modifieduser',
+  modifiedtime: 'modifiedtime'
+};
+
+exports.Prisma.Portal_serviceCriteriaDocs_CMSScalarFieldEnum = {
+  id: 'id',
+  companyid: 'companyid',
+  link_criteriaId: 'link_criteriaId',
+  document: 'document',
+  type: 'type',
+  addedtime: 'addedtime',
+  addeduser: 'addeduser',
+  modifieduser: 'modifieduser',
+  modifiedtime: 'modifiedtime'
+};
+
+exports.Prisma.Portal_serviceDocs_CMSScalarFieldEnum = {
+  id: 'id',
+  link_id: 'link_id',
+  document: 'document',
+  type: 'type',
+  category: 'category',
+  addedtime: 'addedtime',
+  addeduser: 'addeduser',
+  modifieduser: 'modifieduser',
+  modifiedtime: 'modifiedtime'
+};
+
+exports.Prisma.Portal_serviceOrderScalarFieldEnum = {
+  id: 'id',
+  link_clientId: 'link_clientId',
+  link_serviceId: 'link_serviceId',
+  price: 'price',
+  addedtime: 'addedtime',
+  addeduser: 'addeduser',
+  modifieduser: 'modifieduser',
+  modifiedtime: 'modifiedtime'
+};
+
+exports.Prisma.Portal_usersPivotScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  client_id: 'client_id'
+};
+
+exports.Prisma.Temp_bots_summaryScalarFieldEnum = {
+  id: 'id',
+  reco_id: 'reco_id',
+  summary: 'summary'
+};
+
+exports.Prisma.VendorcreditsmirrorScalarFieldEnum = {
+  lid: 'lid',
+  vendor_credit_id: 'vendor_credit_id',
+  vendor_credit_number: 'vendor_credit_number',
+  date: 'date',
+  status: 'status',
+  current_sub_status_id: 'current_sub_status_id',
+  current_sub_status: 'current_sub_status',
+  reference_number: 'reference_number',
+  vendor_id: 'vendor_id',
+  vendor_name: 'vendor_name',
+  currency_id: 'currency_id',
+  currency_code: 'currency_code',
+  exchange_rate: 'exchange_rate',
+  source_of_supply: 'source_of_supply',
+  destination_of_supply: 'destination_of_supply',
+  gst_no: 'gst_no',
+  bill_id: 'bill_id',
+  bill_number: 'bill_number',
+  line_item_id: 'line_item_id',
+  account_id: 'account_id',
+  account_name: 'account_name',
+  discount: 'discount',
+  description: 'description',
+  itc_eligibility: 'itc_eligibility',
+  tax_id: 'tax_id',
+  tax_name: 'tax_name',
+  tax_percentage: 'tax_percentage',
+  igst: 'igst',
+  cgst: 'cgst',
+  sgst: 'sgst',
+  total: 'total',
+  addedtime: 'addedtime',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  lastmodified: 'lastmodified',
+  tag: 'tag',
+  synctimestamp: 'synctimestamp',
+  itc_availability: 'itc_availability'
+};
+
+exports.Prisma.VendorpaymentsMirrorScalarFieldEnum = {
+  lid: 'lid',
+  payment_id: 'payment_id',
+  payment_number: 'payment_number',
+  status: 'status',
+  vendor_id: 'vendor_id',
+  vendor_name: 'vendor_name',
+  payment_mode: 'payment_mode',
+  currency_id: 'currency_id',
+  currency_code: 'currency_code',
+  date: 'date',
+  description: 'description',
+  reference_number: 'reference_number',
+  exchange_rate: 'exchange_rate',
+  tax_account_id: 'tax_account_id',
+  tax_account_name: 'tax_account_name',
+  tax_amount_withheld: 'tax_amount_withheld',
+  amount: 'amount',
+  total_payment_amount: 'total_payment_amount',
+  destination_of_supply: 'destination_of_supply',
+  source_of_supply: 'source_of_supply',
+  bcy_amount: 'bcy_amount',
+  paid_through_account_id: 'paid_through_account_id',
+  paid_through_account_name: 'paid_through_account_name',
+  balance: 'balance',
+  bill_id: 'bill_id',
+  amount_applied: 'amount_applied',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  lastmodified: 'lastmodified',
+  synctimestamp: 'synctimestamp'
+};
+
+exports.Prisma.ZohocreditnotesScalarFieldEnum = {
+  lid: 'lid',
+  creditnote_id: 'creditnote_id',
+  creditnote_number: 'creditnote_number',
+  date: 'date',
+  status: 'status',
+  reference_number: 'reference_number',
+  total: 'total',
+  balance: 'balance',
+  exchange_rate: 'exchange_rate',
+  customer_id: 'customer_id',
+  customer_name: 'customer_name',
+  currency_id: 'currency_id',
+  currency_code: 'currency_code',
+  applied_invoices: 'applied_invoices',
+  addedtime: 'addedtime',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  lastmodified: 'lastmodified',
+  tag: 'tag',
+  synctimestamp: 'synctimestamp'
+};
+
+exports.Prisma.ZohocustomerpaymentsScalarFieldEnum = {
+  lid: 'lid',
+  payment_id: 'payment_id',
+  payment_number: 'payment_number',
+  invoice_number: 'invoice_number',
+  payment_mode: 'payment_mode',
+  date: 'date',
+  amount: 'amount',
+  bcy_amount: 'bcy_amount',
+  location_id: 'location_id',
+  location_name: 'location_name',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  lastmodified: 'lastmodified',
+  synctimestamp: 'synctimestamp',
+  tag: 'tag',
+  childUpdated: 'childUpdated'
+};
+
+exports.Prisma.ZohoexpenseScalarFieldEnum = {
+  lid: 'lid',
+  expenseid: 'expenseid',
+  date: 'date',
+  accountname: 'accountname',
+  description: 'description',
+  currencycode: 'currencycode',
+  customername: 'customername',
+  customerid: 'customerid',
+  total: 'total',
+  bcy_total: 'bcy_total',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  lastmodified: 'lastmodified',
+  synctimestamp: 'synctimestamp',
+  tag: 'tag',
+  childUpdated: 'childUpdated'
+};
+
+exports.Prisma.ZohojournalsScalarFieldEnum = {
+  lid: 'lid',
+  journal_id: 'journal_id',
+  journal_date: 'journal_date',
+  reference_number: 'reference_number',
+  currency_id: 'currency_id',
+  notes: 'notes',
+  journal_type: 'journal_type',
+  entity_type: 'entity_type',
+  total: 'total',
+  bcy_total: 'bcy_total',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  last_modified: 'last_modified',
+  syncdatetime: 'syncdatetime',
+  tag: 'tag',
+  childupdated: 'childupdated',
+  entry_number: 'entry_number',
+  SYNCTIMESTAMP: 'SYNCTIMESTAMP'
+};
+
+exports.Prisma.ZohovendorcreditsScalarFieldEnum = {
+  lid: 'lid',
+  vendor_credit_id: 'vendor_credit_id',
+  vendor_credit_number: 'vendor_credit_number',
+  status: 'status',
+  current_sub_status_id: 'current_sub_status_id',
+  current_sub_status: 'current_sub_status',
+  date: 'date',
+  total: 'total',
+  balance: 'balance',
+  reference_number: 'reference_number',
+  vendor_id: 'vendor_id',
+  vendor_name: 'vendor_name',
+  currency_id: 'currency_id',
+  currency_code: 'currency_code',
+  addedtime: 'addedtime',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  lastmodified: 'lastmodified',
+  tag: 'tag',
+  synctimestamp: 'synctimestamp'
+};
+
+exports.Prisma.ZohovendorpaymentsScalarFieldEnum = {
+  lid: 'lid',
+  payment_id: 'payment_id',
+  payment_number: 'payment_number',
+  bill_numbers: 'bill_numbers',
+  vendor_id: 'vendor_id',
+  vendor_name: 'vendor_name',
+  payment_mode: 'payment_mode',
+  currency_id: 'currency_id',
+  currency_code: 'currency_code',
+  date: 'date',
+  description: 'description',
+  reference_number: 'reference_number',
+  exchange_rate: 'exchange_rate',
+  amount: 'amount',
+  bcy_amount: 'bcy_amount',
+  paid_through_account_id: 'paid_through_account_id',
+  paid_through_account_name: 'paid_through_account_name',
+  balance: 'balance',
+  bcy_balance: 'bcy_balance',
+  companyname: 'companyname',
+  companyid: 'companyid',
+  lastmodified: 'lastmodified',
+  synctimestamp: 'synctimestamp',
+  tag: 'tag',
+  childUpdated: 'childUpdated',
+  status: 'status'
 };
 
 exports.Prisma.SortOrder = {
@@ -3683,7 +4207,29 @@ exports.Prisma.ModelName = {
   ZohoBills: 'ZohoBills',
   zohoContacts: 'zohoContacts',
   zohoContactsLineItemInfo: 'zohoContactsLineItemInfo',
-  zohoItemsMaster: 'zohoItemsMaster'
+  zohoItemsMaster: 'zohoItemsMaster',
+  customerPaymentsMirror: 'customerPaymentsMirror',
+  gstr2b_cdnr: 'gstr2b_cdnr',
+  gstr2b_impg: 'gstr2b_impg',
+  gstr2b_impgsez: 'gstr2b_impgsez',
+  gstr2ba: 'gstr2ba',
+  noticeTracker: 'noticeTracker',
+  portal_clients: 'portal_clients',
+  portal_service_userDocs: 'portal_service_userDocs',
+  portal_serviceCriteria: 'portal_serviceCriteria',
+  portal_serviceCriteriaDocs_CMS: 'portal_serviceCriteriaDocs_CMS',
+  portal_serviceDocs_CMS: 'portal_serviceDocs_CMS',
+  portal_serviceOrder: 'portal_serviceOrder',
+  portal_usersPivot: 'portal_usersPivot',
+  temp_bots_summary: 'temp_bots_summary',
+  vendorcreditsmirror: 'vendorcreditsmirror',
+  vendorpaymentsMirror: 'vendorpaymentsMirror',
+  zohocreditnotes: 'zohocreditnotes',
+  zohocustomerpayments: 'zohocustomerpayments',
+  zohoexpense: 'zohoexpense',
+  zohojournals: 'zohojournals',
+  zohovendorcredits: 'zohovendorcredits',
+  zohovendorpayments: 'zohovendorpayments'
 };
 
 /**
