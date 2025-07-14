@@ -132,6 +132,7 @@ async function misTable({ groupid, company, year, amount, segment, advFilter }) 
 
         let tbData1 = await workPaper(data, "feMonthlyTbGroup")
         tbData1 = tbData1.res;
+        // console.log(tbData1)
         // return tbData1;
         // if (segment != null && segment !== "") {
         //     tbData1 = tbData1.filter((item) => item.a == segment)
@@ -160,10 +161,18 @@ async function misTable({ groupid, company, year, amount, segment, advFilter }) 
 
 
             let closingCheck = 0;
+            // calculate cb for separate month
+            let cbMonth={}
             let tbCheck = await pfFunTotalCheck();
             let tbData2 = tbData1.filter((item) => {
                 let cb = Number(item.closingbalance) / amountFormat;
                 closingCheck += cb;
+                if( cbMonth.hasOwnProperty(item.monthNo)) {
+                    cbMonth[item.monthNo] += cb;
+                }
+                else{
+                    cbMonth[item.monthNo] = cb;
+                }
                 if (!rejectedHead.includes(item.head)) {
                     return item;
                 }
@@ -211,6 +220,7 @@ async function misTable({ groupid, company, year, amount, segment, advFilter }) 
             // $(".closingTotal").text(`TB Data Total : ${INR(tbCheck)}`);
             closingTotalPyFun = (INR(closingCheck))
             closingTotal = (INR(tbCheck))
+
 
             // if (closingTotalPyFun <= 0 && closingTotal <= 0) {
             //     $(".status-icon").show().css("color", "green").text("TBTotal ✔"); // Green tick
@@ -1732,6 +1742,7 @@ async function adv_misTable({ groupid, company, year, amount, segment, advFilter
             // $(".closingTotal").text(`TB Data Total : ${INR(tbCheck)}`);
             closingTotalPyFun = (INR(closingCheck))
             closingTotal = (INR(tbCheck))
+
 
             // if (closingTotalPyFun <= 0 && closingTotal <= 0) {
             //     $(".status-icon").show().css("color", "green").text("TBTotal ✔"); // Green tick

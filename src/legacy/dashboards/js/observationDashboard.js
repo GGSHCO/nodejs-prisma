@@ -4,10 +4,10 @@ const {
   dateTimeGeneration,
   exeQuery,
   workPaper,
+  sendMail,
 } = require("../../config");
 
 // fetch query for allobservations
-
 
 const fetchProjects = async (params) => {
   // let currentDate = new Date();
@@ -246,14 +246,38 @@ async function updateMilestoneStatus(params) {
             queries.push(encryptInvoice);
           }
         }
+        // added new
+        let allTasksCompleted = false;
+        let allTasksData = false;
+        let projectDetails = "";
+
         if (res[0].total == res[0].completed) {
           let completionDate = dateTimeGeneration(new Date());
           let completeProject = `update allProjects set status='Completed',projectStatus='Completed',completionDate='${completionDate}',completionStatus='Completed' where projectCode='${params.projectCode}'`;
           let encrypt = Buffer.from(completeProject).toString("base64");
           queries.push(encrypt);
+          //ADD ONE KEY to the objs that one passed to fronent HERE if res[0].total == res[0].completed this condition is passed
+          allTasksCompleted = true;
+          projectDetails = await fetchTable(
+            `SELECT  projectCode, managerResponsible, personResponsible1, personResponsible2, personResponsible3, partner 
+             FROM allProjects WHERE projectCode = '${params.projectCode}'`
+          );
+          if (projectDetails) {
+            allTasksData = true;
+          }
+          console.log(projectDetails);
         }
+
         if (queries.length > 0) {
           let response = await queryGet(queries);
+          /////
+          if (allTasksCompleted) {
+            response.allTasks = "completed";
+          }
+          if (allTasksData) {
+            response.allTasksData = projectDetails;
+          }
+          //////
           return response;
         } else {
           return response;
@@ -560,7 +584,7 @@ const updateAllObservationObs = async (params) => {
         '${params.addedUser}','${params.projectName}','Pending'
         
     )
-`);
+  `);
 
     return res;
   } catch (e) {
@@ -648,9 +672,9 @@ const cancelProject = async (params) => {
   }
 };
 
-async function pettyTaskStatus() {
+async function pettyTaskStatus(params) {
   try {
-    let res = await fetchTable(`select * from pettyTask`);
+    let res = await fetchTable(`select * from pettyTask where companyId='${params.companyid}'`);
     return res;
   } catch (error) {
     return { error: true, message: error.message, details: error };
@@ -670,7 +694,7 @@ async function totalUsersCount(params) {
 async function getObservationType(params) {
   try {
     let res = await fetchTable(
-      `select * from AllObservations where type='${params.type}'`
+      `select * from AllObservations where type='${params.type}' AND companyId='${params.companyid}'`
     );
     return res;
   } catch (error) {
@@ -705,10 +729,10 @@ async function getPresalesvalidation(params) {
 
         results.push({
           contractID: item.urn,
-          ps_validation:item.ps_validation,
+          ps_validation: item.ps_validation,
           clientName: assign.clientName,
           assignmentNature: assign.assignmentNature,
-          milestones: milestones, 
+          milestones: milestones,
         });
       }
     }
@@ -724,7 +748,6 @@ async function saveMilestonePsvalidation(params) {
   let res;
   try {
     for (const item of params.milestones) {
-
       const updateQuery = `
        UPDATE milestoneSubform
   SET milestone = '${item.newMilestone}'
@@ -737,7 +760,7 @@ async function saveMilestonePsvalidation(params) {
 
       console.log("Executing Query:", updateQuery); // Debug
       res = await exeQuery(updateQuery);
-      console.log(res)
+      console.log(res);
     }
     return res;
   } catch (error) {
@@ -757,7 +780,150 @@ async function allContractsValidationChange(params) {
     return { error: true, message: error.message, details: error };
   }
 }
+///sanjay july 7 
+// ADD THIS NEW FUNCTION TO YOUR BACKEND CONTROLLER
+const completeObservationWithRemarks = async (params) => {
+  try {
+    // 1. Get the current timestamp for the completion date
+    const completionDate = dateTimeGeneration(new Date());
 
+    // 2. Escape the remarks string from the frontend to prevent SQL errors
+    const escapedRemarks = params.remarks.replace(/'/g, "''");
+
+    // 3. Construct a SINGLE, ATOMIC SQL query to update everything at once
+    const sqlQuery = `
+      UPDATE AllObservations
+      SET 
+        issueStatus = 'completed',
+        completionDate = '${completionDate}',
+        remarks = '${escapedRemarks}'
+      WHERE  
+        observationCode = '${params.observationCode}';
+    `;
+
+    // 4. Execute the single, reliable query
+    let res = await exeQuery(sqlQuery);
+    
+    // 5. Return the result to the frontend
+    return res;
+
+  } catch (e) {
+    // Handle any potential database errors
+    return { error: e.message };
+  }
+};
+
+
+
+///////////////the below code is added by Sanjay on July 11 2025
+// In your backend controller
+
+const getProjectDataObservationNew = async (params) => {
+  try {
+    // The WHERE clause is expanded to include all three 'personResponsible' fields
+    let getProjectData = await fetchTable(`
+      SELECT 
+        observationCode, projectCode, clientName, caption, assignedBy, 
+        personResponsible, personResponsible1, personResponsible2, personResponsible3, -- Make sure to select these
+        addedUser, addedTime, type, companyName, projectName,
+        companyId, edoc, steps, issueStatus, remarks, filesAttached
+      FROM 
+        AllObservations 
+      WHERE 
+        companyId = '${params.companyid}' 
+        AND type = 'observation'
+        AND (
+          assignedBy = '${params.name}' OR
+          personResponsible = '${params.name}' OR  
+          personResponsible2 = '${params.name}' OR
+          personResponsible3 = '${params.name}'
+        )
+    `);
+
+    return getProjectData;
+  } catch (e) {
+    return { error: e.message };
+  }
+};
+
+// In your backend controller file
+
+const updateAllObservationObsNew = async (params) => {
+  try {
+    // The INSERT statement is now updated to include the new columns
+    let res = await exeQuery(`
+      INSERT INTO AllObservations (
+          caption,
+          companyName,
+          companyId,
+          projectCode,
+          assignedBy,
+          personResponsible,
+          personResponsible1,
+          personResponsible2,
+          personResponsible3,
+          edoc,
+          type,
+          observationCode,
+          clientName,
+          addedTime,
+          steps,
+          addedUser,
+          projectName,
+          issueStatus
+      ) VALUES (
+          '${params.caption}',
+          '${params.companyName}',
+          '${params.companyId}',
+          '${params.projectCode}',
+          '${params.assignedBy}',
+          '${params.personResponsible}',
+          '${params.personResponsible1}',
+          '${params.personResponsible2}',
+          '${params.personResponsible3}',
+          '${params.edoc}',
+          '${params.type}',
+          '${params.observationCode}',
+          '${params.clientName}',
+          '${params.addedTime}',
+          '${params.steps}',
+          '${params.addedUser}',
+          '${params.projectName}',
+          'Pending'
+      )
+    `);
+
+    return res;
+  } catch (e) {
+    return { error: e.message };
+  }
+};
+
+const addObservationEntry = async (params) => {
+  try {
+    // Escape single quotes in the JSON string to prevent SQL errors
+    const escapedRemarks = params.remarks.replace(/'/g, "''");
+
+    const sqlQuery = `
+      UPDATE AllObservations
+      SET 
+        remarks = '${escapedRemarks}',
+        filesAttached = NULL -- Set the old column to NULL as it's now migrated
+      WHERE  
+        observationCode = '${params.observationCode}';
+    `;
+    
+    let res = await exeQuery(sqlQuery);
+    return res;
+
+  } catch (e) {
+    return { error: e.message };
+  }
+};
+
+
+
+////////////////////////////////////////////////end
 module.exports = {
   updateObservationremarks,
   cancelProject,
@@ -789,8 +955,10 @@ module.exports = {
   getObservationType,
   getPresalesvalidation,
   saveMilestonePsvalidation,
-allContractsValidationChange,
-
+  allContractsValidationChange,
+  completeObservationWithRemarks,
+  getProjectDataObservationNew,
+  updateAllObservationObsNew,addObservationEntry
 };
 
 // get milestone with amount to generate invoice

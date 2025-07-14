@@ -52,7 +52,7 @@ const apiLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5, // Limit each IP to 5 requests per windowMs
+  max: process.env.NODE_ENV === 'prod' ? 5 : 50, // Limit each IP to 5 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
   // keyGenerator: (req, res) => {
@@ -149,7 +149,7 @@ export const securityMiddleware = [
 
 
   // CSRF protection
-  csrfProtection,
+  // csrfProtection,
 
   express.json({ limit: '100kb' }),
   express.urlencoded({ extended: true, limit: '100kb' }),

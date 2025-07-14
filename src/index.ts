@@ -15,7 +15,7 @@ import cookieParser from 'cookie-parser'
 
 import { securityMiddleware, apiRateLimiter, authenticate } from './middleware/security'
 
-// import legacyApp from './legacy/app.js'
+import legacyApp from './legacy/app.js'
 
 
 import authRoutes from './routes/auth.routes'
@@ -67,7 +67,7 @@ app.use(securityMiddleware)
 
 app.use('/api', authRoutes)
 
-// app.use('/', authenticate,  apiRateLimiter, legacyApp);
+app.use('/', authenticate,  apiRateLimiter, legacyApp);
 
 app.use('/api/masters', authenticate, apiRateLimiter, mastersRoutes) // Production
 app.use('/api/user', authenticate, apiRateLimiter, userRoutes) // Production

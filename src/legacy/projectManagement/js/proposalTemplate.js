@@ -144,7 +144,7 @@ async function getAssignmentNatureName(params) {
 async function getClientDetails(params) {
   try {
     const getClientDetails = await fetchTable(
-    `select companyId from allContracts where urn='${params.contractID}'`
+    `select zohocontactID from AllContracts where urn='${params.contractID}'`
   );
     return getClientDetails
   } catch (error) {
@@ -155,7 +155,7 @@ async function getClientDetails(params) {
 async function getContactMaster(params) {
   try {
     const getContactMaster =   await fetchTable(
-      `select poc1Mail from contactMaster where lid='${params.lid}'`
+      `select email from invitedUser where lid='${params.lid}'`
     );
     return getContactMaster;
   } catch (error) {

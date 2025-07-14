@@ -72,8 +72,13 @@ async function addAssignmentService(params) {
       let encryptedQuery = Buffer.from(q).toString("base64");
       query.push(encryptedQuery);
     });
-    let result = await queryGet(query);
-    return result;
+    if (query.length > 0) {
+      let result = await queryGet(query);
+      return result;
+    }
+    else{
+      return res
+    }
   } catch (error) {
     return { error: true, message: error.message, details: error };
   }
@@ -96,21 +101,24 @@ async function updateAssignmentService(params) {
     let encrypt = Buffer.from(q).toString("base64");
     query.push(encrypt);
     let serviceId = params.id;
-    params.docs.map((item) => {
-      let q;
-      if (item.id == undefined) {
-        q = `insert into portal_serviceDocs_CMS (link_id,category,document,type,addeduser,addedtime)
+    if (params.docs.length > 0) {
+      params.docs.map((item) => {
+        let q;
+        if (item.id == undefined) {
+          q = `insert into portal_serviceDocs_CMS (link_id,category,document,type,addeduser,addedtime)
         values ('${serviceId}','2','${item.documentName}','${item.documentType}','${params.addeduser}','${addedTime}')`;
-      } else if (item.id) {
-        q = `UPDATE portal_serviceDocs_CMS 
+        } else if (item.id) {
+          q = `UPDATE portal_serviceDocs_CMS 
             SET document='${item.documentName}', type='${item.documentType}', modifieduser='${params.addeduser}', modifiedtime='${addedTime}'
             WHERE id='${item.id}'`;
-      }
+        }
 
-      let encryptedQuery = Buffer.from(q).toString("base64");
-      query.push(encryptedQuery);
-    });
+        let encryptedQuery = Buffer.from(q).toString("base64");
+        query.push(encryptedQuery);
+      });
+    }
     let result = await queryGet(query);
+    console.log(result);
     return result;
   } catch (error) {
     return { error: true, message: error.message, details: error };
@@ -119,11 +127,13 @@ async function updateAssignmentService(params) {
 
 async function deleteAssignmentCriteria(params) {
   try {
+    let q3 = `delete from portal_serviceOrder where link_serviceId='${params.id}'`;
+    let encrypt3 = Buffer.from(q3).toString("base64");
     let q1 = `delete from portal_serviceDocs_CMS where link_id='${params.id}'`;
     let encrypt1 = Buffer.from(q1).toString("base64");
     let q2 = `delete from portal_serviceCriteria where id='${params.id}'`;
     let encrypt2 = Buffer.from(q2).toString("base64");
-    let query = [encrypt1, encrypt2];
+    let query = [encrypt3,encrypt1, encrypt2];
     let res = await queryGet(query);
     return res;
   } catch (error) {
@@ -133,8 +143,10 @@ async function deleteAssignmentCriteria(params) {
 
 async function deleteCritDoc(params) {
   try {
-    let res=await exeQuery(`delete from portal_serviceDocs_CMS where id='${params.id}'`)
-    return res
+    let res = await exeQuery(
+      `delete from portal_serviceDocs_CMS where id='${params.id}'`
+    );
+    return res;
   } catch (error) {
     return { error: true, message: error.message, details: error };
   }

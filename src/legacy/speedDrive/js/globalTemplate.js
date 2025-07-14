@@ -111,10 +111,23 @@ const insertRoleFileRecord = async (item) => {
 };
 
 const updateFileRecord = async (item) => {
+  const escapeQuotes = (str) => str.replace(/'/g, "''");
   try {
-    let res = await exeQuery(
-      `update speedDrive set filesSaved='${item.filesSaved}' where userName='${item.userName}' AND type='${item.type}'`
-    );
+    console.log(item.lid)
+    const filesSaved = escapeQuotes(item.filesSaved);
+    const userName = escapeQuotes(item.userName);
+    const type = escapeQuotes(item.type);
+
+    let query = `
+      UPDATE speedDrive 
+      SET filesSaved='${filesSaved}',companyid='${item.companyid}',userid='${item.lid}'
+      WHERE userName='${userName}' AND type='${type}'
+    `;
+
+    let res = await exeQuery(query);
+    // let res = await exeQuery(
+    //   `update speedDrive set filesSaved='${item.filesSaved}' where userName='${item.userName}' AND type='${item.type}'`
+    // );
     return res;
   } catch (e) {
     return { error: e.message };
@@ -124,11 +137,114 @@ const updateFileRecord = async (item) => {
 async function getFinancialYear() {
   try {
     let res = await fetchTable(`SELECT * FROM dbo.fnfetchfylist() ORDER BY FY`);
-    console.log(res);
     return res;
   } catch (error) {
     return { error: true, message: error.message, details: error };
   }
+}
+async function getGroupClientContact() {
+  try {
+    let res = await fetchTable(`SELECT groupName,name FROM contactMaster`);
+    return res;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
+}
+async function getAllContracts(params) {
+  let companyid=params.companyid;
+  try {
+    let res = await fetchTable(`SELECT * FROM AllContracts where companyId='${companyid}'`);
+    return res;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
+}
+
+async function getClientMatchingName(params) {
+  let companyid=params.companyid;
+  try {
+    let res1 = await fetchTable(` SELECT
+                c.* 
+            FROM
+                AllContracts c
+            INNER JOIN
+                ContactMaster m
+            ON
+                c.clientName = m.name
+                  WHERE
+        c.companyId = ${companyid} AND m.companyid = ${companyid};
+        `);
+        
+        let res2 = await fetchTable(`
+      SELECT
+        c.* 
+      FROM
+        AllContracts c
+      LEFT JOIN
+        ContactMaster m
+      ON
+        c.clientName = m.name
+       WHERE
+        c.companyId = ${companyid} AND m.name IS NULL;
+    `);
+    return {matched:res1,unmatched:res2};
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
+}
+
+async function getProjectsClientName(params){
+  let companyid=params.companyid;
+  try{
+let res=await fetchTable(`SELECT
+    ud.link_projectId,
+    ap.clientName,
+    ap.personResponsible1, 
+    ap.managerResponsible,
+    ap.companyId,
+    ud.blob,
+    CASE
+        WHEN cms.category = 1 THEN 'PBC'
+        WHEN cms.category = 2 THEN 'Deliverables'
+        ELSE 'unknown'
+    END AS category_name
+FROM
+    portal_service_UserDocs AS ud
+INNER JOIN
+    portal_serviceDocs_CMS AS cms ON ud.link_docId = cms.id
+INNER JOIN
+    Allprojects AS ap ON ud.link_projectId = ap.projectCode`)
+  return res;
+
+  }
+  catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
+  
+}
+ 
+async function getPersonalDocuments(){
+  console.log("test")
+  try{
+  let res=await fetchTable(`SELECT DISTINCT
+    ac.clientName
+FROM
+    SYF_USERMASTER AS sum
+JOIN
+    portal_usersPivot AS pup ON sum.lid = pup.user_id
+JOIN
+    portal_clients AS pc ON pup.client_id = pc.id
+JOIN
+    AllContracts AS ac ON pc.zohoContactId = ac.zohocontactID
+WHERE
+    (sum.email LIKE '%docs_pan_aadhar%' OR sum.email LIKE '%docs_aadhar%')`);
+    console.log(res)
+    return res;
+  }
+   catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
+
 }
 
 async function getMonth() {
@@ -172,5 +288,10 @@ module.exports = {
   insertRoleFileRecord,
   updateFileRecord,
   getFinancialYear,
+  getGroupClientContact,
+  getAllContracts,
+  getClientMatchingName,
+  getProjectsClientName,
+  getPersonalDocuments,
   getMonth,
 };

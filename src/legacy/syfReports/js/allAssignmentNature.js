@@ -10,6 +10,16 @@ async function getAssignmentNatureData({companyid}) {
     }
 }
 
+async function getAssignmentLidName(params) {
+    try {
+        let res = await fetchTable(`SELECT assignmentNature FROM AssignmentNature where lid='${params.assigmentLid}'`)
+        return res
+    }
+    catch (error) {
+        return { error: true, message: error.message, details: error };
+    }
+}
+
 async function deleteAssignmentNature({ lids }) {
     try {
         let delMilestoneQuery = `DELETE FROM Milestones WHERE assignmentNatureID IN (${lids})`
@@ -41,4 +51,4 @@ async function assignmentBulkUpload({ obj }) {
 
 
 
-module.exports = { getAssignmentNatureData, deleteAssignmentNature, assignmentBulkUpload }
+module.exports = { getAssignmentNatureData,getAssignmentLidName, deleteAssignmentNature, assignmentBulkUpload }

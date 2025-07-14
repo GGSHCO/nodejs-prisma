@@ -1,6 +1,8 @@
-let backendUrl = "http://desktop-dssus3g:3000/api"; // Local
-// let backendUrl = "https://finspeednodejs.azurewebsites.net/api"
+let backendUrl = process.env.BACKEND_URL;
+
 // let backendUrl = "https://syfnodejsprod-d7b9bsc4b7gwaeev.southindia-01.azurewebsites.net/api"; // Production
+
+// let backendUrl = "https://finspeednodejs.azurewebsites.net/api"
 
 async function getEndpoints() {
   let endpoints = {
@@ -28,6 +30,7 @@ async function getEndpoints() {
     pm_saveMilestones: `${backendUrl}/pm_saveMilestones`,
     pm_delSingleMilestone: `${backendUrl}/pm_delSingleMilestone`,
     pm_getAssignmentData: `${backendUrl}/pm_getAssignmentData`,
+    pm_getAssignmentLidName: `${backendUrl}/pm_getAssignmentLidName`,
     pm_deleteAssignment: `${backendUrl}/pm_deleteAssignment`,
     pm_assignmentBulkUpload: `${backendUrl}/pm_assignmentBulkUpload`,
     pm_getAssignmentUvData: `${backendUrl}/pm_getAssignmentUvData`,
@@ -42,6 +45,11 @@ async function getEndpoints() {
     pm_getClientDetails: `${backendUrl}/pm_getClientDetails`,
     pm_getContractMasterDetails: `${backendUrl}/pm_getContractMasterDetails`,
     pm_checkEmailClients: `${backendUrl}/pm_checkEmailClients`,
+    pm_getClientProjects: `${backendUrl}/pm_getClientProjects`,
+    pm_getClientContract: `${backendUrl}/pm_getClientContract`,
+
+    getProjectsWithContactInfo: `${backendUrl}/getProjectsWithContactInfo`,
+
     /////gstTracker
     gst_zohoNames: `${backendUrl}/gst_zohoNames`,
     gst_insertIntoGstNotices: `${backendUrl}/gst_insertIntoGstNotices`,
@@ -198,6 +206,24 @@ async function getEndpoints() {
 
     services_userAdd_addToPivot: `${backendUrl}/services_userAdd_addToPivot`,
 
+    getProjectUsers_ua: `${backendUrl}/getProjectUsers_ua`,
+
+    recordUserInvitation: `${backendUrl}/recordUserInvitation`,
+
+    productvs: `${backendUrl}/productvs`,
+
+    productdata: `${backendUrl}/productdata`,
+
+    saveServiceOrder: `${backendUrl}/saveServiceOrder`,
+
+    assignProductsToClient: `${backendUrl}/assignProductsToClient`,
+
+    getProductsForClientAssignment: `${backendUrl}/getProductsForClientAssignment`,
+
+    addProductToClient: `${backendUrl}/addProductToClient`,
+
+    removeProductFromClient: `${backendUrl}/removeProductFromClient`,
+
     settings_displayRole: `${backendUrl}/settings_displayRole`,
     settings_saveRole: `${backendUrl}/settings_saveRole`,
     settings_updateRole: `${backendUrl}/settings_updateRole`,
@@ -292,7 +318,11 @@ async function getEndpoints() {
     speed_insertRoleFileRecord: `${backendUrl}/speed_insertRoleFileRecord`,
     speed_updateFileRecord: `${backendUrl}/speed_updateFileRecord`,
     speed_financialYearOnly: `${backendUrl}/speed_financialYearOnly`,
+    speed_getProjects_clientname: `${backendUrl}/speed_getProjects_clientname`,
     speed_getMonth: `${backendUrl}/speed_getMonth`,
+    speed_getGroupClientContact: `${backendUrl}/speed_getGroupClientContact`,
+    speed_getAllContracts: `${backendUrl}/speed_getAllContracts`,
+    speed_getMatchingClientName: `${backendUrl}/speed_getMatchingClientName`,
     document_getTransactionCompanyMaster: `${backendUrl}/document_getTransactionCompanyMaster`,
     document_getPathtransactionReportMaster: `${backendUrl}/document_getPathtransactionReportMaster`,
     document_getPathtemplateTransaction: `${backendUrl}/document_getPathtemplateTransaction`,
@@ -324,6 +354,9 @@ async function getEndpoints() {
     forms_getUvSubFormData: `${backendUrl}/forms_getUvSubFormData`,
     forms_getEmployeeList: `${backendUrl}/forms_getEmployeeList`,
     forms_deleteRowData: `${backendUrl}/forms_deleteRowData`,
+
+    getEmployeeTimesheetOptions: `${backendUrl}/getEmployeeTimesheetOptions`,
+
     myspace_getKpiMaster: `${backendUrl}/myspace_getKpiMaster`,
     myspace_insertKpiMaster: `${backendUrl}/myspace_insertKpiMaster`,
     myspace_deleteKpiMaster: `${backendUrl}/myspace_deleteKpiMaster`,
@@ -363,11 +396,17 @@ async function getEndpoints() {
     extDocs_getExtTabsData: `${backendUrl}/extDocs_getExtTabsData`,
     extDocs_deleteExtTabsData: `${backendUrl}/extDocs_deleteExtTabsData`,
     extDocs_getAllExtTabs: `${backendUrl}/extDocs_getAllExtTabs`,
+    records_getRecordsData: `${backendUrl}/records_getRecordsData`,
     records_getAllRecords: `${backendUrl}/records_getAllRecords`,
     records_deleteRecords: `${backendUrl}/records_deleteRecords`,
+    reco_getSummary: `${backendUrl}/reco_getSummary`,
+    reco_saveSummary: `${backendUrl}/reco_saveSummary`,
+
     //////////services_userList.js
     services_userList_zohoData: `${backendUrl}/services_userList_zohoData`,
     services_userList_zohocontact: `${backendUrl}/services_userList_zohocontact`,
+
+    services_userList_getExistingPortalClients: `${backendUrl}/services_userList_getExistingPortalClients`,
 
     //////////
     records_addRecords: `${backendUrl}/records_addRecords`,
@@ -382,11 +421,59 @@ async function getEndpoints() {
     // projectdesk
     projectdesk_getObservstionDetail: `${backendUrl}/projectdesk_getObservstionDetail`,
     projectdesk_getMilestoneDetails: `${backendUrl}/projectdesk_getMilestoneDetails`,
+    projectdesk_getChecklistDetails: `${backendUrl}/projectdesk_getChecklistDetails`,
+
+    sanjay_getAssignedPortalUsers: `${backendUrl}/sanjay_getAssignedPortalUsers`,
+
+    projectdesk_getTeamMembersDetails: `${backendUrl}/projectdesk_getTeamMembersDetails`,
+    projectdesk_getTimeSheetDetails: `${backendUrl}/projectdesk_getTimeSheetDetails`,
+    projectdesk_getDocumentDetails: `${backendUrl}/projectdesk_getDocumentDetails`,
+    projectdesk_saveBlobUrl: `${backendUrl}/projectdesk_saveBlobUrl`,
+    projectdesk_exportBlobUrl: `${backendUrl}/projectdesk_exportBlobUrl`,
+    projectdesk_saveKycBlobUrl: `${backendUrl}/projectdesk_saveKycBlobUrl`,
+    projectdesk_getkycBlobUrl: `${backendUrl}/projectdesk_getkycBlobUrl`,
+    projectdesk_getstoredBlobUrl: `${backendUrl}/projectdesk_getstoredBlobUrl`,
+    projectdesk_deleteBlobUrl: `${backendUrl}/projectdesk_deleteBlobUrl`,
+
     pm_getPendingLeads: `${backendUrl}/pm_getPendingLeads`,
     contractStatusChange: `${backendUrl}/contractStatusChange`,
     obs_getPreSalesValidationData: `${backendUrl}/obs_getPreSalesValidationData`,
     obs_saveMilestonePsvalidation: `${backendUrl}/obs_saveMilestonePsvalidation`,
     obs_PSsalesAllcontractsstatusChange: `${backendUrl}/obs_PSsalesAllcontractsstatusChange`,
+//////july 9 added by sanjay
+    completeObservationWithRemarks: `${backendUrl}/completeObservationWithRemarks`,
+
+    getProjectDataObservationNew : `${backendUrl}/getProjectDataObservationNew`,
+
+    
+       updateAllObservationObsNew  : `${backendUrl}/updateAllObservationObsNew`,
+
+
+
+       addObservationEntry : `${backendUrl}/addObservationEntry`,
+
+////////////////////////////
+//////////////////////itreturnfilling surmmary //////////
+
+   fetchItReturns : `${backendUrl}/fetchItReturns`,
+
+
+////////////////////////end//////////////////////////////
+    // portal service
+    portal_getServices: `${backendUrl}/portal_getServices`,
+
+    portal_getServiceCriteriaPayment: `${backendUrl}/portal_getServiceCriteriaPayment`,
+
+    portal_getZohoClientName: `${backendUrl}/portal_getZohoClientName`,
+
+    removeServiceOrder: `${backendUrl}/removeServiceOrder`,
+
+    addServiceOrder: `${backendUrl}/addServiceOrder`,
+
+    getServiceOrdersForClient: `${backendUrl}/getServiceOrdersForClient`,
+    portal_paymentCreation: `${backendUrl}/portal_paymentCreation`,
+    speed_getPersonalDocuments: `${backendUrl}/speed_getPersonalDocuments`,
+    pm_saveProposal: `${backendUrl}/pm_saveProposal`,
   };
   let result = Buffer.from(JSON.stringify(endpoints)).toString("base64");
   return result;

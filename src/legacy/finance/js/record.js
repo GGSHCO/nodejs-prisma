@@ -51,11 +51,16 @@ const getRecordsGroupBy = async (params) => {
             }
             groupby = params.groupby.join(',');
         }
+         console.log(`SELECT ${sum}
+            FROM ${params.tableName}  where companyid='${params.companyid}'${filter}
+            GROUP BY ${groupby}`)
         let getData = await fetchTable(`
             SELECT ${sum}
             FROM ${params.tableName}  where companyid='${params.companyid}'${filter}
             GROUP BY ${groupby}
         `);
+
+       
 
         getData = getData.map(record => {
             sumList.forEach(key => {

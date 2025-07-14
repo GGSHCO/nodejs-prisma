@@ -15,22 +15,52 @@ async function getRecoTableData({ table, companyid, filter, fields }) {
                 if (item.value.includes(',')) {
                     const values = item.value.split(',').map(val => `${item.column}='${val.trim()}'`);
                     return `(${values.join(' or ')})`;
-                } else {
+                } else{
                     return `(${item.column}='${item.value}')`;
                 }
             } else if (item.type === "date") {
                 return `(CAST(${item.column} AS DATE) = '${item.value}')`;
             }
+            else if (item.type === "NOT NULL") {
+                return `(${item.column} IS NOT NULL AND ${item.column} <> '')`;
+            }
         }).filter(Boolean);
 
         let condition = conditions.length > 0 ? `and ${conditions.join(" and ")}` : "";
+        console.log(filter)
         if (table == 'creditcard') {
-            condition += ` and description not like '%RTGS Payment Received%' and description not like '%NEFT PAYMENT RECEIVED%' and description not like '%IGST%' and description not like '%DCC Fee%'`
+            // condition += ` and description not like '%RTGS Payment Received%' and description not like '%NEFT PAYMENT RECEIVED%' and description not like '%IGST%' and description not like '%DCC Fee%'`
         }
         console.log(condition)
         let res = await exeQuery(`select ${field} from ${table} where companyId='${companyid}'${condition}`)
         data = res.responseData.table
         return data
+    }
+    catch (error) {
+        return { error: true, message: error.message, details: error };
+    }
+}
+
+async function checkSummary(params){
+    try{
+        let res = await fetchTable(`select summary from temp_bots_summary where reco_id='${params.id}'`)
+        return res
+        }
+    catch (error) {
+        return { error: true, message: error.message, details: error };
+    }
+}
+
+async function saveSummary(params){
+    try{
+        let res;
+        if(params.type=='new'){
+            res=await exeQuery(`insert into temp_bots_summary (reco_id,summary) values  ('${params.id}','${params.summary}')`)
+        }
+        else if (params.type=='update'){
+            res=await exeQuery(`update temp_bots_summary set summary='${params.summary}' where reco_id='${params.id}'`)
+        }
+        return res
     }
     catch (error) {
         return { error: true, message: error.message, details: error };
@@ -123,4 +153,4 @@ async function removeLineItem(params) {
     }
 }
 
-module.exports = { getRecoTableData, removeLineItem, completeReco, completeBulkReco, rejectReco, deleteTableData, manualMatching }
+module.exports = { getRecoTableData,checkSummary, saveSummary,removeLineItem, completeReco, completeBulkReco, rejectReco, deleteTableData, manualMatching }

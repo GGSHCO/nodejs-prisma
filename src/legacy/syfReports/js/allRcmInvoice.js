@@ -597,7 +597,8 @@ function formatIndianCurrency(amount) {
 
 function formatDate(dateStr) {
     let date = new Date(dateStr);
-    let day = date.getDate().toString().padStart(2, '0');
+    // let day = ().toString().padStart(2, '0');
+    let day = date.getDate().toString().padStart(2, '0');//updated by sathish
     let month = date.toLocaleString('en-GB', { month: 'short' });
     let year = date.getFullYear().toString().slice(-2);
     return `${day}-${month}-${year}`;

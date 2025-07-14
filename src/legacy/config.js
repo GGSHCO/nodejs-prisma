@@ -1,14 +1,14 @@
-const sql = require('mssql');
-const { Connection, Request } = require('tedious');
+const sql = require("mssql");
+const { Connection, Request } = require("tedious");
 
-require('dotenv').config();
+require("dotenv").config();
 
-// const pythonUrl = "http://192.168.1.2:8000/"; // Local
+// const pythonUrl = process.env.PYTHON_BACKEND_URL; // changed to environment variable
 const pythonUrl = "https://speedyourfin.el.r.appspot.com/"; // Production
 let baseUrl = "https://speedappggsh.azurewebsites.net"; // Dev .Net
 // let baseUrl = "https://speedappggshprod.azurewebsites.net"; // Prod .Net meant for production which is not used right now
-const keyvaultURL = `https://kvl-ggshstorageaccount.vault.azure.net/`
-const jwt = require('jsonwebtoken');
+const keyvaultURL = `https://kvl-ggshstorageaccount.vault.azure.net/`;
+const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.JWT_SECRET;
 const EXPIRY_TIME = process.env.JWT_EXPIRY;
 
@@ -16,78 +16,75 @@ const EXPIRY_TIME = process.env.JWT_EXPIRY;
 
 // secret name qa => kvl-ggsh-sql-qa-conn-string
 
-
 const { DefaultAzureCredential } = require("@azure/identity");
 const { SecretClient } = require("@azure/keyvault-secrets");
 
 let credential = new DefaultAzureCredential();
 let client = new SecretClient(keyvaultURL, credential);
 
+async function connectWithDB() {
+  // connect.js
 
-async function connectWithDB(){
-// connect.js
+  // Read environment variables from .env (optional but recommended)
 
-// Read environment variables from .env (optional but recommended)
+  const config = {
+    server: process.env.AZURE_SQL_SERVER, // e.g. yourserver.database.windows.net
+    authentication: {
+      type: "default",
+      options: {
+        userName: process.env.AZURE_SQL_USER, // e.g. your username
+        password: process.env.AZURE_SQL_PASSWORD, // e.g. your password
+      },
+    },
+    options: {
+      database: process.env.AZURE_SQL_DATABASE, // your DB name
+      encrypt: true,
+      trustServerCertificate: false,
+    },
+  };
 
-const config = {
-server: process.env.AZURE_SQL_SERVER, // e.g. yourserver.database.windows.net
-authentication: {
-type: 'default',
-options: {
-userName: process.env.AZURE_SQL_USER, // e.g. your username
-password: process.env.AZURE_SQL_PASSWORD, // e.g. your password
-},
-},
-options: {
-database: process.env.AZURE_SQL_DATABASE, // your DB name
-encrypt: true,
-trustServerCertificate: false,
-},
-};
+  const connection = new Connection(config);
 
-const connection = new Connection(config);
+  connection.on("connect", (err) => {
+    if (err) {
+      console.error("Connection failed:", err.message);
+      return;
+    }
+    console.log("Connected to Azure SQL Database.");
 
-connection.on('connect', (err) => {
-if (err) {
-console.error('Connection failed:', err.message);
-return;
-}
-console.log('Connected to Azure SQL Database.');
+    const request = new Request("SELECT * from syf_", (err, rowCount) => {
+      if (err) {
+        console.error("Query failed:", err.message);
+      }
+      connection.close();
+    });
 
-const request = new Request('SELECT * from syf_', (err, rowCount) => {
-if (err) {
-console.error('Query failed:', err.message);
-}
-connection.close();
-});
+    request.on("row", (columns) => {
+      columns.forEach((column) => {
+        console.log(`${column.metadata.colName}: ${column.value}`);
+      });
+    });
 
-request.on('row', (columns) => {
-columns.forEach((column) => {
-console.log(`${column.metadata.colName}: ${column.value}`);
-});
-});
+    connection.execSql(request);
+  });
 
-connection.execSql(request);
-});
-
-connection.connect();
+  connection.connect();
 }
 
 // connectWithDB();
 
 async function getZBSecret(secretNamelList) {
-
-    let result = {};
-    for (let secretName of secretNamelList) {
-        try {
-            let secret = await client.getSecret(secretName);
-            result[secretName] = secret.value;
-        } catch (error) {
-            result[secretName] = error;
-        }
+  let result = {};
+  for (let secretName of secretNamelList) {
+    try {
+      let secret = await client.getSecret(secretName);
+      result[secretName] = secret.value;
+    } catch (error) {
+      result[secretName] = error;
     }
-    // console.log(result)
-    return result;
+  }
+  // console.log(result)
+  return result;
 }
 
 // let secret = getZBSecret(['kvl-ggsh-sql-prod-conn-string'])
@@ -100,10 +97,6 @@ async function getZBSecret(secretNamelList) {
 // }
 
 // main();
-
-
-
-
 
 // async function main() {
 //   const credential = new DefaultAzureCredential ();
@@ -138,46 +131,45 @@ async function getZBSecret(secretNamelList) {
 
 // Fetch BE table using SQL
 async function fetchTable(query) {
-    let getCompany_query = Buffer.from(query).toString('base64');
-    let getCompany_call = await queryGet([getCompany_query]);
-    let getCompany_res = getCompany_call.responseData.table;
-    return getCompany_res;
+  let getCompany_query = Buffer.from(query).toString("base64");
+  let getCompany_call = await queryGet([getCompany_query]);
+  // console.log(getCompany_call,"query response")
+  let getCompany_res = getCompany_call.responseData.table;
+  return getCompany_res;
 }
 
 // exeQuery
 async function exeQuery(query) {
-    let getCompany_query = Buffer.from(query).toString('base64');
-    let getCompany_call = await queryGet([getCompany_query]);
-    return getCompany_call;
+  let getCompany_query = Buffer.from(query).toString("base64");
+  let getCompany_call = await queryGet([getCompany_query]);
+  return getCompany_call;
 }
 
 // fetch options
 async function fetchOptions(query, labelName, valueName) {
-    let getTable_query = Buffer.from(query).toString('base64');
-    let getTable_call = await queryGet([getTable_query]);
-    let getTable_res = getTable_call.responseData.table;
+  let getTable_query = Buffer.from(query).toString("base64");
+  let getTable_call = await queryGet([getTable_query]);
+  let getTable_res = getTable_call.responseData.table;
 
-    let tableOptions = [];
-    getTable_res.filter((table) => {
-        if(table[labelName]!=null){
-            tableOptions.push({ label: table[labelName], value: table[valueName] });
-        }
-    });
+  let tableOptions = [];
+  getTable_res.filter((table) => {
+    if (table[labelName] != null) {
+      tableOptions.push({ label: table[labelName], value: table[valueName] });
+    }
+  });
 
-    return tableOptions;
+  return tableOptions;
 }
-
-
 
 // 1. API for SQL Query
 async function queryGet(data) {
-    let fe = await fetch(`${baseUrl}/api/Speed/DQLQueryExecution`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    })
-    let jsonfe = await fe.json();
-    return jsonfe;
+  let fe = await fetch(`${baseUrl}/api/Speed/DQLQueryExecution`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  let jsonfe = await fe.json();
+  return jsonfe;
 }
 
 // Bulk Insert
@@ -197,434 +189,503 @@ async function queryGet(data) {
 
 // python call
 
-
 // get schema
-
-
 
 // Decryption
 // Buffer.from(query,'base64').toString('utf-8');
 function INR(num) {
-    let currency = num.toLocaleString('en-IN', {
-        // style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0,
-        minimumFractionDigits: 0,
-    });
-    return currency;
+  let currency = num.toLocaleString("en-IN", {
+    // style: 'currency',
+    currency: "INR",
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  });
+  return currency;
 }
 
 // added Time generation
 function dateTimeGeneration(date) {
-    let dd = date.getDate();
-    let mm = date.getMonth() + 1;
-    let yy = date.getFullYear();
-    let dateFormat = yy + "-" + mm + "-" + dd;
-    let time = new Date().toLocaleTimeString().split(" ");
-    let addedTime = dateFormat + " " + time[0];
-    return addedTime
+  let dd = date.getDate();
+  let mm = date.getMonth() + 1;
+  let yy = date.getFullYear();
+  let dateFormat = yy + "-" + mm + "-" + dd;
+  let time = new Date().toLocaleTimeString().split(" ");
+  let addedTime = dateFormat + " " + time[0];
+  return addedTime;
 }
 
 async function changeSyncStatus({ lid, status, time }) {
-    try {
-        let res = await exeQuery(`update syf_usermaster set zbStatus='${status}',modifiedTime='${time}' where lid='${lid}'`)
-        return res
-    }
-    catch (error) {
-        return { error: true, message: error.message, details: error };
-    }
+  try {
+    let res = await exeQuery(
+      `update syf_usermaster set zbStatus='${status}',modifiedTime='${time}' where lid='${lid}'`
+    );
+    return res;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
 // mainJSon creation
 async function setMainJson({ userId, token }) {
-    try {
-        let mainJsonData = {}
-        let userRes = await fetchTable(`select lid,name,email,zbStatus from syf_usermaster where lid='${userId}'`)
-        mainJsonData.userName = userRes[0].name
-        mainJsonData.token = token
-        mainJsonData.userId = userRes[0].lid
-        mainJsonData.email = userRes[0].email
+  try {
+    let mainJsonData = {};
+    let userRes = await fetchTable(
+      `select lid,name,email,zbStatus from syf_usermaster where lid='${userId}'`
+    );
+    mainJsonData.userName = userRes[0].name;
+    mainJsonData.token = token;
+    mainJsonData.userId = userRes[0].lid;
+    mainJsonData.email = userRes[0].email;
 
-        let companyRes = await fetchTable(`select * from syf_companymaster where userid='${userId}' and defaultload='checked'`)
-        if (companyRes.length == 0) {
-            companyRes = await fetchTable(`select * from syf_companymaster where userid='${userId}'`)
-        }
-        if (companyRes.length > 0) {
-            mainJsonData.companyname = companyRes[0].companyname
-            mainJsonData.companyid = companyRes[0].companyid
-            mainJsonData.plan = companyRes[0].plan
-            mainJsonData.companyType = 'owned'
-            mainJsonData.defaultload = companyRes[0].defaultload
-        }
-        else if (companyRes.length == 0) {
-            let invitedUsers = await fetchTable(`select *  from invitedusers where inviteduserid='${userId}'`)
-            console.log(invitedUsers)
-            if (invitedUsers.length > 0) {
-                companyRes = await fetchTable(`select * from syf_companymaster where lid='${invitedUsers[0].companyid}'`)
-                mainJsonData.companyType = 'shared'
-                mainJsonData.defaultload = ""
-            }
-            else {
-                companyRes = []
-            }
-        }
-        if (companyRes.length > 0) {
-            let data = {
-                mainJsonData: mainJsonData,
-                companyid: companyRes[0].lid
-            }
-            let companyData = await getCompanyDetails(data)
-            mainJsonData = companyData
-
-        }
-        return mainJsonData
+    let companyRes = await fetchTable(
+      `select * from syf_companymaster where userid='${userId}' and defaultload='checked'`
+    );
+    if (companyRes.length == 0) {
+      companyRes = await fetchTable(
+        `select * from syf_companymaster where userid='${userId}'`
+      );
     }
-    catch (error) {
-        return { error: true, message: error.message, details: error };
+    if (companyRes.length > 0) {
+      mainJsonData.companyname = companyRes[0].companyname;
+      mainJsonData.companyid = companyRes[0].companyid;
+      mainJsonData.plan = companyRes[0].plan;
+      mainJsonData.companyType = "owned";
+      mainJsonData.defaultload = companyRes[0].defaultload;
+    } else if (companyRes.length == 0) {
+      let invitedUsers = await fetchTable(
+        `select *  from invitedusers where inviteduserid='${userId}'`
+      );
+      console.log(invitedUsers);
+      if (invitedUsers.length > 0) {
+        companyRes = await fetchTable(
+          `select * from syf_companymaster where lid='${invitedUsers[0].companyid}'`
+        );
+        mainJsonData.companyType = "shared";
+        mainJsonData.defaultload = "";
+      } else {
+        companyRes = [];
+      }
     }
+    if (companyRes.length > 0) {
+      let data = {
+        mainJsonData: mainJsonData,
+        companyid: companyRes[0].lid,
+      };
+      let companyData = await getCompanyDetails(data);
+      mainJsonData = companyData;
+    }
+    return mainJsonData;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
-async function getAcbkDetails({userid}){
-    try{
-        let res=await fetchTable(`select namepersoftware,software,organizationid,companyid,companyName from syf_companyacbkmaster where companyid in (select lid from syf_companymaster where userid='${userid}')`)
-        return res
-    }
-    catch (error) {
-        return { error: true, message: error.message, details: error };
-    }
+async function getAcbkDetails({ userid }) {
+  try {
+    let res = await fetchTable(
+      `select namepersoftware,software,organizationid,companyid,companyName from syf_companyacbkmaster where companyid in (select lid from syf_companymaster where userid='${userid}')`
+    );
+    return res;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
 async function getCompanyDetails({ mainJsonData, companyid }) {
-    try {
-        let companyData = await fetchTable(`select * from syf_companymaster where lid='${companyid}'`)
-        let companyRes = companyData[0]
-        mainJsonData.companyname = companyRes.companyname
-        mainJsonData.companyid = companyRes.lid
-        mainJsonData.plan = companyRes.subscription
-        mainJsonData.groupid=companyRes.groupid
-        mainJsonData.financialstartmonth = companyRes.financialstartmonth
-        if (companyRes.financialstartmonth == null) { companyRes.financialstartmonth = '04' }
-        let currentDate = new Date();
-        let year = currentDate.getFullYear();
-        let date = calculateFinancialYear(companyRes, year)
-        mainJsonData.dateDetails = date
-        let s = `select * from syf_companyacbkmaster where companyid='${companyRes.lid}'`; //  and fromdate >= '${date.startDate}' and todate <= '${date.endDate}'
-
-        let query = Buffer.from(s).toString('base64');
-        let book = await queryGet([query])
-
-        let books = book.responseData.table
-        if (books.length > 0) {
-            mainJsonData.books = books
-        }
-        if (mainJsonData.companyType == 'owned' && mainJsonData.plan !== undefined) {
-            let modulesRes = await fetchTable(`select module from syf_planmaster where 
-            name='${mainJsonData.plan}'`)
-            if (modulesRes.length > 0) {
-                let moduleList = JSON.parse(modulesRes[0].module).modules.join(', ');
-                if (moduleList) {
-                    let modules = await fetchTable(`select * from syf_modulemaster where lid in (${moduleList})`)
-                    mainJsonData.modules = modules
-                }
-            }
-        }
-        else {
-            let moduleRes = await fetchTable(`select modules from invitedusers where companyid='${companyRes.lid}' and inviteduserid='${mainJsonData.userId}'`)
-            if (moduleRes.length > 0) {
-                let moduleList = JSON.parse(moduleRes[0].modules).join(', ');
-                if (moduleList) {
-                    let modules = await fetchTable(`select * from syf_modulemaster where lid in (${moduleList})`)
-                    mainJsonData.modules = modules
-
-                }
-            }
-        }
-
-        return mainJsonData
+  try {
+    let companyData = await fetchTable(
+      `select * from syf_companymaster where lid='${companyid}'`
+    );
+    let companyRes = companyData[0];
+    mainJsonData.companyname = companyRes.companyname;
+    mainJsonData.companyid = companyRes.lid;
+    mainJsonData.plan = companyRes.subscription;
+    mainJsonData.groupid = companyRes.groupid;
+    mainJsonData.financialstartmonth = companyRes.financialstartmonth;
+    if (companyRes.financialstartmonth == null) {
+      companyRes.financialstartmonth = "04";
     }
-    catch (error) {
-        return { error: true, message: error.message, details: error };
+    let currentDate = new Date();
+    let year = currentDate.getFullYear();
+    let date = calculateFinancialYear(companyRes, year);
+    mainJsonData.dateDetails = date;
+    let s = `select * from syf_companyacbkmaster where companyid='${companyRes.lid}'`; //  and fromdate >= '${date.startDate}' and todate <= '${date.endDate}'
+
+    let query = Buffer.from(s).toString("base64");
+    let book = await queryGet([query]);
+
+    let books = book.responseData.table;
+    if (books.length > 0) {
+      mainJsonData.books = books;
+    }
+    if (
+      mainJsonData.companyType == "owned" &&
+      mainJsonData.plan !== undefined
+    ) {
+      let modulesRes =
+        await fetchTable(`select module from syf_planmaster where 
+            name='${mainJsonData.plan}'`);
+      if (modulesRes.length > 0) {
+        let moduleList = JSON.parse(modulesRes[0].module).modules.join(", ");
+        if (moduleList) {
+          let modules = await fetchTable(
+            `select * from syf_modulemaster where lid in (${moduleList})`
+          );
+          mainJsonData.modules = modules;
+        }
+      }
+    } else {
+      let moduleRes = await fetchTable(
+        `select modules from invitedusers where companyid='${companyRes.lid}' and inviteduserid='${mainJsonData.userId}'`
+      );
+      if (moduleRes.length > 0) {
+        let moduleList = JSON.parse(moduleRes[0].modules).join(", ");
+        console.log(moduleList);
+        if (moduleList) {
+          let modules = await fetchTable(
+            `select * from syf_modulemaster where lid in (${moduleList})`
+          );
+          mainJsonData.modules = modules;
+        }
+      }
     }
 
+    return mainJsonData;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
-async function getUserRoles(params){
-    try{
-     let userRoles=await fetchTable(`select role from invitedusers where inviteduseremail='${params.email}' and companyid='${params.companyid}'`)
-        console.log(userRoles)
-     return userRoles;
-    }
-    catch (error) {
-        return { error: true, message: error.message, details: error };
-    }
-
+async function getUserRoles(params) {
+  try {
+    let userRoles = await fetchTable(
+      `select role from invitedusers where inviteduseremail='${params.email}' and companyid='${params.companyid}'`
+    );
+    console.log(userRoles);
+    return userRoles;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
 function calculateFinancialYear(companyRes, year) {
-    let fs_startMonth = Number(companyRes.financialstartmonth);
-    let currentDate = new Date();
-    let currentYear, previousYear, startMonth, endMonth, startDate, endDate, cy_current, cy_previous;
+  let fs_startMonth = Number(companyRes.financialstartmonth);
+  let currentDate = new Date();
+  let currentYear,
+    previousYear,
+    startMonth,
+    endMonth,
+    startDate,
+    endDate,
+    cy_current,
+    cy_previous;
 
-    if (fs_startMonth == 0) {
-        currentYear = year;
-        previousYear = Number(year) - 1;
-        cy_current = year;
-        cy_previous = Number(cy_current) - 1;
-        startMonth = companyRes.financialstartmonth;
-        endMonth = 12;
-        if (endMonth < 9) {
-            endMonth = `0${endMonth}`;
-        }
-        startDate = `${year}-${companyRes.financialstartmonth}-01`;
-        endDate = `${year}-${endMonth}-31`;
-    } else {
-        let year_suffix = Number(year.toString().substring(2, 4));
-        let currentYear_dateFormat = new Date(`${year}-${companyRes.financialstartmonth}-01`);
-        let previousYear_dateFormat = new Date(currentYear_dateFormat.setMonth(currentYear_dateFormat.getMonth() - 12));
-        endMonth = previousYear_dateFormat.getMonth();
-        if (endMonth < 9) {
-            endMonth = `0${endMonth}`;
-        }
-
-        // Adjust currentYear and previousYear based on startMonth
-        if (currentDate.getFullYear() === year && currentDate.getMonth() + 1 < fs_startMonth) {
-            currentYear = `${year - 1}-${year_suffix}`;
-            previousYear = `${year - 2}-${year_suffix - 1}`;
-            startDate = `${year - 1}-${companyRes.financialstartmonth}-01`;
-            endDate = `${year}-${endMonth}-31`;
-            cy_current = Number("20" + (year_suffix));
-            cy_previous = Number(cy_current) - 1;
-        } else {
-            startDate = `${year}-${companyRes.financialstartmonth}-01`;
-            endDate = `${year + 1}-${endMonth}-31`;
-            currentYear = `${year}-${year_suffix + 1}`;
-            previousYear = `${year - 1}-${year_suffix}`;
-            cy_current = Number("20" + (year_suffix + 1));
-            cy_previous = Number(cy_current) - 1;
-        }
-
-        startMonth = companyRes.financialstartmonth;
+  if (fs_startMonth == 0) {
+    currentYear = year;
+    previousYear = Number(year) - 1;
+    cy_current = year;
+    cy_previous = Number(cy_current) - 1;
+    startMonth = companyRes.financialstartmonth;
+    endMonth = 12;
+    if (endMonth < 9) {
+      endMonth = `0${endMonth}`;
+    }
+    startDate = `${year}-${companyRes.financialstartmonth}-01`;
+    endDate = `${year}-${endMonth}-31`;
+  } else {
+    let year_suffix = Number(year.toString().substring(2, 4));
+    let currentYear_dateFormat = new Date(
+      `${year}-${companyRes.financialstartmonth}-01`
+    );
+    let previousYear_dateFormat = new Date(
+      currentYear_dateFormat.setMonth(currentYear_dateFormat.getMonth() - 12)
+    );
+    endMonth = previousYear_dateFormat.getMonth();
+    if (endMonth < 9) {
+      endMonth = `0${endMonth}`;
     }
 
-    return {
-        currentYear,
-        previousYear,
-        startMonth,
-        endMonth,
-        startDate,
-        endDate,
-        cy_current,
-        cy_previous
-    };
+    // Adjust currentYear and previousYear based on startMonth
+    if (
+      currentDate.getFullYear() === year &&
+      currentDate.getMonth() + 1 < fs_startMonth
+    ) {
+      currentYear = `${year - 1}-${year_suffix}`;
+      previousYear = `${year - 2}-${year_suffix - 1}`;
+      startDate = `${year - 1}-${companyRes.financialstartmonth}-01`;
+      endDate = `${year}-${endMonth}-31`;
+      cy_current = Number("20" + year_suffix);
+      cy_previous = Number(cy_current) - 1;
+    } else {
+      startDate = `${year}-${companyRes.financialstartmonth}-01`;
+      endDate = `${year + 1}-${endMonth}-31`;
+      currentYear = `${year}-${year_suffix + 1}`;
+      previousYear = `${year - 1}-${year_suffix}`;
+      cy_current = Number("20" + (year_suffix + 1));
+      cy_previous = Number(cy_current) - 1;
+    }
+
+    startMonth = companyRes.financialstartmonth;
+  }
+
+  return {
+    currentYear,
+    previousYear,
+    startMonth,
+    endMonth,
+    startDate,
+    endDate,
+    cy_current,
+    cy_previous,
+  };
 }
 
 //  mainJson end
 
 // fetch user , company info
 
-async function fetchUserInfo({ username,source,mainJson }) {
-    let getUser_query = await fetchTable(`select lid,email,profileimage,name,zbStatus,country,phonenumber from SYF_USERMASTER where EMAIL='${username}'`);
-    let userInfo = getUser_query[0]
+async function fetchUserInfo({ username, source, mainJson }) {
+  let getUser_query = await fetchTable(
+    `select lid,email,profileimage,name,zbStatus,country,phonenumber from SYF_USERMASTER where EMAIL='${username}'`
+  );
+  let userInfo = getUser_query[0];
+  console.log(username);
+  // Fetch Company Information
+  let userid = userInfo.lid;
+  let getCompany_query = await fetchTable(
+    `select * from SYF_COMPANYMASTER where USERID='${userid}'`
+  );
+  let getCompany_res = getCompany_query;
+  let companyInfo;
+  if (getCompany_res.length != 0) {
+    companyInfo = getCompany_res;
+  } else {
+    companyInfo = [];
+  }
+  let sharedCompanyInfo = [];
 
-    // Fetch Company Information
-    let userid = userInfo.lid
-    let getCompany_query = await fetchTable(`select * from SYF_COMPANYMASTER where USERID='${userid}'`);
-    let getCompany_res = getCompany_query
-    let companyInfo;
-    if (getCompany_res.length != 0) {
-        companyInfo = getCompany_res;
-    }
-    else {
-        companyInfo = [];
-    }
-    let sharedCompanyInfo = []
+  let getSharedCompany_query = await fetchTable(
+    `select * from INVITEDUSERS where INVITEDUSERID='${userid}' and status='accepted'`
+  );
+  let getSharedCompany_res = getSharedCompany_query;
+  if (getSharedCompany_res.length != undefined) {
+    sharedCompanyInfo = getSharedCompany_res;
+  }
 
-    let getSharedCompany_query = await fetchTable(`select * from INVITEDUSERS where INVITEDUSERID='${userid}' and status='accepted'`);
-    let getSharedCompany_res = getSharedCompany_query
-    if (getSharedCompany_res.length != undefined) {
-        sharedCompanyInfo = getSharedCompany_res;
+  // check if user has access to that page
+  let access;
+  if (mainJson.hasOwnProperty("modules")) {
+    let modules = mainJson.modules;
+    let list = [
+      "index.html",
+      "settings/companyPage.html",
+      "settings/addGroup.html",
+      "settings/users-profile.html",
+      "login/login.html",
+      "syf-signup/signup.html",
+      "settings/myPlanPage.html",
+    ];
+    if (!list.includes(source)) {
+      let findModule = modules.filter((item) => item.source == source);
+      if (findModule.length == 0) {
+        access = false;
+      } else if (findModule.length == 1) {
+        access = true;
+      }
+    } else {
+      access = true;
     }
-
-    // check if user has access to that page
-    let access;
-    if(mainJson.hasOwnProperty('modules')){
-        let modules=mainJson.modules
-        let list=['index.html','settings/companyPage.html','settings/addGroup.html','settings/users-profile.html','login/login.html','syf-signup/signup.html','settings/myPlanPage.html']
-    if(!list.includes(source)){
-        let findModule = modules.filter((item) => item.source == source);
-        if(findModule.length==0){
-            access=false
-        }
-        else if(findModule.length==1){
-            access=true
-        }
-    }
-    else{
-        access=true
-    }
-    }
-    let companyid=mainJson.companyid
-    let data={
-        mainJson:mainJson,
-        companyid:companyid
-    }
-    // let getModules = await getCompanyDetails(data)
-    let moduleStatus="No change"
-    // if(mainJson.modules.length!=getModules.modules.length){
-    //     moduleStatus=getModules.modules
-    // }
-    return {
-        userInfo: userInfo,
-        companyInfo: companyInfo,
-        sharedCompanyInfo: sharedCompanyInfo,
-        access:access,
-        moduleStatus:moduleStatus
-    }
+  }
+  let companyid = mainJson.companyid;
+  let data = {
+    mainJson: mainJson,
+    companyid: companyid,
+  };
+  // let getModules = await getCompanyDetails(data)
+  let moduleStatus = "No change";
+  // if(mainJson.modules.length!=getModules.modules.length){
+  //     moduleStatus=getModules.modules
+  // }
+  return {
+    userInfo: userInfo,
+    companyInfo: companyInfo,
+    sharedCompanyInfo: sharedCompanyInfo,
+    access: access,
+    moduleStatus: moduleStatus,
+  };
 }
 
-// invited users 
+// invited users
 
 async function getUserModules({ companyid }) {
-    try {
-        let res = await fetchTable(`select * from syf_companymaster where LID='${companyid}'`)
-        if (res != undefined & res.length > 0) {
-            let plan = res[0].subscription
-            let getModules = await fetchTable(`select * from SYF_PLANMASTER where NAME='${plan}'`)
-            let getModule = JSON.parse(getModules[0].module)
-            let modulesId = getModule.modules
-            if (modulesId.length > 0) {
-                let formattedIds = modulesId.join(', ');
-                let modulesQuery = await fetchTable(`select * from SYF_MODULEMASTER WHERE LID IN (${formattedIds});`)
-                let moduleList = modulesQuery.map((item) => { return { label: `${item.name} - ${item.subcategory}`, value: item.lid } })
-                return moduleList
-            }
-            else {
-                return []
-            }
-        }
+  try {
+    let res = await fetchTable(
+      `select * from syf_companymaster where LID='${companyid}'`
+    );
+    if ((res != undefined) & (res.length > 0)) {
+      let plan = res[0].subscription;
+      let getModules = await fetchTable(
+        `select * from SYF_PLANMASTER where NAME='${plan}'`
+      );
+      let getModule = JSON.parse(getModules[0].module);
+      let modulesId = getModule.modules;
+      if (modulesId.length > 0) {
+        let formattedIds = modulesId.join(", ");
+        let modulesQuery = await fetchTable(
+          `select * from SYF_MODULEMASTER WHERE LID IN (${formattedIds});`
+        );
+        let moduleList = modulesQuery.map((item) => {
+          return {
+            label: `${item.name} - ${item.subcategory}`,
+            value: item.lid,
+          };
+        });
+        return moduleList;
+      } else {
+        return [];
+      }
     }
-    catch (error) {
-        return { error: true, message: error.message, details: error };
-    }
-
-
-
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
-async function getRoles({companyId}) {
-    try {
-        let getRoles_res = await fetchTable(`SELECT distinct role from roles where companyId='${companyId}'`)
-        let rolesOption = [];
-        if (getRoles_res.length > 0) {
-            getRoles_res.map((roles) => {
-                rolesOption.push({ label: roles.role, value: roles.role });
-            });
-        }
-
-
-        let response = {
-            options: rolesOption,
-            res: getRoles_res
-        }
-        return response;
+async function getRoles({ companyId }) {
+  try {
+    let getRoles_res = await fetchTable(
+      `SELECT distinct role from roles where companyId='${companyId}'`
+    );
+    let rolesOption = [];
+    if (getRoles_res.length > 0) {
+      getRoles_res.map((roles) => {
+        rolesOption.push({ label: roles.role, value: roles.role });
+      });
     }
-    catch (error) {
-        return { error: true, message: error.message, details: error };
-    }
+
+    let response = {
+      options: rolesOption,
+      res: getRoles_res,
+    };
+    return response;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
-
-async function getCountry(){
-    try{
-        let res=await fetchOptions(`select * from countryMaster`,"country","country")
-        return res
-    }
-    catch (error) {
-        return { error: true, message: error.message, details: error };
-    }
+async function getCountry() {
+  try {
+    let res = await fetchOptions(
+      `select * from countryMaster`,
+      "country",
+      "country"
+    );
+    return res;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
 async function workPaper(data, url) {
-    try{
-        let fe = await fetch(pythonUrl + url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-        let jsonfe = await fe.json();
-        return jsonfe;
-    }
-    catch (error) {
-        return { error: true, message: error.message, details: error };
-    }
-    
+  try {
+    let fe = await fetch(pythonUrl + url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    let jsonfe = await fe.json();
+    return jsonfe;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
 // Send mail
-async function sendMail({data}) {
-    let formData = new FormData();
-    // data.RecipientList.forEach(item => {
-    //     formData.append("RecipientList", item);
-    //   });
-    //   if data has no cc
-    if(data.BCCList!==undefined){
-        data.BCCList.forEach(item => {
-            formData.append("BCCList", item);
-          });
+async function sendMail({ data }) {
+  let formData = new FormData();
+
+  //   if data has no cc
+  if (data.BCCList !== undefined) {
+    data.BCCList.forEach((item) => {
+      formData.append("BCCList", item);
+    });
+  }
+  if (data.CCList !== undefined) {
+    if (data.CCList.length > 1) {
+      data.CCList.forEach((item) => {
+        formData.append("CCList", item);
+      });
+    } else {
+      formData.append("CCList", data.CCList);
     }
-    if(data.CCList!==undefined){
-    formData.append("CCList", data.CCList);
+  }
+  if (data.RecipientList != undefined) {
+    if (data.RecipientList.length > 1) {
+      data.RecipientList.forEach((item) => {
+        formData.append("RecipientList", item);
+      });
+    } else {
+      formData.append("RecipientList", data.RecipientList);
     }
-    if(data.RecipientList!=undefined){
-    formData.append("RecipientList", data.RecipientList);
-    }
-    else{
+  } else {
     formData.append("RecipientList", []);
+  }
+
+  formData.append("Subject", data.Subject);
+  formData.append("Body", data.Body);
+  let fe = await fetch(
+    `${baseUrl}/api/GGSHEmailService/GGSHEmailSenderService`,
+    {
+      method: "POST",
+      body: formData,
     }
-    
-    formData.append("Subject", data.Subject);
-    formData.append("Body", data.Body);
-    let fe = await fetch(`${baseUrl}/api/GGSHEmailService/GGSHEmailSenderService`, {
-        method: "POST",
-        body: formData
-    })
-    let jsonfe = await fe.text();
-    return jsonfe;
+  );
+  let jsonfe = await fe.text();
+  return jsonfe;
 }
 
 // Get Schema Details
 async function getSchema() {
-    let fe = await fetch(baseUrl + "/api/Speed/GetTablecolumnSchemaDetails", {
-        method: "GET",
-        headers: { "Content-Type": "application/json", 'accept': 'text/plain', "Access-Control-Allow-Origin": "*" },
-    })
-    let jsonfe = await fe.json();
-    return jsonfe;
+  let fe = await fetch(baseUrl + "/api/Speed/GetTablecolumnSchemaDetails", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      accept: "text/plain",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+  let jsonfe = await fe.json();
+  return jsonfe;
 }
 
 // bulk insert api
 async function bulkInsert(data) {
-    let fe = await fetch(baseUrl + "/api/Speed/BulkInsertJsonToDataStore", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", 'accept': 'text/plain', "Access-Control-Allow-Origin": "*" },
-        body: JSON.stringify(data)
-    })
-    let jsonfe = await fe.json();
-    return jsonfe;
+  let fe = await fetch(baseUrl + "/api/Speed/BulkInsertJsonToDataStore", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      accept: "text/plain",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify(data),
+  });
+  let jsonfe = await fe.json();
+  return jsonfe;
 }
 
-async function getAcceptedInvites({lid}) {
-    try{
-        let getRoles_res = await fetchTable(`SELECT * from INVITEDUSERS where inviteduserid='${lid}' and status='pending'`)
-    let length = getRoles_res.length
+async function getAcceptedInvites({ lid }) {
+  try {
+    let getRoles_res = await fetchTable(
+      `SELECT * from INVITEDUSERS where inviteduserid='${lid}' and status='pending'`
+    );
+    let length = getRoles_res.length;
     let notifyList = `<li class="dropdown-header notificationItem">
                         You have <span class="top_count"></span> notifications
                     </li>
                     <li>
                         <hr class="dropdown-divider">
-                    </li>`
+                    </li>`;
     getRoles_res.filter((item) => {
-        notifyList += `<li class="notification-item d-flex justify-content-center align-items-center p-3">
+      notifyList += `<li class="notification-item d-flex justify-content-center align-items-center p-3">
                             <div>
                                 <div>
                                     <h5>Invitation from ${item.addeduser}</h5>
@@ -636,34 +697,53 @@ async function getAcceptedInvites({lid}) {
 
                         <li>
                             <hr class="dropdown-divider">
-                        </li>`
-    })
+                        </li>`;
+    });
     return {
-        notifyList:notifyList,
-        length:length
-    }
-    }
-    catch (error) {
-        return { error: true, message: error.message, details: error };
-    }
-}
-
-async function changeInviteStatus({id, status}) {
-    try{
-    let changeStatus_query = await exeQuery(`UPDATE INVITEDUSERS SET STATUS='${status}' where LID='${id}'`)
-    return changeStatus_query
-}
-catch (error) {
+      notifyList: notifyList,
+      length: length,
+    };
+  } catch (error) {
     return { error: true, message: error.message, details: error };
+  }
 }
 
+async function changeInviteStatus({ id, status }) {
+  try {
+    let changeStatus_query = await exeQuery(
+      `UPDATE INVITEDUSERS SET STATUS='${status}' where LID='${id}'`
+    );
+    return changeStatus_query;
+  } catch (error) {
+    return { error: true, message: error.message, details: error };
+  }
 }
 
-
-
-
-
-module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendMail,getSchema,bulkInsert,setMainJson,getRoles, fetchUserInfo, queryGet,changeSyncStatus, exeQuery, fetchOptions, bulkInsert, INR, dateTimeGeneration, getZBSecret, workPaper, getCompanyDetails, getUserRoles,getUserModules,getAcceptedInvites }
+module.exports = {
+  fetchTable,
+  getAcbkDetails,
+  getCountry,
+  changeInviteStatus,
+  sendMail,
+  getSchema,
+  bulkInsert,
+  setMainJson,
+  getRoles,
+  fetchUserInfo,
+  queryGet,
+  changeSyncStatus,
+  exeQuery,
+  fetchOptions,
+  bulkInsert,
+  INR,
+  dateTimeGeneration,
+  getZBSecret,
+  workPaper,
+  getCompanyDetails,
+  getUserRoles,
+  getUserModules,
+  getAcceptedInvites,
+};
 
 // let baseUrl, formUrl, pythonUrl, getRole, userInfo, companyInfo, sharedCompanyInfo, nodejsUrl, companyId, financialStartYear, financialEndYear, dateDetails, client, roles, modulesOptions;
 
@@ -707,7 +787,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //                                 </div>
 //                             </div>
 
-
 //                             <div class="row mb-3">
 //                                 <label for="calendarYear" class="col-sm-3 col-form-label">Calendar Year</label>
 //                                 <div class="col-sm-7">
@@ -720,7 +799,7 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //                                     <div id="month"></div>
 //                                 </div>
 //                             </div>
-//                             <div class="row mb-3">  
+//                             <div class="row mb-3">
 //                                 <label for="gstin" class="col-sm-3 col-form-label">GSTIN</label>
 //                                 <div class="col-sm-7">
 //                                     <div id="gstin"></div>
@@ -745,8 +824,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 
 // }
 
-
-
 // // ******************************** Page Components Fetch Start ********************************
 // $(document).ready(async () => {
 
@@ -760,7 +837,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     //     activeSideBar()
 //     // }
 //     // atchaya
-
 
 //     await fetchTopbar();
 //     // Fetch Topbar
@@ -819,9 +895,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 
 //     // // Call the cache update function
 //     // updateCache();
-
-
-
 
 //     // end by yohana
 
@@ -906,7 +979,7 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //                 for (const item of company) {
 //                     let companyName = client.res.find((company) => company.lid == item)?.companyname;
 //                     let emailCheckQuery = stringToBase64(`
-//                         SELECT 1 FROM invitedusers 
+//                         SELECT 1 FROM invitedusers
 //                         WHERE companyname = '${companyName}' AND inviteduseremail = '${userEmail}'
 //                     `);
 //                     let result = await queryGet([emailCheckQuery]);
@@ -986,13 +1059,7 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     })
 // }
 
-
 // // ******************************** Page Components Fetch End ********************************
-
-
-
-
-
 
 // // ******************************** API Section Start ********************************
 // // 1. API for SQL Query
@@ -1126,11 +1193,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //         $(".topbar_item").show()
 //     }
 
-
-
-
-
-
 //     // // set in local storage - topbar,sidebar atchaya
 //     // let info = localStorage.getItem('sidebar')
 //     // let topbar = localStorage.getItem('topbar')
@@ -1158,7 +1220,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //             showModules(getModule);
 //             await fetchSelectedCompany();
 
-
 //         }
 //     }
 
@@ -1174,7 +1235,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     // }
 
 //     // atchaya end
-
 
 //     return userInfo
 // }
@@ -1298,9 +1358,8 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //                         <span>Home</span>
 //                     </a>
 //                 </li>
-                
+
 //                 ${li}
-                
 
 //             </ul>
 
@@ -1317,7 +1376,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //         $(`#${activeLink}`).parent().parent().parent().find('.nav-link').addClass('activeTab')
 //         $(`#${activeLink}`).parent().parent().addClass('show')
 //         $(`#${activeLink}`).parent().parent().addClass('active')
-
 
 //     }
 //     else {
@@ -1339,7 +1397,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //         $(`#${activeLink}`).parent().parent().addClass('show')
 //         $(`#${activeLink}`).parent().parent().addClass('active')
 
-
 //     }
 //     else {
 //         $(`#${activeLink}`).addClass('active')
@@ -1353,9 +1410,8 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     //sidebar active-Atchaya end
 // }
 
-
 // // async function fetchSelectedCompany() {
-// //  
+// //
 // //         if (localStorage.getItem("company") == null || localStorage.getItem("company") == "null") {
 // //             let selectedCompany;
 // //             let defaultCompany = companyInfo.filter((company) => {
@@ -1376,7 +1432,7 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 
 // //         }
 // //         let localHistory = JSON.parse(base64ToString(localStorage.getItem("company")));
-// //     
+// //
 // //     //check if localstorage company -shared atchaya
 // //     let sharedcompany = sharedCompanyInfo.filter((company) => {
 // //         return (company.companyid == localHistory.companyID)
@@ -1448,7 +1504,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 // //     //         }
 // //     //     }
 // //     // })
-
 
 // //     // shared module restriction - Atchaya
 // //     if (localStorage.getItem('moduleType') == 'shared') {
@@ -1532,7 +1587,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //         });
 //     }
 
-
 //     sharedCompanyInfo.filter((company) => company.companyid !== localHistory.companyID)
 //         .map((company) => {
 //             companyOptions += `
@@ -1563,7 +1617,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     await fetchSelectedFinancialYear(selectedCompany_id);
 // }
 
-
 // //fetch financial start and end year -Atchaya
 // async function fetchSelectedFinancialYear(selectedCompany_id) {
 //     let calendarYear = ["2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030"];
@@ -1582,7 +1635,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //         cy_previous = dateDetails.cy_previous
 
 //     } else {
-
 
 //         let company_fe = await fetchTable(`select * from syf_companymaster where lid='${selectedCompany_id}'`)
 //         let company = company_fe[0]
@@ -1625,7 +1677,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 
 //         }
 
-
 //     }
 
 //     $('.selectFinancialYear').text(currentYear)
@@ -1656,7 +1707,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 
 // // Fetch all table names
 
-
 // var test;
 
 // // async function fetchSelectedCompany() {
@@ -1673,7 +1723,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 // //             companyInfo = { 'status': 'No Company' }
 // //         }
 // //         localStorage.setItem("company", stringToBase64(JSON.stringify(companyInfo)));
-
 
 // //     }
 // //     let localHistory = JSON.parse(base64ToString(localStorage.getItem("company")));
@@ -1716,9 +1765,7 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 
 // //     fetchSelectedFinancialYear()
 
-
 // // }
-
 
 // // function fetchSelectedFinancialYear() {
 // //     // let calendarYear = ["2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030"];
@@ -1742,8 +1789,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 // //         // let company_fe = await fetchTable(`select * from syf_companymaster where lid='${companyInfo.lid}'`)
 // //         let company = companyInfo
 // //         let fs_startMonth = Number(company.financialstartmonth)
-
-
 
 // //         let currentDate = new Date();
 // //         let year = currentDate.getFullYear();
@@ -1782,9 +1827,7 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 
 // //         }
 
-
 // //     }
-
 
 // //     let financialYearOptions = ""
 // //     financialYear.forEach((year) => {
@@ -1810,25 +1853,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 // //     $('.selectFinancialYear').text(currentYear)
 
 // // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // async function fetchTableList() {
 //     let getTable_query = stringToBase64(`select * from tableMaster`);
@@ -1899,8 +1923,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     let jsonfe = await fe.text();
 //     return jsonfe;
 // }
-
-
 
 // // function to get entity types
 // async function getEntity() {
@@ -2012,7 +2034,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     let getCompanyAcbk_call = await queryGet([getCompanyAcbk_query]);
 //     let getCompanyAcbk_res = getCompanyAcbk_call.responseData.table;
 
-
 //     let accountOptions = [];
 //     getCompanyAcbk_res.map((compaccounts) => {
 //         accountOptions.push(compaccounts);
@@ -2075,7 +2096,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     let inviteUserRes = await recordGetPost(invitedUsers);
 //     return inviteUserRes;
 // }
-
 
 // // Get All users
 // async function getMasterUserList() { // EmailList
@@ -2168,7 +2188,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     }
 // }
 
-
 // // Bulk Insert
 // async function bulkInsert(data) {
 //     let fe = await fetch(baseUrl + "/api/Speed/BulkInsertJsonToDataStore", {
@@ -2179,8 +2198,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     let jsonfe = await fe.json();
 //     return jsonfe;
 // }
-
-
 
 // // Get ALL ggshCoa
 // async function getGgshCoa(company) {
@@ -2231,7 +2248,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     return getSpeedFileDrive_res;
 // }
 
-
 // // / Get global report master
 // async function getGlobalReportMaster() {
 //     let getGlobalAudit_query = stringToBase64(`SELECT * FROM GlobalReportMaster`);
@@ -2253,7 +2269,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     let getTransactionAudit_res = getTransactionAudit_call.responseData.table;
 //     return getTransactionAudit_res;
 // }
-
 
 // async function getGlobalTemplateMaster() {
 //     let getGlobalAudit_query = stringToBase64(`SELECT * FROM SYF_GLOBALTEMPLATES`);
@@ -2279,7 +2294,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 // // get Total Collections
 // async function getTotalCollections() {
 
-
 //     let date_query = stringToBase64(`SELECT *
 //     FROM AllInvoices
 //     WHERE status='Collected'`);
@@ -2297,7 +2311,7 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 //                 <span aria-hidden="true">&times;</span>
 //             </button>
-            
+
 //         </div>`
 
 //     $(".topbar").prepend(res);
@@ -2351,7 +2365,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     });
 //     return monthOption;
 // }
-
 
 // // Fetch all the months
 // async function getMonth() {
@@ -2419,7 +2432,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 // // AR datas fetch end
 // //******************************** API Templates End ********************************
 
-
 // //******************************** Common Workflows Start ********************************
 // // alert close workflow
 // $("body").on("click", ".close", (e) => {
@@ -2427,7 +2439,7 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 // })
 // $("body").on("click", ".signout", () => {
 //     // Optionally, redirect to a different page
-    
+
 //     localStorage.removeItem("user");
 //     localStorage.removeItem("date");
 //     localStorage.removeItem("company");
@@ -2441,7 +2453,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     window.history.pushState(null, '', `${formUrl}/landingPage/landingPage.html`);
 //     window.history.go(-1); // Go back to previous page
 //     window.history.go(-1); // Go back again to remove the original page from history
-
 
 // })
 // // Logout button click handler
@@ -2488,7 +2499,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 // // if (!userSession) {
 // //     window.open(`${formUrl}/landingPage/landingPage.html`);
 // // }
-
 
 // // $("body").on("click", ".signout", async () => {
 // //     // Clear local and session storage
@@ -2594,7 +2604,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     localStorage.setItem('activeModule', value)
 // })
 
-
 // // onclick of financial start year option - Atchaya
 // $(document).on('click', '.startYearOption', async (e) => {
 //     let value = $(e.currentTarget).text()
@@ -2652,7 +2661,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     dateDetails = date;
 // })
 
-
 // // sql functions
 // async function recordGetPost(data) {
 //     let fe = await fetch(baseUrl + "/api/Speed/DynamicGetDataTable", {
@@ -2663,7 +2671,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     let jsonfe = await fe.json();
 //     return jsonfe;
 // }
-
 
 // //CRUD Operation API
 // async function recordOperation(record) {
@@ -2676,15 +2683,13 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     return postJsonfe;
 // }
 
-
-
 // async function createNewCompany() {
 //     let addedTime = dateTimeGeneration(new Date());
 //     let companyName = `Company_${addedTime}`;
 //     let insertCompany = await exeQuery(`INSERT INTO SYF_COMPANYMASTER
 //             (USERID,USERNAME,EMAIL,COMPANYNAME,ADDEDTIME,ADDEDUSER)
 //             VALUES
-//             ('${userInfo.lid}','${userInfo.name}','${userInfo.email}','${companyName}','${addedTime}','${userInfo.name}') 
+//             ('${userInfo.lid}','${userInfo.name}','${userInfo.email}','${companyName}','${addedTime}','${userInfo.name}')
 //         `);
 
 //     let fetchCompany = await fetchTable(`select * from syf_companymaster where companyName='${companyName}'`)
@@ -2728,8 +2733,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 // }
 
 // //******************************** Common Workflows End ********************************
-
-
 
 // //******************************** Loader Section End ********************************
 // // Page Loader
@@ -2796,10 +2799,7 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     }
 // }
 
-
-
 // //******************************** Loader Section End ********************************
-
 
 // //******************************** Encryption Start ********************************
 // //Convert string to base64
@@ -2875,7 +2875,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     catch (error) {
 //     }
 // }
-
 
 // // project management fetch end
 
@@ -3021,7 +3020,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     return response;
 // }
 
-
 // async function getAcademyEvent() {
 //     let getcourseEvent_query = stringToBase64(`SELECT * FROM academyEvent`);
 //     let getcourseEvent_call = await queryGet([getcourseEvent_query]);
@@ -3118,9 +3116,7 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     return response;
 // }
 
-
 // // ACADEMY
-
 
 // async function getUserSpecificRoles() {
 //     let getRoles_query = stringToBase64(`SELECT role from INVITEDUSERS where inviteduseremail='${userInfo.email}'`)
@@ -3135,7 +3131,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //         return getRoles_res[0].role;
 //     }
 // }
-
 
 // async function getMaxContId() {
 //     company = JSON.parse(base64ToString(localStorage.getItem("company")));
@@ -3212,7 +3207,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     let crntYearFormat = dateDetails.cy_current;
 //     let prevYearFormat = dateDetails.cy_previous;
 
-
 //     // let split1 = crntFY.split("-")
 //     // if (split1.length == 0) {
 //     //     prevFY = Number(split1[0]) - 1;
@@ -3233,15 +3227,10 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //     // }
 //     // let tbData = await workPaper(data, "feAnnualTb");
 
-
-
 //     let queryTB = stringToBase64(`SELECT * FROM dbo.fnfetchAnnualTb('${client}','${preYear}','${crntYear}') ORDER BY alieSeq,classificationSeq,headSeq,subHeadSeq`);
 //     let getQuery = await queryGet([queryTB]);
 //     let tbData = getQuery.responseData.table;
 //     if (tbData.length != 0) {
-
-
-
 
 //         let bs_alieList = [];
 //         let pl_alieList = [];
@@ -3256,8 +3245,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //         let bs_uniqueAlieList = Array.from(new Set(bs_alieList));
 //         let pl_uniqueAlieList = Array.from(new Set(pl_alieList));
 
-
-
 //         // ********************* Financials Profit & Loss table formation start *********************
 //         let headList_check = [];
 //         bs_uniqueAlieList.map((alie) => {
@@ -3268,7 +3255,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //             });
 //         });
 //         let uniqueHeadList_check = Array.from(new Set(headList_check));
-
 
 //         let headCount = uniqueHeadList_check.length + 1;
 //         $(".tbNotes_bs").html("");
@@ -3436,7 +3422,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //                     }
 //                     plRow += `<tr class="tbsHead subHeadNavigation" onclick="subHeadNavigation('pl${headCount}')"><td id="${pageId_head}" style="position:relative;text-align:left;padding-left:60px;" class="contextList">${head}</td><td class="fs_notes"  style="text-align:center;padding:0px;">${headCount}</td><td id="${pageId_head_crntClosing}" style="position:relative;text-align:right;" class="contextList  fs_yearCount">${INR(bs_crnt_value)}</td><td  id="${pageId_head_preClosing}" style="position:relative;text-align:right;border-left:1px solid black;" class="contextList fs_yearCount">${INR(bs_prev_value)}</td></tr>`;
 
-
 //                     let subHeadTable = `<div id="pl${headCount}" class="pt-4">
 //                     <h6 style="font-weight:bold;">Note No.${headCount}-${head.toUpperCase()}</h6>
 //                     <div class="table-responsive">
@@ -3540,7 +3525,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //                 }
 //             });
 //             let uniqueClassList = Array.from(new Set(classList));
-
 
 //             let crntAlieTotal = 0;
 //             let prevAlieTotal = 0;
@@ -3786,9 +3770,6 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 //         $(".tbBalance>tbody").html(clsHtmlrow);
 //         // ********************* Financials Balance sheet Creation End *********************
 
-
-
-
 //         $(".summaryCrntFY").text(crntYearFormat);
 //         $(".summaryPrevFY").text(prevYearFormat);
 
@@ -3862,4 +3843,3 @@ module.exports = { fetchTable,getAcbkDetails,getCountry,changeInviteStatus,sendM
 
 //     return formData;
 // }
-

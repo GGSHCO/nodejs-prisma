@@ -18,9 +18,42 @@ async function getEmployeeOptions({ companyid, type }) {
     try {
         console.log(companyid)
         let res = await fetchTable(`SELECT DISTINCT iu.inviteduseremail, a.name
-FROM invitedusers iu
-LEFT JOIN syf_usermaster a ON iu.inviteduseremail = a.email
-WHERE iu.companyid = '${companyid}'`)
+    FROM invitedusers iu
+  LEFT JOIN syf_usermaster a ON iu.inviteduseremail = a.email
+     WHERE iu.companyid = '${companyid}'`)
+        let res2 = await fetchTable(`SELECT username,email from syf_companymaster where lid='${companyid}'`)
+        let options = []
+        if (type == "email") {
+            res.map((item) => {
+                options.push({ label: item.name, value: item.inviteduseremail })
+            })
+            res2.map((item) => {
+                options.push({ label: item.username, value: item.email })
+            })
+        }
+        else if (type == "name") {
+            res.map((item) => {
+                options.push({ label: item.name, value: item.name })
+            })
+            res2.map((item) => {
+                options.push({ label: item.username, value: item.username })
+            })
+        }
+
+        return options
+    }
+    catch (error) {
+        return { error: true, message: error.message, details: error };
+    }
+}
+
+async function getEmployeeTimesheetOptions({ companyid, type }) {
+    try {
+        console.log(companyid)
+        let res = await fetchTable(`SELECT DISTINCT iu.inviteduseremail, a.name
+    FROM invitedusers iu
+  LEFT JOIN syf_usermaster a ON iu.inviteduseremail = a.email
+     WHERE iu.companyid = '${companyid}' AND iu.role!='Client'`)
         let res2 = await fetchTable(`SELECT username,email from syf_companymaster where lid='${companyid}'`)
         let options = []
         if (type == "email") {
@@ -147,4 +180,4 @@ async function deleteRowData({ tableName, id }) {
     }
 }
 
-module.exports = { fetchFormOptions, saveFormData, getUvFormData, updateFormData, getEmployeeOptions, saveSubform,getUvSubFormData,deleteRowData }
+module.exports = { fetchFormOptions, saveFormData, getUvFormData, updateFormData, getEmployeeOptions,getEmployeeTimesheetOptions, saveSubform,getUvSubFormData,deleteRowData,getEmployeeTimesheetOptions }
